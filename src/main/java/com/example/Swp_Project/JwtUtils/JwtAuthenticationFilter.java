@@ -81,5 +81,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return null; // Return null if the token is not present or incorrectly formatted
     }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.equals("/") || path.startsWith("/public/") || path.equals("/api/user/login") ||
+                path.equals("/api/user/register") || path.startsWith("/swagger-ui") || path.startsWith("/api-docs");
+    }
 }
 
