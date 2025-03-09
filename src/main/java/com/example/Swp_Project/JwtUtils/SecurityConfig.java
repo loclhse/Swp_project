@@ -19,7 +19,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Updated CSRF disable
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/user/login","api/user/register","/swagger-ui.html", "/swagger-ui/**", "/api-docs/**").permitAll() // Allow login
+                        .requestMatchers("/", "/public/**","api/user/login","api/user/register","/swagger-ui.html", "/swagger-ui/**", "/api-docs/**").permitAll() // Allow login
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
