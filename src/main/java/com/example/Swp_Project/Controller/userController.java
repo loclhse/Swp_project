@@ -1,6 +1,7 @@
 package com.example.Swp_Project.Controller;
 
 import com.example.Swp_Project.Dto.userDTO;
+import com.example.Swp_Project.JwtUtils.JwtUtils;
 import com.example.Swp_Project.Model.customUsersDetail;
 import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Dto.LoginRequest;
@@ -9,6 +10,8 @@ import com.example.Swp_Project.Service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,22 +21,42 @@ import java.util.*;
 @RestController
 public class userController {
     @Autowired
+    private JwtUtils jwtUtils;
+    @Autowired
     private userService usservice;
     @Autowired
     private userDetailsService usdetail;
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginRequest loginRequest) {
         try {
-
+            if (loginRequest.getEmail() == null || loginRequest.getPassword() == null) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Email or password missing"));
+            }
             String token = usservice.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
-            UserDetails userDetails = usdetail.loadUserByUsername(loginRequest.getEmail());
-            customUsersDetail customUserDetails = (customUsersDetail) userDetails;
+            customUsersDetail userDetails = (customUsersDetail) usdetail.loadUserByUsername(loginRequest.getEmail());
 
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
-            response.put("userID", customUserDetails.getUserID());
-            response.put("username", customUserDetails.getUsername());
-            response.put("email", customUserDetails.getEmail());
+            response.put("userID", userDetails.getUserID());
+            response.put("username", userDetails.getUsername());
+            response.put("email", userDetails.getEmail());
+            response.put("role", userDetails.getRole());
+
+            String role = userDetails.getRole() != null ? userDetails.getRole() : "unknown";
+            switch (role) {
+                case "Admin":
+                    response.put("message", "Welcome to Admin Dashboard");
+                    break;
+                case "Staff":
+                    response.put("message", "Welcome to Staff Dashboard");
+                    break;
+                case "User":
+                    response.put("message", "Welcome to User Dashboard");
+                    break;
+                default:
+                    response.put("message", "Welcome to Default Dashboard");
+            }
+
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

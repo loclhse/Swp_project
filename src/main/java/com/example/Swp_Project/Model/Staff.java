@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -16,87 +17,54 @@ import java.util.UUID;
     @NoArgsConstructor
     public class Staff {
         @Id
-        private UUID staff_id;
-        private String name;
+        private UUID staffId;
+        private String staffName;
         private String phone;
         private String email;
         private String password;
         private String role;
         private String status;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDate create_at;
-
-
-        public UUID getStaff_id() {
-            return staff_id;
-        }
+        private LocalDateTime createAt;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime updateAt;
 
         public String getRole() {
             return role;
         }
-
         public void setRole(String role) {
             this.role = role;
         }
-
-        public void setStaff_id(UUID staff_id) {
-            this.staff_id = staff_id;
-        }
-
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-
+        public UUID getStaffId() {return staffId;}
+        public void setStaffId(UUID staffId) {this.staffId = staffId;}
+        public String getStaffName() {return staffName;}
+        public void setStaffName(String staffName) {this.staffName = staffName;}
         public String getPhone() {
             return phone;
         }
-
         public void setPhone(String phone) {
             this.phone = phone;
         }
-
-
         public String getEmail() {
             return email;
         }
-
-        public void setEmail(String email) {
-            this.email = email;
+        public void setEmail(String email) {this.email = email;}
+        public String getPassword() {return password;}
+        public void setPassword(String password) {this.password = password;}
+        public String getStatus() {return status;}
+        public void setStatus(String status) {this.status = status;}
+        public LocalDateTime getCreateAt() {
+            return createAt;
         }
-
-
-        public String getPassword() {
-            return password;
+        public void setCreateAt(LocalDateTime createAt) {
+            this.createAt = createAt;
         }
-
-        public void setPassword(String password) {
-            this.password = password;
+        public LocalDateTime getUpdateAt() {
+            return updateAt;
         }
-
-
-        public String getStatus() {
-            return status;
+        public void setUpdateAt(LocalDateTime updateAt) {
+            this.updateAt = updateAt;
         }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-
-
-        public LocalDate getCreate_at() {
-            return create_at;
-        }
-
-        public void setCreate_at(LocalDate create_at) {
-            this.create_at = create_at;
-        }
-
     }
 
 

@@ -43,10 +43,8 @@ public class appointmentService {
         existing.setParentName(updatedAppointment.getParentName());
         existing.setAppointmentDate(updatedAppointment.getAppointmentDate());
         existing.setTimeStart(updatedAppointment.getTimeStart());
-        existing.setFeedbacks(updatedAppointment.getFeedbacks());
-        existing.setVaccineDetailsList(updatedAppointment.getVaccineDetailsList());
         existing.setStatus(updatedAppointment.getStatus());
-
+        existing.setUpdateAt(LocalDateTime.now());
         User user = userRepositories.findById(existing.getUserId()).get();
         user.getAppointments().removeIf(a -> a.getAppointmentId().equals(appointmentId));
         user.getAppointments().add(existing);

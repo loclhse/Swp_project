@@ -19,7 +19,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Updated CSRF disable
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/public/**","api/user/login","api/user/register","/swagger-ui.html", "/swagger-ui/**", "/api-docs/**").permitAll() // Allow login
+                        .requestMatchers("/", "/public/**","/api/admin/","/api/user/login","/api/user/register","/swagger-ui.html", "/swagger-ui/**", "/api-docs/**","api/news").permitAll() // Allow login
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
@@ -30,11 +30,11 @@ public class SecurityConfig {
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Use BCrypt for password hashing
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager(); // Expose AuthenticationManager bean
+        return authConfig.getAuthenticationManager();
     }
 }

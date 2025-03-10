@@ -17,6 +17,7 @@ import java.util.UUID;
 public class Admin {
     @Id
 private UUID adminId;
+    private String adminName;
     private String email;
     private String password;
     private String status;
@@ -26,59 +27,35 @@ private UUID adminId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateAt;
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
-    }
+    public String getAdminName() {return adminName;}
 
-    public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
-    }
+    public void setAdminName(String adminName) {this.adminName = adminName;}
 
-    public LocalDateTime getCreataAt() {
-        return creataAt;
-    }
+    public LocalDateTime getUpdateAt() {return updateAt;}
 
-    public void setCreataAt(LocalDateTime creataAt) {
-        this.creataAt = creataAt;
-    }
+    public void setUpdateAt(LocalDateTime updateAt) {this.updateAt = updateAt;}
 
-    public UUID getAdminId() {
-        return adminId;
-    }
+    public LocalDateTime getCreataAt() {return creataAt;}
 
-    public void setAdminId(UUID adminId) {
-        this.adminId = adminId;
-    }
+    public void setCreataAt(LocalDateTime creataAt) {this.creataAt = creataAt;}
 
-    public String getEmail() {
-        return email;
-    }
+    public UUID getAdminId() {return adminId;}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public void setAdminId(UUID adminId) {this.adminId = adminId;}
 
-    public String getPassword() {
-        return password;
-    }
+    public String getEmail() {return email;}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public void setEmail(String email) {this.email = email;}
 
-    public String getStatus() {
-        return status;
-    }
+    public String getPassword() {return password;}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public void setPassword(String password) {this.password = password;}
 
-    public String getRole() {
-        return role;
-    }
+    public String getStatus() {return status;}
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+    public void setStatus(String status) {this.status = status;}
+
+    public String getRole() {return role;}
+
+    public void setRole(String role) {this.role = role;}
 }

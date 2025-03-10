@@ -1,7 +1,9 @@
 package com.example.Swp_Project.Service;
 
 import com.example.Swp_Project.Dto.adminDto;
+import com.example.Swp_Project.JwtUtils.JwtUtils;
 import com.example.Swp_Project.Model.Admin;
+import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Repositories.adminRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,20 +20,18 @@ public class adminService {
     @Autowired
     private adminRepositories adminRepositories;
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
     public List<Admin> getAllAdmins() {
 
         return adminRepositories.findAll();
     }
-
     public Optional<Admin> getAdminById(UUID adminId) {
 
         return adminRepositories.findById(adminId);
     }
-
     public Admin createAdmin(adminDto admin) {
         Admin ad=new Admin();
         ad.setAdminId(UUID.randomUUID());
+        ad.setAdminName(admin.getAdminName());
         ad.setEmail(admin.getEmail());
         ad.setPassword(passwordEncoder.encode(admin.getPassword()));
         ad.setRole("Admin");
@@ -39,7 +39,6 @@ public class adminService {
         ad.setCreataAt(LocalDateTime.now());
         return adminRepositories.save(ad);
     }
-
     public Admin updateAdmin(UUID adminId, adminDto updatedAdmin) {
         Optional <Admin> Admin = getAdminById(adminId);
         if (Admin.isPresent()) {
@@ -52,7 +51,6 @@ public class adminService {
             return null;
         }
     }
-
     public boolean deleteAdmin(UUID adminId) {
         Optional<Admin> optionalAdmin = getAdminById(adminId);
         if (optionalAdmin.isPresent()) {

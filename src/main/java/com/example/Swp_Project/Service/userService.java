@@ -3,8 +3,12 @@ package com.example.Swp_Project.Service;
 
 import com.example.Swp_Project.Dto.userDTO;
 import com.example.Swp_Project.JwtUtils.JwtUtils;
+import com.example.Swp_Project.Model.Admin;
+import com.example.Swp_Project.Model.Staff;
 import com.example.Swp_Project.Model.User;
+import com.example.Swp_Project.Repositories.adminRepositories;
 import com.example.Swp_Project.Repositories.childrenRepositories;
+import com.example.Swp_Project.Repositories.staffRepositories;
 import com.example.Swp_Project.Repositories.userRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -16,14 +20,16 @@ import java.util.*;
 
 @Service
 public class userService {
-@Autowired
+    @Autowired
     private JwtUtils jwtUtil;
     @Autowired
     private userRepositories usrepo;
     @Autowired
-    private childrenRepositories childrenRepositories;
+    private staffRepositories staffRepo;
+    @Autowired
+    private adminRepositories adminRepo;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
 
     public User register(userDTO user) {
         if (user.getUsername() == null || user.getEmail() == null || user.getPassword() == null) {
@@ -33,6 +39,7 @@ public class userService {
             throw new RuntimeException("Email already exists.");
         }
         User us=new User();
+        us.setUserID(UUID.randomUUID());
         us.setUsername(user.getUsername());
         us.setEmail(user.getEmail());
         us.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -50,12 +57,45 @@ public class userService {
         }
     }
     public String authenticateUser(String email, String password) {
-        User user = usrepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+
+        User user = usrepo.findByEmail(email).orElse(null);
+        if (user != null) {
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                throw new RuntimeException("Invalid password");}
+
+            return jwtUtil.generateToken(
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getUserID(),
+                    user.getRole()
+            );}
+
+        Staff staff = staffRepo.findByEmail(email).orElse(null);
+        if (staff != null) {
+            if (!passwordEncoder.matches(password, staff.getPassword())) {
+                throw new RuntimeException("Invalid password");}
+
+            return jwtUtil.generateToken(
+                    staff.getStaffName(),
+                    staff.getEmail(),
+                    staff.getStaffId(),
+                    staff.getRole()
+            );}
+
+        Admin admin = adminRepo.findByEmail(email).orElse(null);
+        if (admin != null) {
+            if (!passwordEncoder.matches(password, admin.getPassword())) {
+                throw new RuntimeException("Invalid password");
+            }
+            return jwtUtil.generateToken(
+                    admin.getEmail(),
+                    admin.getEmail(),
+                    admin.getAdminId(),
+                    admin.getRole()
+            );
         }
-        return jwtUtil.generateToken(user.getUsername(),user.getEmail(),user.getUserID());  // Use email for token generation
+
+        throw new RuntimeException("User not found");
     }
     public List<User> getAllUsers() {
         return usrepo.findAll();

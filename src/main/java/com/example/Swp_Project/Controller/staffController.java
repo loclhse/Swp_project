@@ -1,5 +1,6 @@
 package com.example.Swp_Project.Controller;
 
+import com.example.Swp_Project.Dto.staffDto;
 import com.example.Swp_Project.Model.Staff;
 import com.example.Swp_Project.Service.staffService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,13 @@ public class staffController {
     }
 
     @PostMapping
-    public Staff createStaff(@RequestBody Staff staff) {
+    public Staff createStaff(@RequestBody staffDto staff) {
+
         return staffService.createStaff(staff);
     }
 
     @PutMapping("/{staff_id}")
-    public ResponseEntity<Staff> updateStaff(@PathVariable UUID staff_id, @RequestBody Staff staffDetails) {
+    public ResponseEntity<Staff> updateStaff(@PathVariable UUID staff_id, @RequestBody staffDto staffDetails) {
         return ResponseEntity.ok(staffService.updateStaff(staff_id, staffDetails));
     }
 

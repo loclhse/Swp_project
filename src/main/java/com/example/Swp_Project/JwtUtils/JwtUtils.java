@@ -10,11 +10,11 @@ public class JwtUtils {
 
     private String secretKey = "6jSBqNjDF+HlVUMA5nOguNrWRqckFYfAPPgt3CpDOCo=";
 
-    // Method to generate the JWT token (you may already have this in your setup)
-    public String generateToken(String username, String email, UUID userID) {
+    public String generateToken(String username, String email, UUID userID,String role) {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("email", email);
         claims.put("userID", userID.toString());
+        claims.put("role",role);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
@@ -25,19 +25,17 @@ public class JwtUtils {
 
 
     public String getUsernameFromToken(String token) {
-        return getClaims(token).getSubject();
+         return getClaims(token).getSubject();
     }
-
-
     public String getEmailFromToken(String token) {
+
         return getClaims(token).get("email", String.class);
     }
-
-
     public UUID getUserIDFromToken(String token) {
-        return UUID.fromString(getClaims(token).get("userID", String.class));
+        return UUID.fromString(getClaims(token).get("userID", String.class));}
+    public String getRoleFromToken(String token) {
+        return getClaims(token).get("role", String.class);
     }
-
 
     public boolean validateToken(String token) {
         try {

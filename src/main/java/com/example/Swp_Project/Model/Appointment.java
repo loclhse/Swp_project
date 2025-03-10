@@ -29,6 +29,8 @@ public class Appointment {
     private String status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateAt;
 
 
     public Appointment(UUID userId, String childrenName, String parentName, LocalDate appointmentDate, LocalTime timeStart) {
@@ -38,6 +40,14 @@ public class Appointment {
         this.parentName = parentName;
         this.appointmentDate = appointmentDate;
         this.timeStart = timeStart;
+    }
+
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(LocalDateTime updateAt) {
+        this.updateAt = updateAt;
     }
 
     public String getChildrenName() {
