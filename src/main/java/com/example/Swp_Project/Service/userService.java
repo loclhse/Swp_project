@@ -68,7 +68,7 @@ public class userService {
        User existingUser = existingUserOpt.get();
        existingUser.setUsername(updatedUser.getUsername());
        existingUser.setEmail(updatedUser.getEmail());
-       existingUser.setPassword(updatedUser.getPassword());
+       existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
        existingUser.setUpdateAt(LocalDateTime.now());
        return usrepo.save(existingUser);
    }
