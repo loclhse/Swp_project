@@ -1,10 +1,12 @@
 package com.example.Swp_Project.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -12,7 +14,7 @@ import java.util.UUID;
 @Document(collection = "VaccineDetails")
 public class VaccineDetails {
     @Id
-    private UUID vaccineDetailsId = UUID.randomUUID();
+    private UUID vaccineDetailsId;
     private UUID vaccineId;
     private Integer doseRequire;
     private String doseName;
@@ -21,6 +23,26 @@ public class VaccineDetails {
     private String status;
     private Integer dateBetweenDoses;
     private Double price;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateAt;
+
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(LocalDateTime updateAt) {
+        this.updateAt = updateAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public UUID getVaccineId() {
         return vaccineId;

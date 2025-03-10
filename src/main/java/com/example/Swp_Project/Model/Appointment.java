@@ -16,7 +16,7 @@ import java.util.*;
 @Document(collection = "Appointment")
 public class Appointment {
     @Id
-    private UUID appointmentId=UUID.randomUUID();
+    private UUID appointmentId;
     private UUID userId;
     private String childrenName;
     private String parentName;

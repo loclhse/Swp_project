@@ -1,5 +1,6 @@
 package com.example.Swp_Project.Controller;
 
+import com.example.Swp_Project.Dto.adminDto;
 import com.example.Swp_Project.Model.Admin;
 import com.example.Swp_Project.Service.adminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,13 @@ public class adminController {
     }
 
     @PostMapping
-    public ResponseEntity<Admin> createAdmin(@RequestBody Admin admin) {
+    public ResponseEntity<Admin> createAdmin(@RequestBody adminDto admin) {
         Admin createdAdmin = adminService.createAdmin(admin);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAdmin);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Admin> updateAdmin(@PathVariable UUID id, @RequestBody Admin updatedAdmin) {
+    public ResponseEntity<Admin> updateAdmin(@PathVariable UUID id, @RequestBody adminDto updatedAdmin) {
         Admin admin = adminService.updateAdmin(id, updatedAdmin);
         if (admin == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

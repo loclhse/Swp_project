@@ -14,7 +14,7 @@ import java.util.UUID;
 @Document(collection = "News")
 public class News {
     @Id
-    private  UUID newsId=UUID.randomUUID();
+    private  UUID newsId;
     private String title;
     private String description;
     private String source;

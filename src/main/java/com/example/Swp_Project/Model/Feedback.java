@@ -18,7 +18,7 @@ import java.util.UUID;
 @Document(collection = "Feedback")
 public class Feedback {
     @Id
-    private UUID feedbackId=UUID.randomUUID();
+    private UUID feedbackId;
     private String rating;
     private String context;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

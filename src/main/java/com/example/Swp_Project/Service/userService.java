@@ -1,7 +1,7 @@
 package com.example.Swp_Project.Service;
 
 
-import com.example.Swp_Project.Dto.userRegisterDTO;
+import com.example.Swp_Project.Dto.userDTO;
 import com.example.Swp_Project.JwtUtils.JwtUtils;
 import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Repositories.childrenRepositories;
@@ -25,7 +25,7 @@ public class userService {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public User register(userRegisterDTO user) {
+    public User register(userDTO user) {
         if (user.getUsername() == null || user.getEmail() == null || user.getPassword() == null) {
             throw new IllegalArgumentException("Username, email, and password are required fields.");
         }
@@ -60,7 +60,7 @@ public class userService {
     public List<User> getAllUsers() {
         return usrepo.findAll();
     }
-   public User updateUser(UUID userId, userRegisterDTO updatedUser) {
+   public User updateUser(UUID userId, userDTO updatedUser) {
        Optional<User> existingUserOpt = usrepo.findById(userId);
        if (existingUserOpt.isEmpty()) {
            throw new RuntimeException("User not found with ID: " + userId);

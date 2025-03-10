@@ -16,17 +16,17 @@ import java.util.UUID;
     @NoArgsConstructor
     public class Staff {
         @Id
-        private UUID staff_id;  // Set to private
-        private String name;    // Set to private
-        private String phone;   // Set to private
-        private String email;   // Set to private
+        private UUID staff_id;
+        private String name;
+        private String phone;
+        private String email;
         private String password;
-        private String role;// Set to private
-        private String status;   // Set to private
+        private String role;
+        private String status;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDate create_at; // Set to private
+        private LocalDate create_at;
 
-        // Getter and Setter for staff_id
+
         public UUID getStaff_id() {
             return staff_id;
         }
@@ -43,7 +43,7 @@ import java.util.UUID;
             this.staff_id = staff_id;
         }
 
-        // Getter and Setter for name
+
         public String getName() {
             return name;
         }
@@ -52,7 +52,7 @@ import java.util.UUID;
             this.name = name;
         }
 
-        // Getter and Setter for phone
+
         public String getPhone() {
             return phone;
         }
@@ -61,7 +61,7 @@ import java.util.UUID;
             this.phone = phone;
         }
 
-        // Getter and Setter for email
+
         public String getEmail() {
             return email;
         }
@@ -70,7 +70,7 @@ import java.util.UUID;
             this.email = email;
         }
 
-        // Getter and Setter for password
+
         public String getPassword() {
             return password;
         }
@@ -79,7 +79,7 @@ import java.util.UUID;
             this.password = password;
         }
 
-        // Getter and Setter for status
+
         public String getStatus() {
             return status;
         }
@@ -88,7 +88,7 @@ import java.util.UUID;
             this.status = status;
         }
 
-        // Getter and Setter for create_at
+
         public LocalDate getCreate_at() {
             return create_at;
         }

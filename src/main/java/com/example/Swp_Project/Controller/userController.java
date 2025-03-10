@@ -1,6 +1,6 @@
 package com.example.Swp_Project.Controller;
 
-import com.example.Swp_Project.Dto.userRegisterDTO;
+import com.example.Swp_Project.Dto.userDTO;
 import com.example.Swp_Project.Model.customUsersDetail;
 import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Dto.LoginRequest;
@@ -41,7 +41,7 @@ public class userController {
         }
     }
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody userRegisterDTO us) {
+    public ResponseEntity<?> createUser(@RequestBody userDTO us) {
         try {
             User createdUser = usservice.register(us);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
@@ -67,7 +67,7 @@ public class userController {
                 .orElseGet(() -> ResponseEntity.notFound().build()); // 404
     }
     @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable UUID userId, @RequestBody userRegisterDTO user) {
+    public ResponseEntity<User> updateUser(@PathVariable UUID userId, @RequestBody userDTO user) {
        try {
              User updatedUser = usservice.updateUser(userId, user);
              return ResponseEntity.ok(updatedUser); // 200

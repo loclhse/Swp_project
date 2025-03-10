@@ -20,7 +20,7 @@ import java.util.UUID;
 @Document(collection = "Children")
 public class Children {
     @Id
-    private UUID childrenId=UUID.randomUUID();
+    private UUID childrenId;
     private String childrenName;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;

@@ -17,7 +17,7 @@ import java.util.UUID;
 public class User {
 
         @Id
-        private UUID userID = UUID.randomUUID(); // Auto-generate unique ID
+        private UUID userID;
         private String username;
         private String email;
         private String password;

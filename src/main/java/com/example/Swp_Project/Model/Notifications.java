@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Notifications {
     @Id
-    private UUID notificationId= UUID.randomUUID(); // Unique ID (Primary Key)
+    private UUID notificationId; // Unique ID (Primary Key)
     private UUID userID;
     private String messages;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

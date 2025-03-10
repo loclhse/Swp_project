@@ -14,7 +14,7 @@ import java.util.UUID;
 @Document(collection = "Vaccine")
 public class Vaccin {
     @Id
-    private UUID vaccineId=UUID.randomUUID();
+    private UUID vaccineId;
     private String illnessName;
     private String descriptions;
     private Integer ageLimit;

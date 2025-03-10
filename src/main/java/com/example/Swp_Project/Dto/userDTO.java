@@ -1,9 +1,10 @@
 package com.example.Swp_Project.Dto;
 
-public class userRegisterDTO {
+public class userDTO {
     private String username;
     private String email;
     private String password;
+
 
     public String getUsername() {
         return username;

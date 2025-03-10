@@ -16,14 +16,23 @@ import java.util.UUID;
 @Document (collection = "Admin")
 public class Admin {
     @Id
-private UUID admin_id=UUID.randomUUID();
+private UUID adminId;
     private String email;
     private String password;
     private String status;
     private String role;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-
     private LocalDateTime creataAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateAt;
+
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(LocalDateTime updateAt) {
+        this.updateAt = updateAt;
+    }
 
     public LocalDateTime getCreataAt() {
         return creataAt;
@@ -33,12 +42,12 @@ private UUID admin_id=UUID.randomUUID();
         this.creataAt = creataAt;
     }
 
-    public UUID getAdmin_id() {
-        return admin_id;
+    public UUID getAdminId() {
+        return adminId;
     }
 
-    public void setAdmin_id(UUID admin_id) {
-        this.admin_id = admin_id;
+    public void setAdminId(UUID adminId) {
+        this.adminId = adminId;
     }
 
     public String getEmail() {
