@@ -1,4 +1,4 @@
-package com.example.Swp_Project.DtoUltils;
+package com.example.Swp_Project.Dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

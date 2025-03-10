@@ -1,5 +1,6 @@
-package com.example.Swp_Project.CartDTO;
+package com.example.Swp_Project.Service;
 
+import com.example.Swp_Project.Model.CartItem;
 import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Repositories.userRepositories;

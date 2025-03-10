@@ -1,7 +1,7 @@
 
 package com.example.Swp_Project.JwtUtils;
 
-import com.example.Swp_Project.DtoUltils.customUsersDetail;
+import com.example.Swp_Project.Model.customUsersDetail;
 import com.example.Swp_Project.Service.userDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

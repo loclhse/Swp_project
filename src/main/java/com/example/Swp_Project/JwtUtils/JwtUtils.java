@@ -8,16 +8,13 @@ import java.util.UUID;
 @Component
 public class JwtUtils {
 
-    private String secretKey = "6jSBqNjDF+HlVUMA5nOguNrWRqckFYfAPPgt3CpDOCo="; // Replace with your own secret key
+    private String secretKey = "6jSBqNjDF+HlVUMA5nOguNrWRqckFYfAPPgt3CpDOCo=";
 
     // Method to generate the JWT token (you may already have this in your setup)
     public String generateToken(String username, String email, UUID userID) {
-        Claims claims = Jwts.claims().setSubject(username);  // Set the username as the subject of the token
+        Claims claims = Jwts.claims().setSubject(username);
         claims.put("email", email);
-        claims.put("userID", userID.toString());  // Store userID as a string (can be UUID)
-
-
-
+        claims.put("userID", userID.toString());
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
@@ -31,40 +28,34 @@ public class JwtUtils {
         return getClaims(token).getSubject();
     }
 
-    // ✅ Extract Email
+
     public String getEmailFromToken(String token) {
         return getClaims(token).get("email", String.class);
     }
 
-    // ✅ Extract UserID
+
     public UUID getUserIDFromToken(String token) {
         return UUID.fromString(getClaims(token).get("userID", String.class));
     }
 
 
-
-
-    // Method to validate the token (check if username matches and token is not expired)
     public boolean validateToken(String token) {
         try {
-            // Parse the token to check its validity
+
             Jwts.parser()
                     .setSigningKey(secretKey)
-                    .parseClaimsJws(token); // This throws an exception if the token is invalid or expired
-
-            // Optional: Check if the token has expired (you can also rely on ExpiredJwtException)
+                    .parseClaimsJws(token);
             Claims claims = Jwts.parser()
                     .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
-
             Date expiration = claims.getExpiration();
+
             if (expiration.before(new Date())) {
                 System.out.println("JWT expired");
-                return false; // Explicitly return false if the token is expired
+                return false;
             }
-
-            return true; // Valid token
+            return true;
 
         } catch (ExpiredJwtException e) {
             System.out.println("JWT expired: " + e.getMessage());
@@ -75,7 +66,7 @@ public class JwtUtils {
         } catch (Exception e) {
             System.out.println("Token validation error: " + e.getMessage());
         }
-        return false; // Return false if any validation fails
+        return false;
     }
 
     private Claims getClaims(String token) {

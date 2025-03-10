@@ -1,7 +1,7 @@
 package com.example.Swp_Project.Controller;
 
-import com.example.Swp_Project.CartDTO.CartItem;
-import com.example.Swp_Project.CartDTO.cartService;
+import com.example.Swp_Project.Model.CartItem;
+import com.example.Swp_Project.Service.cartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

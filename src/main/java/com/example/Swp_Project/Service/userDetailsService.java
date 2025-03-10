@@ -1,6 +1,6 @@
 package com.example.Swp_Project.Service;
 
-import com.example.Swp_Project.DtoUltils.customUsersDetail;
+import com.example.Swp_Project.Model.customUsersDetail;
 import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Repositories.userRepositories;
 
@@ -9,8 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class userDetailsService implements UserDetailsService {

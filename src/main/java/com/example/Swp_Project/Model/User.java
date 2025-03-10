@@ -1,6 +1,5 @@
 package com.example.Swp_Project.Model;
 
-import com.example.Swp_Project.CartDTO.CartItem;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,7 +13,7 @@ import java.util.UUID;
 
 @Document(collection = "User") // Collection name in MongoDB
 @AllArgsConstructor
-@NoArgsConstructor
+
 public class User {
 
         @Id
@@ -25,19 +24,25 @@ public class User {
         private String role;
         private String status;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime createdAt; // Auto-set timestamp
+        private LocalDateTime createdAt;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime updateAt;// Auto-set timestamp
         private List<Children>childrens=new ArrayList<>();
         private List<Feedback>feedbacks=new ArrayList<>();
         private List<Appointment>appointments=new ArrayList<>();
-        private List<Vaccin>vaccins=new ArrayList<>();
         private List<CartItem>cart=new ArrayList<>();
 
-        public User(String username, String email, String password, String role, String status) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.status = status;
+        public User(){
+        }
+
+        public User(String username, String email, String password, String role, String status,LocalDateTime createdAt,LocalDateTime updateAt) {
+            this.username = username;
+            this.email = email;
+            this.password = password;
+            this.role = role;
+            this.status = status;
+            this.createdAt=createdAt;
+            this.updateAt=updateAt;
     }
 
     public List<CartItem> getCart() {
@@ -48,12 +53,13 @@ public class User {
         this.cart = cart;
     }
 
-    public List<Vaccin> getVaccins() {
-        return vaccins;
+
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
     }
 
-    public void setVaccins(List<Vaccin> vaccins) {
-        this.vaccins = vaccins;
+    public void setUpdateAt(LocalDateTime updateAt) {
+        this.updateAt = updateAt;
     }
 
     public List<Appointment> getAppointments() {

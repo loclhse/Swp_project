@@ -1,9 +1,9 @@
 package com.example.Swp_Project.Controller;
 
-import com.example.Swp_Project.DtoUltils.customUsersDetail;
-import com.example.Swp_Project.Model.Children;
+import com.example.Swp_Project.Dto.userRegisterDTO;
+import com.example.Swp_Project.Model.customUsersDetail;
 import com.example.Swp_Project.Model.User;
-import com.example.Swp_Project.DtoUltils.LoginRequest;
+import com.example.Swp_Project.Dto.LoginRequest;
 import com.example.Swp_Project.Service.userDetailsService;
 import com.example.Swp_Project.Service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +24,11 @@ public class userController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginRequest loginRequest) {
         try {
-            // Authenticate user and generate the token
+
             String token = usservice.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
-
-            // Use UserDetailsService to load user information
             UserDetails userDetails = usdetail.loadUserByUsername(loginRequest.getEmail());
-
-            // Cast to CustomUserDetails
             customUsersDetail customUserDetails = (customUsersDetail) userDetails;
 
-            // Prepare the response with token and user info
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("userID", customUserDetails.getUserID());
@@ -46,7 +41,7 @@ public class userController {
         }
     }
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody User us) {
+    public ResponseEntity<?> createUser(@RequestBody userRegisterDTO us) {
         try {
             User createdUser = usservice.register(us);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
@@ -72,10 +67,10 @@ public class userController {
                 .orElseGet(() -> ResponseEntity.notFound().build()); // 404
     }
     @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable UUID userId, @RequestBody User user) {
-        try {
-            User updatedUser = usservice.updateUser(userId, user);
-            return ResponseEntity.ok(updatedUser); // 200
+    public ResponseEntity<User> updateUser(@PathVariable UUID userId, @RequestBody userRegisterDTO user) {
+       try {
+             User updatedUser = usservice.updateUser(userId, user);
+             return ResponseEntity.ok(updatedUser); // 200
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build(); // 404
         }

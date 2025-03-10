@@ -1,6 +1,5 @@
-package com.example.Swp_Project.DtoUltils;
+package com.example.Swp_Project.Model;
 
-import com.example.Swp_Project.Model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

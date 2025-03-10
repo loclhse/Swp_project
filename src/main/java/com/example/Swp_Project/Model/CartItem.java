@@ -1,6 +1,4 @@
-package com.example.Swp_Project.CartDTO;
-
-import org.springframework.data.annotation.Id;
+package com.example.Swp_Project.Model;
 
 import java.util.UUID;
 
