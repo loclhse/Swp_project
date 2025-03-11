@@ -7,6 +7,7 @@ import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Repositories.adminRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,8 @@ import java.util.UUID;
 public class adminService {
     @Autowired
     private adminRepositories adminRepositories;
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     public List<Admin> getAllAdmins() {
 
         return adminRepositories.findAll();

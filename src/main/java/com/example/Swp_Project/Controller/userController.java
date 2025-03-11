@@ -20,12 +20,14 @@ import java.util.*;
 @RequestMapping("/api/user")
 @RestController
 public class userController {
+
     @Autowired
     private JwtUtils jwtUtils;
     @Autowired
     private userService usservice;
     @Autowired
     private userDetailsService usdetail;
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginRequest loginRequest) {
         try {
@@ -58,11 +60,13 @@ public class userController {
             }
 
             return ResponseEntity.ok(response);
+
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Collections.singletonMap("error", e.getMessage()));
         }
     }
+
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody userDTO us) {
         try {
@@ -73,23 +77,25 @@ public class userController {
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
-    }
-        @ExceptionHandler(Exception.class)
+    }@ExceptionHandler(Exception.class)
         public ResponseEntity<?> handleException (Exception ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
-        }
+    }
+
         @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = usservice.getAllUsers();
         return ResponseEntity.ok(users); // 200
     }
-    @GetMapping("/{username}")
+
+        @GetMapping("/{username}")
     public ResponseEntity<User> findByUsername(@RequestParam String username) {
         Optional<User> user = usservice.findByUsername(username);
         return user.map(ResponseEntity::ok) // 200
                 .orElseGet(() -> ResponseEntity.notFound().build()); // 404
     }
-    @PutMapping("/{userId}")
+
+        @PutMapping("/{userId}")
     public ResponseEntity<User> updateUser(@PathVariable UUID userId, @RequestBody userDTO user) {
        try {
              User updatedUser = usservice.updateUser(userId, user);
@@ -98,7 +104,8 @@ public class userController {
             return ResponseEntity.notFound().build(); // 404
         }
     }
-    @DeleteMapping("/{userId}")
+
+       @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
         try {
             usservice.deleteUser(userId);
@@ -107,5 +114,4 @@ public class userController {
             return ResponseEntity.notFound().build(); // 404
         }
     }
-
-    }
+}

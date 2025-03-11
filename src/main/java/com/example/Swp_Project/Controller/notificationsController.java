@@ -13,6 +13,7 @@ import java.util.UUID;
 @RequestMapping("/api/notifications")
 @RestController
 public class notificationsController {
+
     @Autowired
     private notificationService notificationService;
 
@@ -23,16 +24,17 @@ public class notificationsController {
         return ResponseEntity.ok(notification);
     }
 
-
     @GetMapping
     public ResponseEntity<List<Notifications>> getAllNotifications() {
         return ResponseEntity.ok(notificationService.getAllNotificationsSorted());
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<Notifications> getNotificationById(@PathVariable UUID id) {
         Optional<Notifications> notification = notificationService.getNotificationById(id);
         return notification.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?>updateNotifications(@PathVariable UUID id,@RequestBody Notifications noti){
         return notificationService.updateNotification(id,noti);

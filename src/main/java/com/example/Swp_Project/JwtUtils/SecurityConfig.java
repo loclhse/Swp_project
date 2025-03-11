@@ -19,15 +19,22 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Updated CSRF disable
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/public/**","/api/admin/","/api/user/login","/api/user/register","/swagger-ui.html", "/swagger-ui/**", "/api-docs/**","api/news").permitAll() // Allow login
-                        .requestMatchers("/api/**").authenticated()
-                        .anyRequest().authenticated() // Protect all other endpoints
+                        .requestMatchers("/",
+                                 "/public/**",
+                                 "/api/user/login",
+                                 "/api/user/register",
+                                 "/swagger-ui.html",
+                                 "/swagger-ui/**",
+                                 "/api-docs/**",
+                                 "/api/vaccines-getall").permitAll()
+                        .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

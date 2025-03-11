@@ -19,10 +19,13 @@ import java.util.UUID;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     @Autowired
     private JwtUtils jwtUtil;
+
     @Autowired
     private userDetailsService userDetailsService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -34,31 +37,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
               response.setContentType("application/json");
               response.setCharacterEncoding("UTF-8");
               return;
-        }
-        try {
+              }
+
+              try {
 
                 String role=jwtUtil.getRoleFromToken(token);
                 String username = jwtUtil.getUsernameFromToken(token);
                 String email = jwtUtil.getEmailFromToken(token);
                 UUID userID = jwtUtil.getUserIDFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
                 UsernamePasswordAuthenticationToken authentication=new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 customUsersDetail userDetailsWithInfo = new customUsersDetail(userID,username,email,role);
                 authentication.setDetails(userDetailsWithInfo);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        } catch (Exception e) {
+              } catch (Exception e) {
 
                 System.out.println("Error processing token: " + e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("{\"error\": \"Error processing authentication.\"}");
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
-                return;
-        }
+                    return;
+
+              }
 
         chain.doFilter(request, response);
+
     }
+
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -67,11 +75,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         System.out.println("Authorization header is missing or does not start with 'Bearer '.");
         return null;
     }
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         return path.equals("/") || path.startsWith("/public/") || path.equals("/api/user/login") ||
-                path.equals("/api/user/register") || path.startsWith("/swagger-ui") || path.startsWith("/api-docs");
+                path.equals("/api/user/register") || path.startsWith("/swagger-ui")
+                || path.startsWith("/api-docs");
     }
 }
 

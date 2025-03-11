@@ -13,6 +13,7 @@ import com.example.Swp_Project.Repositories.userRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,8 +29,8 @@ public class userService {
     private staffRepositories staffRepo;
     @Autowired
     private adminRepositories adminRepo;
-
-    private BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User register(userDTO user) {
         if (user.getUsername() == null || user.getEmail() == null || user.getPassword() == null) {

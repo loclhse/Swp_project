@@ -22,8 +22,10 @@ public class News {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-        // Constructor
-        public News(String title, String description, String source, String category, LocalDateTime createdAt) {
+    public News() {
+    }
+
+    public News(String title, String description, String source, String category, LocalDateTime createdAt) {
             this.title = title;
             this.description = description;
             this.source = source;
@@ -31,7 +33,7 @@ public class News {
             this.createdAt = createdAt;
         }
 
-        // Getters
+
         public String getTitle() {
             return title;
         }
@@ -73,13 +75,11 @@ public class News {
             this.createdAt = createdAt;
         }
 
-        // toString() method for easy debugging
-
-    public UUID getNewsId() {
+        public UUID getNewsId() {
         return newsId;
     }
 
-    public void setNewsId(UUID newsId) {
+        public void setNewsId(UUID newsId) {
         this.newsId = newsId;
     }
 

@@ -12,8 +12,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/staff")
 public class staffController {
-@Autowired
+
+    @Autowired
     private staffService staffService;
+
     @GetMapping
     public List<Staff> getAllStaff() {
         return staffService.getAllStaff();
@@ -28,7 +30,6 @@ public class staffController {
 
     @PostMapping
     public Staff createStaff(@RequestBody staffDto staff) {
-
         return staffService.createStaff(staff);
     }
 

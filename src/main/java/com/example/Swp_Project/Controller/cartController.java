@@ -11,8 +11,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/cart")
 public class cartController {
+
     @Autowired
     private cartService cartService;
+
     @PostMapping("/{userID}")
     public CartItem addToCart(
             @PathVariable UUID userID,
@@ -33,6 +35,7 @@ public class cartController {
             @RequestParam("quantity") int quantity) {
         return cartService.updateCartItem(userID, itemId, quantity);
     }
+
     @DeleteMapping("/{userID}/{itemId}")
     public void removeFromCart(@PathVariable UUID userID, @PathVariable UUID itemId) {
         cartService.removeFromCart(userID, itemId);

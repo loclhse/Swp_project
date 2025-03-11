@@ -22,9 +22,19 @@ public class Feedback {
     private String rating;
     private String context;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createAt=LocalDateTime.now();
+    private LocalDateTime createAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateAt;
     private UUID userId;
     private UUID appointmentsId;
+
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(LocalDateTime updateAt) {
+        this.updateAt = updateAt;
+    }
 
     public UUID getAppointmentsId() {
         return appointmentsId;

@@ -1,5 +1,6 @@
 package com.example.Swp_Project.Controller;
 
+import com.example.Swp_Project.Dto.vaccineDto;
 import com.example.Swp_Project.Model.Vaccin;
 import com.example.Swp_Project.Service.vaccineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,27 +13,28 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/api/vaccine")
+@RequestMapping("/api")
 public class vaccineController {
+
     @Autowired
     private vaccineService vaccineService;
-    @PostMapping
-    public ResponseEntity<Vaccin> createVaccine(@RequestBody Vaccin vaccine) {
+
+    @PostMapping("/vaccine-create")
+    public ResponseEntity<Vaccin> createVaccine(@RequestBody vaccineDto vaccine) {
         return ResponseEntity.ok(vaccineService.createVaccine(vaccine));
     }
 
-    @GetMapping
+    @GetMapping("/vaccines-getall")
     public ResponseEntity<List<Vaccin>> getAllVaccines() {
         return ResponseEntity.ok(vaccineService.getAllVaccines());
     }
 
-
-    @GetMapping("/{vaccineId}")
+    @GetMapping("/vaccines-get/{vaccineId}")
     public ResponseEntity<Vaccin> getVaccineById(@PathVariable UUID vaccineId) {
         return ResponseEntity.ok(vaccineService.getVaccineById(vaccineId));
     }
 
-    @DeleteMapping("/{vaccineId}")
+    @DeleteMapping("/vaccine-delete/{vaccineId}")
     public ResponseEntity<String> deleteVaccine(@PathVariable UUID vaccineId) {
         return ResponseEntity.ok(vaccineService.deleteVaccine(vaccineId));
     }

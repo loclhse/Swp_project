@@ -27,32 +27,30 @@ public class JwtUtils {
     public String getUsernameFromToken(String token) {
          return getClaims(token).getSubject();
     }
-    public String getEmailFromToken(String token) {
 
+    public String getEmailFromToken(String token) {
         return getClaims(token).get("email", String.class);
     }
+
     public UUID getUserIDFromToken(String token) {
-        return UUID.fromString(getClaims(token).get("userID", String.class));}
+        return UUID.fromString(getClaims(token).get("userID", String.class));
+    }
+
     public String getRoleFromToken(String token) {
         return getClaims(token).get("role", String.class);
     }
 
     public boolean validateToken(String token) {
         try {
-
-            Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token);
-            Claims claims = Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token)
-                    .getBody();
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
             Date expiration = claims.getExpiration();
 
             if (expiration.before(new Date())) {
                 System.out.println("JWT expired");
                 return false;
             }
+
             return true;
 
         } catch (ExpiredJwtException e) {
@@ -64,13 +62,11 @@ public class JwtUtils {
         } catch (Exception e) {
             System.out.println("Token validation error: " + e.getMessage());
         }
+
         return false;
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 }

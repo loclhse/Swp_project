@@ -7,6 +7,7 @@ import com.example.Swp_Project.Model.Staff;
 import com.example.Swp_Project.Repositories.staffRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,7 +21,8 @@ public class staffService {
 
     @Autowired
     private staffRepositories  staffRepository;
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     public List<Staff> getAllStaff() {

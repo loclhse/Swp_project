@@ -12,8 +12,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/appointment")
 public class appointmentController {
+
     @Autowired
     private appointmentService appointmentService;
+
     @PostMapping("/{userID}")
     public Appointment createAppointment(@PathVariable UUID userID, @RequestBody Appointment appointment) {
         return appointmentService.createAppointment(userID, appointment);
@@ -33,6 +35,7 @@ public class appointmentController {
     public Appointment updateAppointment(@PathVariable UUID appointmentId, @RequestBody Appointment appointment) {
         return appointmentService.updateAppointment(appointmentId, appointment);
     }
+
     @DeleteMapping("/{userID}/{appointmentId}")
     public void deleteAppointment(@PathVariable UUID userID, @PathVariable UUID appointmentId) {
         appointmentService.deleteAppointment(userID, appointmentId);

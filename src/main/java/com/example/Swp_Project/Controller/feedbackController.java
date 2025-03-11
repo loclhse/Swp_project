@@ -15,8 +15,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/feedback")
 public class feedbackController {
+
     @Autowired
     private feedbackService feedbackService;
+
     @PostMapping("/users/{userId}/appointments/{appointmentId}/feedback")
     public ResponseEntity<String> addFeedback(
             @PathVariable UUID userId,
@@ -25,7 +27,6 @@ public class feedbackController {
         return feedbackService.addFeedback(userId, appointmentId, feedback);
     }
 
-    // READ: Get Feedback by ID
     @GetMapping("/feedback/{feedbackId}")
     public ResponseEntity<Feedback> getFeedbackById(@PathVariable UUID feedbackId) {
         try {
@@ -36,7 +37,6 @@ public class feedbackController {
         }
     }
 
-    // READ: Get All Feedback for a User
     @GetMapping("/users/{userId}/feedback")
     public ResponseEntity<List<Feedback>> getUserFeedbacks(@PathVariable UUID userId) {
         try {
@@ -47,7 +47,6 @@ public class feedbackController {
         }
     }
 
-    // READ: Get All Feedback for an Appointment
     @GetMapping("/appointments/{appointmentId}/feedback")
     public ResponseEntity<List<Feedback>> getAppointmentFeedbacks(@PathVariable UUID appointmentId) {
         try {
@@ -58,7 +57,6 @@ public class feedbackController {
         }
     }
 
-    // UPDATE: Update Feedback
     @PutMapping("/users/{userId}/appointments/{appointmentId}/feedback/{feedbackId}")
     public ResponseEntity<Feedback> updateFeedback(
             @PathVariable UUID userId,
@@ -73,7 +71,6 @@ public class feedbackController {
         }
     }
 
-    // DELETE: Remove Feedback
     @DeleteMapping("/users/{userId}/appointments/{appointmentId}/feedback/{feedbackId}")
     public ResponseEntity<String> deleteFeedback(
             @PathVariable UUID userId,
@@ -86,5 +83,5 @@ public class feedbackController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-        }
+}
 

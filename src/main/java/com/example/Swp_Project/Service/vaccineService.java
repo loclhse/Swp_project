@@ -1,5 +1,6 @@
 package com.example.Swp_Project.Service;
 
+import com.example.Swp_Project.Dto.vaccineDto;
 import com.example.Swp_Project.Model.Vaccin;
 
 import com.example.Swp_Project.Repositories.vaccineRepositories;
@@ -17,9 +18,13 @@ public class vaccineService {
     @Autowired
     private vaccineRepositories vaccineRepositories;
 
-    public Vaccin createVaccine(Vaccin vaccine) {
-        vaccine.setVaccineId(UUID.randomUUID());
-        return vaccineRepositories.save(vaccine);
+    public Vaccin createVaccine(vaccineDto vaccine) {
+        Vaccin vaccin=new Vaccin();
+        vaccin.setVaccineId(UUID.randomUUID());
+        vaccin.setIllnessName(vaccine.getIllnessName());
+        vaccin.setAgeLimit(vaccine.getAgeLimit());
+        vaccin.setDescriptions(vaccine.getDescriptions());
+        return vaccineRepositories.save(vaccin);
     }
 
     public List<Vaccin> getAllVaccines() {

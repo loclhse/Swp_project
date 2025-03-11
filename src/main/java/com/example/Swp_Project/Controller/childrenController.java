@@ -16,8 +16,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/children")
 public class childrenController {
+
     @Autowired
     private childrenService childrenService;
+
     @PostMapping("/{userId}")
     public ResponseEntity<Children> addChildToUser(
             @PathVariable UUID userId,
@@ -30,14 +32,12 @@ public class childrenController {
         }
     }
 
-
     @DeleteMapping("{childId}/user/{userId}")
     public ResponseEntity<User> deleteUserChild(
             @PathVariable UUID userId,
             @PathVariable UUID childId) {
         return childrenService.deleteUserChild(userId, childId);
     }
-
 
     @GetMapping("/{userId}/user")
     public ResponseEntity<List<Children>> getUserChildren(@PathVariable UUID userId) {
@@ -48,8 +48,6 @@ public class childrenController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-
-
 
     @PutMapping("/{userId}/children/{childId}")
        public ResponseEntity<Children> updateChild(@PathVariable UUID userId, @PathVariable UUID childId,

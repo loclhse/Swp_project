@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ public class VaccineDetails {
     private UUID vaccineId;
     private Integer doseRequire;
     private String doseName;
+    private String imageUrl;
     private String manufacturer;
     private Integer quantity;
     private String status;
@@ -114,5 +116,13 @@ public class VaccineDetails {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

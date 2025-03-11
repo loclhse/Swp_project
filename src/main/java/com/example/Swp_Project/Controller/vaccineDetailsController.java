@@ -1,5 +1,6 @@
 package com.example.Swp_Project.Controller;
 
+import com.example.Swp_Project.Dto.vaccineDetailsDto;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Service.vaccineDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,11 @@ import java.util.UUID;
 public class vaccineDetailsController {
     @Autowired
     private vaccineDetailService vaccineDetailService;
+
     @PostMapping("/{vaccineId}/vaccine")
     public ResponseEntity<VaccineDetails> createVaccineDetails(
             @PathVariable UUID vaccineId,
-            @RequestBody VaccineDetails details) {
+            @RequestBody vaccineDetailsDto details) {
         try {
             VaccineDetails createdDetails = vaccineDetailService.createVaccineDetails(vaccineId, details);
             return ResponseEntity.ok(createdDetails);
@@ -26,12 +28,11 @@ public class vaccineDetailsController {
         }
     }
 
-
     @PutMapping("/{detailsId}/vaccines/{vaccineId}")
     public ResponseEntity<VaccineDetails> updateVaccineDetails(
             @PathVariable UUID vaccineId,
             @PathVariable UUID detailsId,
-            @RequestBody VaccineDetails updatedDetails) {
+            @RequestBody vaccineDetailsDto updatedDetails) {
         try {
             VaccineDetails updated = vaccineDetailService.updateVaccineDetails(vaccineId, detailsId, updatedDetails);
             return ResponseEntity.ok(updated);
@@ -39,7 +40,6 @@ public class vaccineDetailsController {
             return ResponseEntity.status(404).body(null); // 404 if vaccine or details not found
         }
     }
-
 
     @DeleteMapping("/vaccines/{vaccineId}/details/{detailsId}")
     public ResponseEntity<String> deleteVaccineDetails(
@@ -52,6 +52,7 @@ public class vaccineDetailsController {
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }
+
     @GetMapping("/vaccine-details")
     public ResponseEntity<List<VaccineDetails>> findAllVaccineDetails() {
         try {
@@ -61,9 +62,7 @@ public class vaccineDetailsController {
             return ResponseEntity.status(500).body(null);
         }
     }
-
-
-    }
+}
 
 
 
