@@ -28,6 +28,7 @@ public class vaccineDetailService {
         return vaccineDetailsRepositories.findAll();
     }
 
+
     public VaccineDetails updateVaccineDetails(UUID vaccineId, UUID detailsId, vaccineDetailsDto updatedDetails) {
            Vaccin vaccin = vaccineRepositories.findById(vaccineId)
                 .orElseThrow(() -> new RuntimeException("Vaccine not found for ID: " + vaccineId + ", fam!"));

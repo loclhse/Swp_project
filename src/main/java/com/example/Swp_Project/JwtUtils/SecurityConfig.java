@@ -26,7 +26,8 @@ public class SecurityConfig {
                                  "/swagger-ui.html",
                                  "/swagger-ui/**",
                                  "/api-docs/**",
-                                 "/api/vaccines-getall").permitAll()
+                                 "/api/vaccines",
+                                "/api/vaccine-details").permitAll()
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

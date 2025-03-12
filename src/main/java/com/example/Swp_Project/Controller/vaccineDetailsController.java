@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/vaccineDetails")
+@RequestMapping("/api")
 public class vaccineDetailsController {
     @Autowired
     private vaccineDetailService vaccineDetailService;
 
-    @PostMapping("/{vaccineId}/vaccine")
+    @PostMapping("vaccine-details/{vaccineId}")
     public ResponseEntity<VaccineDetails> createVaccineDetails(
             @PathVariable UUID vaccineId,
             @RequestBody vaccineDetailsDto details) {
@@ -28,7 +28,7 @@ public class vaccineDetailsController {
         }
     }
 
-    @PutMapping("/{detailsId}/vaccines/{vaccineId}")
+    @PutMapping("vaccine-details/{detailsId}/{vaccineId}")
     public ResponseEntity<VaccineDetails> updateVaccineDetails(
             @PathVariable UUID vaccineId,
             @PathVariable UUID detailsId,
@@ -41,7 +41,7 @@ public class vaccineDetailsController {
         }
     }
 
-    @DeleteMapping("/vaccines/{vaccineId}/details/{detailsId}")
+    @DeleteMapping("/vaccine-details/{vaccineId}/{detailsId}")
     public ResponseEntity<String> deleteVaccineDetails(
             @PathVariable UUID vaccineId,
             @PathVariable UUID detailsId) {

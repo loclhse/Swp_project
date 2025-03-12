@@ -19,22 +19,22 @@ public class vaccineController {
     @Autowired
     private vaccineService vaccineService;
 
-    @PostMapping("/vaccine-create")
+    @PostMapping("/vaccines-create")
     public ResponseEntity<Vaccin> createVaccine(@RequestBody vaccineDto vaccine) {
         return ResponseEntity.ok(vaccineService.createVaccine(vaccine));
     }
 
-    @GetMapping("/vaccines-getall")
+    @GetMapping("/vaccines")
     public ResponseEntity<List<Vaccin>> getAllVaccines() {
         return ResponseEntity.ok(vaccineService.getAllVaccines());
     }
 
-    @GetMapping("/vaccines-get/{vaccineId}")
+    @GetMapping("/vaccines/{vaccineId}")
     public ResponseEntity<Vaccin> getVaccineById(@PathVariable UUID vaccineId) {
         return ResponseEntity.ok(vaccineService.getVaccineById(vaccineId));
     }
 
-    @DeleteMapping("/vaccine-delete/{vaccineId}")
+    @DeleteMapping("/vaccines/{vaccineId}")
     public ResponseEntity<String> deleteVaccine(@PathVariable UUID vaccineId) {
         return ResponseEntity.ok(vaccineService.deleteVaccine(vaccineId));
     }

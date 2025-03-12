@@ -39,11 +39,17 @@ public class userService {
         if (usrepo.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists.");
         }
+        if (!user.getPassword().equals(user.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
         User us=new User();
         us.setUserID(UUID.randomUUID());
         us.setUsername(user.getUsername());
         us.setEmail(user.getEmail());
         us.setPassword(passwordEncoder.encode(user.getPassword()));
+        us.setAddress(user.getAddress());
+        us.setPhone(user.getPhone());
+        us.setDateOfBirth(user.getDateOfBirth());
         us.setRole("User");
         us.setStatus("Active");
         us.setCreatedAt(LocalDateTime.now());

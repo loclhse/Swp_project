@@ -21,6 +21,9 @@ public class Appointment {
     private String childrenName;
     private String parentName;
     @JsonFormat(pattern="yyyy-MM-dd")
+    private LocalDate dateOfBirth;
+    private String gender;
+    @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate appointmentDate;
     @JsonFormat(pattern="HH:mm")
     private LocalTime timeStart;
