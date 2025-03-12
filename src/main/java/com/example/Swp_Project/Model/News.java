@@ -10,7 +10,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import java.util.UUID;
 @AllArgsConstructor
-@NoArgsConstructor
 @Document(collection = "News")
 public class News {
     @Id
