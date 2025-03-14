@@ -16,47 +16,44 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/children")
 public class childrenController {
+        @Autowired
+        private childrenService childrenService;
 
-    @Autowired
-    private childrenService childrenService;
-
-    @PostMapping("/{userId}")
-    public ResponseEntity<Children> addChildToUser(
-            @PathVariable UUID userId,
-            @RequestBody Children children) {
-        try {
-            Children updatedUser = childrenService.addChildToUser(userId, children);
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        @GetMapping
+        public List<Children> getAllChildren() {
+            return childrenService.getAllChildren();
         }
-    }
 
-    @DeleteMapping("{childId}/user/{userId}")
-    public ResponseEntity<User> deleteUserChild(
-            @PathVariable UUID userId,
-            @PathVariable UUID childId) {
-        return childrenService.deleteUserChild(userId, childId);
-    }
-
-    @GetMapping("/{userId}/user")
-    public ResponseEntity<List<Children>> getUserChildren(@PathVariable UUID userId) {
-        try {
-            List<Children> children = childrenService.getChildrenByUserId(userId);
-            return ResponseEntity.ok(children);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        @GetMapping("/{id}")
+        public ResponseEntity<Children> getChildrenById(@PathVariable(value = "id") UUID childrenId) {
+            Children children = childrenService.getChildrenById(childrenId);
+            if (children == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok().body(children);
         }
-    }
 
-    @PutMapping("/{userId}/children/{childId}")
-       public ResponseEntity<Children> updateChild(@PathVariable UUID userId, @PathVariable UUID childId,
-                                                   @RequestBody Children updatedChild) {
-        try {
-            Children updated = childrenService.updateChild(userId, childId, updatedChild);
-            return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        @PutMapping("/{id}")
+        public ResponseEntity<Children> updateChildren(@PathVariable(value = "id") UUID childrenId, @RequestBody Children childrenDetails) {
+            Children updatedChildren = childrenService.updateChildren(childrenId, childrenDetails);
+            if (updatedChildren == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok().body(updatedChildren);
         }
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deleteChildren(@PathVariable(value = "id") UUID childrenId) {
+            childrenService.deleteChildren(childrenId);
+            return ResponseEntity.noContent().build();
+        }
+
+        @GetMapping("/{userId}")
+    public ResponseEntity<List<Children>> getChildrenByUserId(@PathVariable(value = "userId") UUID userId) {
+        List<Children> childrenList = childrenService.getChildrenByUserId(userId);
+        if (childrenList.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(childrenList);
     }
 }

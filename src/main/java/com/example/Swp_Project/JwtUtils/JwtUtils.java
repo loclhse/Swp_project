@@ -50,7 +50,6 @@ public class JwtUtils {
                 System.out.println("JWT expired");
                 return false;
             }
-
             return true;
 
         } catch (ExpiredJwtException e) {
@@ -62,7 +61,6 @@ public class JwtUtils {
         } catch (Exception e) {
             System.out.println("Token validation error: " + e.getMessage());
         }
-
         return false;
     }
 

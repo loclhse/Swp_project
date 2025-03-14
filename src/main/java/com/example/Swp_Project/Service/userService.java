@@ -6,15 +6,22 @@ import com.example.Swp_Project.JwtUtils.JwtUtils;
 import com.example.Swp_Project.Model.Admin;
 import com.example.Swp_Project.Model.Staff;
 import com.example.Swp_Project.Model.User;
+import com.example.Swp_Project.Model.customUsersDetail;
 import com.example.Swp_Project.Repositories.adminRepositories;
 import com.example.Swp_Project.Repositories.childrenRepositories;
 import com.example.Swp_Project.Repositories.staffRepositories;
 import com.example.Swp_Project.Repositories.userRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -116,6 +123,9 @@ public class userService {
        existingUser.setUsername(updatedUser.getUsername());
        existingUser.setEmail(updatedUser.getEmail());
        existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+       existingUser.setAddress(updatedUser.getAddress());
+       existingUser.setPhone(updatedUser.getPhone());
+       existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
        existingUser.setUpdateAt(LocalDateTime.now());
        return usrepo.save(existingUser);
    }
@@ -127,6 +137,48 @@ public class userService {
         usrepo.deleteById(userId);
     }
     public Optional<User> findByUsername(String username) {
+
         return usrepo.findByUsername(username);
     }
+    public User findByUserId(UUID id){
+        return usrepo.findByUserID(id);
+    }
+    public User updateUserProfile(UUID userId, userDTO updatedUser) {
+        User existingUser = usrepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+
+
+        if (updatedUser.getUsername() != null) {
+            existingUser.setUsername(updatedUser.getUsername());
+        }
+        if (updatedUser.getEmail() != null) {
+            if (usrepo.findByEmail(updatedUser.getEmail()).isPresent() &&
+                    !updatedUser.getEmail().equals(existingUser.getEmail())) {
+                throw new RuntimeException("Email already exists.");
+            }
+            existingUser.setEmail(updatedUser.getEmail());
+        }
+        if (updatedUser.getPassword() != null && updatedUser.getConfirmPassword() != null) {
+            if (!updatedUser.getPassword().equals(updatedUser.getConfirmPassword())) {
+                throw new IllegalArgumentException("Passwords do not match.");
+            }
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+
+        if (updatedUser.getAddress() != null) {
+            existingUser.setAddress(updatedUser.getAddress());
+        }
+        if (updatedUser.getPhone() != null) {
+            existingUser.setPhone(updatedUser.getPhone());
+        }
+        if (updatedUser.getDateOfBirth() != null) {
+            existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        }
+
+        existingUser.setUpdateAt(LocalDateTime.now());
+        return usrepo.save(existingUser);
+    }
+
+
+
 }

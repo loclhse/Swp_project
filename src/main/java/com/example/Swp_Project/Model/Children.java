@@ -24,25 +24,31 @@ public class Children {
     private String childrenName;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
-    private String parentName;
     private String gender;
-    private Integer age;
-    private String medicalHistory;
-private UUID userId;
+    private String medicalIssue;
+    private UUID userId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creatAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateAt;
 
+    public Children() {
+    }
 
+    public String getMedicalIssue() {
+        return medicalIssue;
+    }
 
-    public Children(String childrenName,String parentName, LocalDate dateOfBirth, String gender, String medicalHistory) {
-        this.childrenName = childrenName;
-        this.parentName = parentName;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
+    public void setMedicalIssue(String medicalIssue) {
+        this.medicalIssue = medicalIssue;
+    }
 
-        this.medicalHistory = medicalHistory;
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
+    }
 
-
+    public void setUpdateAt(LocalDateTime updateAt) {
+        this.updateAt = updateAt;
     }
 
     public UUID getUserId() {
@@ -51,24 +57,6 @@ private UUID userId;
 
     public void setUserId(UUID userId) {
         this.userId = userId;
-    }
-
-
-
-    public String getMedicalHistory() {
-        return medicalHistory;
-    }
-
-    public void setMedicalHistory(String medicalHistory) {
-        this.medicalHistory = medicalHistory;
-    }
-
-    public String getParentName() {
-        return parentName;
-    }
-
-    public void setParentName(String parentName) {
-        this.parentName = parentName;
     }
 
     public String getChildrenName() {
@@ -94,15 +82,6 @@ private UUID userId;
     public void setCreatAt(LocalDateTime creatAt) {
         this.creatAt = creatAt;
     }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;

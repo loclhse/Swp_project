@@ -19,10 +19,11 @@ public class Appointment {
     private UUID appointmentId;
     private UUID userId;
     private String childrenName;
-    private String parentName;
+    private String note;
+    private String medicalIssue;
+    private String childrenGender;
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate dateOfBirth;
-    private String gender;
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate appointmentDate;
     @JsonFormat(pattern="HH:mm")
@@ -35,12 +36,13 @@ public class Appointment {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateAt;
 
+    public Appointment() {
+    }
 
     public Appointment(UUID userId, String childrenName, String parentName, LocalDate appointmentDate, LocalTime timeStart) {
         this.appointmentId = UUID.randomUUID();
         this.userId = userId;
         this.childrenName = childrenName;
-        this.parentName = parentName;
         this.appointmentDate = appointmentDate;
         this.timeStart = timeStart;
     }
@@ -101,7 +103,37 @@ public class Appointment {
         this.appointmentId = appointmentId;
     }
 
+    public String getNote() {
+        return note;
+    }
 
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getMedicalIssue() {
+        return medicalIssue;
+    }
+
+    public void setMedicalIssue(String medicalIssue) {
+        this.medicalIssue = medicalIssue;
+    }
+
+    public String getChildrenGender() {
+        return childrenGender;
+    }
+
+    public void setChildrenGender(String childrenGender) {
+        this.childrenGender = childrenGender;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 
     public LocalDate getAppointmentDate() {
         return appointmentDate;
@@ -111,13 +143,7 @@ public class Appointment {
         return timeStart;
     }
 
-    public String getParentName() {
-        return parentName;
-    }
 
-    public void setParentName(String parentName) {
-        this.parentName = parentName;
-    }
     public String getStatus() {
         return status;
     }

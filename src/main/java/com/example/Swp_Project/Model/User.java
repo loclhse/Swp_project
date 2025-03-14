@@ -32,7 +32,6 @@ public class User {
         private LocalDateTime createdAt;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime updateAt;// Auto-set timestamp
-        private List<Children>childrens=new ArrayList<>();
         private List<Feedback>feedbacks=new ArrayList<>();
         private List<Appointment>appointments=new ArrayList<>();
         private List<CartItem>cart=new ArrayList<>();
@@ -162,25 +161,5 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public List<Children> getChildrens() {
-        return childrens;
-    }
 
-    public void setChildrens(List<Children> childrens) {
-        this.childrens = childrens;
-    }
-
-    // Override toString() for better logging and debugging
-    @Override
-    public String toString() {
-        return "User{" +
-                "userID=" + userID +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                ", status=" + status +
-                ", createdAt=" + createdAt + + '\'' + ", childrens:" + childrens+
-                '}';
-    }
 }

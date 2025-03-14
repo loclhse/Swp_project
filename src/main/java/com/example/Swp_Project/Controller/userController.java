@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,41 +78,87 @@ public class userController {
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
-    }@ExceptionHandler(Exception.class)
-        public ResponseEntity<?> handleException (Exception ex){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
     }
 
-        @GetMapping
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
+    }
+
+    @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = usservice.getAllUsers();
         return ResponseEntity.ok(users); // 200
     }
 
-        @GetMapping("/{username}")
+    @GetMapping("/{username}")
     public ResponseEntity<User> findByUsername(@RequestParam String username) {
         Optional<User> user = usservice.findByUsername(username);
         return user.map(ResponseEntity::ok) // 200
                 .orElseGet(() -> ResponseEntity.notFound().build()); // 404
     }
 
-        @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable UUID userId, @RequestBody userDTO user) {
-       try {
-             User updatedUser = usservice.updateUser(userId, user);
-             return ResponseEntity.ok(updatedUser); // 200
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build(); // 404
-        }
-    }
-
-       @DeleteMapping("/{userId}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
         try {
             usservice.deleteUser(userId);
             return ResponseEntity.noContent().build(); // 204
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build(); // 404
+        }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(@RequestParam("userId") UUID requestedUserId) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            customUsersDetail userDetails = (customUsersDetail) auth.getDetails();
+            UUID authenticatedUserId = userDetails.getUserID();
+
+            if (!authenticatedUserId.equals(requestedUserId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "You can only view your own profile"));
+            }
+
+            User user = usservice.findByUserId(requestedUserId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("username", user.getUsername());
+            response.put("email", user.getEmail());
+            response.put("address", user.getAddress());
+            response.put("phone", user.getPhone());
+            response.put("dateOfBirth", user.getDateOfBirth());
+
+
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong"));
+        }
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody userDTO updatedUser) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            customUsersDetail userDetails = (customUsersDetail) auth.getDetails();
+            UUID userIdd = userDetails.getUserID();
+
+            User updated = usservice.updateUserProfile(userIdd, updatedUser);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Profile updated successfully"
+            ));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong"));
         }
     }
 }

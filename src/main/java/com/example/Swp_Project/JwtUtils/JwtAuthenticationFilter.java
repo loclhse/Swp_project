@@ -27,9 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private userDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
               String token = getJwtFromRequest(request);
               if(token == null || !jwtUtil.validateToken(token)) {
               response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -37,15 +35,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
               response.setContentType("application/json");
               response.setCharacterEncoding("UTF-8");
               return;
+
               }
 
               try {
-
-                String role=jwtUtil.getRoleFromToken(token);
-                String username = jwtUtil.getUsernameFromToken(token);
-                String email = jwtUtil.getEmailFromToken(token);
-                UUID userID = jwtUtil.getUserIDFromToken(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                  String role=jwtUtil.getRoleFromToken(token);
+                  String username = jwtUtil.getUsernameFromToken(token);
+                  String email = jwtUtil.getEmailFromToken(token);
+                  UUID userID = jwtUtil.getUserIDFromToken(token);
+                  UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 UsernamePasswordAuthenticationToken authentication=new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 customUsersDetail userDetailsWithInfo = new customUsersDetail(userID,username,email,role);
@@ -53,18 +51,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
               } catch (Exception e) {
-
-                System.out.println("Error processing token: " + e.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("{\"error\": \"Error processing authentication.\"}");
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                    return;
-
+                  System.out.println("Error processing token: " + e.getMessage());
+                  response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                  response.getWriter().write("{\"error\": \"Error processing authentication.\"}");
+                  response.setContentType("application/json");
+                  response.setCharacterEncoding("UTF-8");
+                  return;
               }
-
-        chain.doFilter(request, response);
-
+              chain.doFilter(request, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
