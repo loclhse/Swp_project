@@ -80,7 +80,7 @@ public class vaccineDetailService {
        vaccineDetails.setImageUrl(details.getImageUrl());
        vaccineDetails.setManufacturer(details.getManufacturer());
        vaccineDetails.setQuantity(details.getQuantity());
-       vaccineDetails.setStatus(details.getStatus());
+       vaccineDetails.setStatus("In Stock");
        vaccineDetails.setDateBetweenDoses(details.getDateBetweenDoses());
        vaccineDetails.setPrice(details.getPrice());
        vaccineDetails.setCreatedAt(LocalDateTime.now());

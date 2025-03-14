@@ -9,5 +9,6 @@ import java.util.UUID;
 
 public interface appointmentRepositories extends MongoRepository<Appointment, UUID> {
     List<Appointment>findByUserId(UUID userId);
-    Optional<Appointment>findById(UUID appointmentId);
+    Appointment findByAppointmentId(UUID appointmentId);
+    List<Appointment> findByStatus(String status);
 }
