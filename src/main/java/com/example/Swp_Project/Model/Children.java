@@ -15,8 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Document(collection = "Children")
 public class Children {
     @Id
