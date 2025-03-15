@@ -56,6 +56,7 @@ private notificationsRepositories notificationsRepositories;
         appointment.setChildrenGender(appointmentDTO.getChildrenGender());
         appointment.setDateOfBirth(appointmentDTO.getDateOfBirth());
         appointment.setAppointmentDate(appointmentDTO.getAppointmentDate());
+        appointment.setVaccineDetailsList(new ArrayList<>());
         appointment.setTimeStart(appointmentDTO.getTimeStart());
         appointment.setStatus("Pending");
         appointment.setCreateAt(LocalDateTime.now());

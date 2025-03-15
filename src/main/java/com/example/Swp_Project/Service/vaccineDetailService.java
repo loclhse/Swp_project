@@ -22,6 +22,9 @@ public class vaccineDetailService {
     @Autowired
     private vaccineRepositories vaccineRepositories ;
 
+public Optional<VaccineDetails>findVaccinesDetailById(UUID vaccinedetailid){
+    return vaccineDetailsRepositories.findById(vaccinedetailid);
+}
 
     public List<VaccineDetails>findAllVaccineDetails(){
 
@@ -89,6 +92,9 @@ public class vaccineDetailService {
        vaccineDetailsRepositories.save(vaccineDetails);
 
        return vaccineDetails;
+    }
+    public List<VaccineDetails>getAllVaccineDetailsByVaccineId(UUID vaccineId){
+        return vaccineDetailsRepositories.findByVaccineId(vaccineId);
     }
 
 }

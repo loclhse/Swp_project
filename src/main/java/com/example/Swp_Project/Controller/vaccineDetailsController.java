@@ -4,6 +4,7 @@ import com.example.Swp_Project.Dto.vaccineDetailsDto;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Service.vaccineDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class vaccineDetailsController {
     @Autowired
     private vaccineDetailService vaccineDetailService;
 
-    @PostMapping("vaccine-details/{vaccineId}")
+    @PostMapping("/vaccine-details/{vaccineId}")
     public ResponseEntity<VaccineDetails> createVaccineDetails(
             @PathVariable UUID vaccineId,
             @RequestBody vaccineDetailsDto details) {
@@ -53,7 +54,7 @@ public class vaccineDetailsController {
         }
     }
 
-    @GetMapping("/vaccine-details")
+    @GetMapping("/vaccinedetails-all")
     public ResponseEntity<List<VaccineDetails>> findAllVaccineDetails() {
         try {
             List<VaccineDetails> details = vaccineDetailService.findAllVaccineDetails();
@@ -61,6 +62,27 @@ public class vaccineDetailsController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
+    }
+    @GetMapping("/vaccines/{vaccineId}/details")
+    public ResponseEntity<List<VaccineDetails>> getAllVaccineDetailsByVaccineId(
+            @PathVariable UUID vaccineId) {
+        try {
+            List<VaccineDetails> vaccineDetails = vaccineDetailService.getAllVaccineDetailsByVaccineId(vaccineId);
+
+            if (vaccineDetails.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            return new ResponseEntity<>(vaccineDetails, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/vaccine-details/{id}")
+    public ResponseEntity<VaccineDetails> getVaccineDetailById(@PathVariable UUID id) {
+        return vaccineDetailService.findVaccinesDetailById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }
 
