@@ -45,7 +45,7 @@ public class cartService {
     private String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
     @Value("${vnpay.returnUrl}")
-    private String vnp_ReturnUrl = "http://localhost:8080/api/vaccines/cart/return";
+    private String vnp_ReturnUrl = "https://vaccinemanagement-2f854cbfd074.herokuapp.com/api/cart/return";
 
         public String addToCart(UUID vaccineDetailsId, Integer quantity, UUID userId) throws Exception {
             Optional<VaccineDetails> vaccineOpt = vaccineDetailsRepository.findById(vaccineDetailsId);
@@ -133,15 +133,21 @@ public class cartService {
     public String processReturn(HttpServletRequest request) throws Exception {
         Map<String, String> params = new HashMap<>();
         for (String key : request.getParameterMap().keySet()) {
-            params.put(key, request.getParameter(key));
+            if (key.startsWith("vnp_")) { // Only vnp_ params
+                params.put(key, request.getParameter(key));
+            }
         }
 
         String vnp_SecureHash = params.remove("vnp_SecureHash");
         String hashData = String.join("&", params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
+                .map(e -> e.getKey() + "=" + e.getValue()) // Raw values
                 .collect(Collectors.toList()));
+
+        System.out.println("Hash Data: " + hashData);
+        System.out.println("vnp_SecureHash: " + vnp_SecureHash);
         String calculatedHash = hmacSHA512(vnp_HashSecret, hashData);
+        System.out.println("Calculated Hash: " + calculatedHash);
 
         if (!calculatedHash.equals(vnp_SecureHash)) {
             throw new Exception("Invalid checksum");
@@ -154,13 +160,11 @@ public class cartService {
                 throw new Exception("Cart is empty on return");
             }
 
-            // Get the stored AppointmentDTO
             appointmentDto appointmentDTO = tempAppointments.get(userId);
             if (appointmentDTO == null) {
                 throw new Exception("Appointment data not found");
             }
 
-            // Create new appointment
             Appointment appointment = new Appointment();
             appointment.setUserId(userId);
             appointment.setAppointmentId(UUID.randomUUID());
@@ -174,7 +178,6 @@ public class cartService {
             appointment.setStatus("Pending");
             appointment.setCreateAt(LocalDateTime.now());
 
-            // Process cart items and update stock
             List<VaccineDetails> vaccineDetailsList = new ArrayList<>();
             for (CartItem cartItem : cartItems) {
                 Optional<VaccineDetails> vaccineOpt = vaccineDetailsRepository.findById(cartItem.getVaccineDetailsId());
@@ -188,7 +191,6 @@ public class cartService {
             }
             appointment.setVaccineDetailsList(vaccineDetailsList);
 
-            // Save appointment and clear temp data
             appointmentRepositories.save(appointment);
             tempCart.remove(userId);
             tempAppointments.remove(userId);

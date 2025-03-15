@@ -53,6 +53,12 @@ public class cartController {
     @GetMapping("/cart/return")
     public ResponseEntity<String> handleReturn(HttpServletRequest request) {
         try {
+            // Log all params
+            System.out.println("VNPay Callback Params:");
+            request.getParameterMap().forEach((key, value) ->
+                    System.out.println(key + ": " + String.join(",", value))
+            );
+
             String result = cartService.processReturn(request);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
