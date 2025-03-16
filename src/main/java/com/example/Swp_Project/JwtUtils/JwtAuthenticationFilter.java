@@ -75,7 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         return path.equals("/") || path.startsWith("/public/") || path.equals("/api/user/login") ||
                 path.equals("/api/user/register") || path.startsWith("/swagger-ui")
-                || path.startsWith("/api-docs") || path.startsWith("/api/vaccines") || path.startsWith("/api/vaccinedetails-all")|| path.startsWith("/vaccines/{vaccineId}/details");
+                || path.startsWith("/api-docs") || path.startsWith("/api/vaccines-all") || path.startsWith("/api/vaccinedetails-all")|| path.startsWith("/vaccines/{vaccineId}/details");
     }
 }
 

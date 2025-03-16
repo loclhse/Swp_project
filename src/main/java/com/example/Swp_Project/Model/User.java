@@ -34,7 +34,6 @@ public class User {
         private LocalDateTime updateAt;// Auto-set timestamp
         private List<Feedback>feedbacks=new ArrayList<>();
         private List<Appointment>appointments=new ArrayList<>();
-        private List<CartItem>cart=new ArrayList<>();
 
         public User(){
         }
@@ -49,13 +48,7 @@ public class User {
             this.updateAt=updateAt;
     }
 
-    public List<CartItem> getCart() {
-        return cart;
-    }
 
-    public void setCart(List<CartItem> cart) {
-        this.cart = cart;
-    }
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;

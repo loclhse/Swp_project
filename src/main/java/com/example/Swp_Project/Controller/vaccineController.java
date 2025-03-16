@@ -24,17 +24,17 @@ public class vaccineController {
         return ResponseEntity.ok(vaccineService.createVaccine(vaccine));
     }
 
-    @GetMapping("/vaccines")
+    @GetMapping("/vaccines-all")
     public ResponseEntity<List<Vaccin>> getAllVaccines() {
         return ResponseEntity.ok(vaccineService.getAllVaccines());
     }
 
-    @GetMapping("/vaccines/{vaccineId}")
+    @GetMapping("/vaccinesById/{vaccineId}")
     public ResponseEntity<Vaccin> getVaccineById(@PathVariable UUID vaccineId) {
         return ResponseEntity.ok(vaccineService.getVaccineById(vaccineId));
     }
 
-    @DeleteMapping("/vaccines/{vaccineId}")
+    @DeleteMapping("/vaccines-delete/{vaccineId}")
     public ResponseEntity<String> deleteVaccine(@PathVariable UUID vaccineId) {
         return ResponseEntity.ok(vaccineService.deleteVaccine(vaccineId));
     }

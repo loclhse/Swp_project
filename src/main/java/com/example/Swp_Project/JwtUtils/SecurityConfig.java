@@ -26,7 +26,7 @@ public class SecurityConfig {
                                  "/swagger-ui.html",
                                  "/swagger-ui/**",
                                  "/api-docs/**",
-                                 "/api/vaccines",
+                                 "/api/vaccines-all",
                                 "/api/vaccinedetails-all",
                                 "/api/vaccines/{vaccineId}/details").permitAll()
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
