@@ -186,7 +186,7 @@ public class cartService {
         params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(e -> System.out.println("  " + e.getKey() + "=" + e.getValue()));
-                
+
         String hashData = String.join("&", params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .map(e -> e.getKey() + "=" + e.getValue())
@@ -202,7 +202,7 @@ public class cartService {
         if (vnp_SecureHash == null) {
             throw new Exception("Missing secure hash");
         }
-        
+
         // Compare hashes case-insensitively
         if (!vnp_SecureHash.equalsIgnoreCase(calculatedHash)) {
             System.out.println("Hash comparison failed:");
