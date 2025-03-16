@@ -29,7 +29,6 @@ public class SecurityConfig {
                                  "/api/vaccines-all",
                                 "/api/vaccinedetails-all",
                                 "/api/vaccines/{vaccineId}/details",
-                                "/api/cart/return?",
                                 "/api/cart/return").permitAll()
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
                 )

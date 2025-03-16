@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.management.Query;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -81,8 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.startsWith("/api/vaccines-all")
                 || path.startsWith("/api/vaccinedetails-all")
                 || path.startsWith("/vaccines/{vaccineId}/details")
-                || path.startsWith("/api/cart/return?")
-                || path.startsWith("/api/cart/return");
+                || path.equals("/api/cart/return") || (path.startsWith("/api/cart/return"));
     }
 }
 
