@@ -183,7 +183,7 @@ public class cartService {
         String vnp_SecureHash = params.remove("vnp_SecureHash");
         String hashData = String.join("&", params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .map(e -> e.getKey() + "=" + e.getValue())
+                .map(e -> e.getKey() + "=" + e.getValue().trim())
                 .collect(Collectors.toList()));
 
         System.out.println("Hash Data before hash: [" + hashData + "]");
@@ -193,8 +193,16 @@ public class cartService {
         String calculatedHash = hmacSHA512(vnp_HashSecret, hashData);
         System.out.println("ProcessReturn - Calculated Hash: " + calculatedHash);
 
-        if (vnp_SecureHash == null || !calculatedHash.equals(vnp_SecureHash)) {
-            throw new Exception("Invalid checksum or missing secure hash");
+        if (vnp_SecureHash == null) {
+            throw new Exception("Missing secure hash");
+        }
+        
+        // Compare hashes case-insensitively
+        if (!vnp_SecureHash.equalsIgnoreCase(calculatedHash)) {
+            System.out.println("Hash comparison failed:");
+            System.out.println("Expected: " + vnp_SecureHash.toLowerCase());
+            System.out.println("Actual  : " + calculatedHash.toLowerCase());
+            throw new Exception("Invalid checksum");
         }
 
         if ("00".equals(params.get("vnp_ResponseCode"))) {
@@ -247,7 +255,16 @@ public class cartService {
 
     private String hmacSHA512(String key, String data) throws Exception {
         System.out.println("hmacSHA512 - Input data: [" + data + "]");
-        return HmacUtils.hmacSha512Hex(key, data);
+        Mac mac = Mac.getInstance("HmacSHA512");
+        mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512"));
+        byte[] hmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hmac) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 
     private String bytesToHex(byte[] bytes) {
