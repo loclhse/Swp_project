@@ -174,7 +174,7 @@ public class cartService {
 
         for (String key : parameterMap.keySet()) {
             if (key != null && key.startsWith("vnp_")) {
-                String value = request.getParameter(key).trim();
+                String value = request.getParameter(key);
                 params.put(key, value);
                 System.out.println("ProcessReturn - Added to params: " + key + "=" + value);
             }
