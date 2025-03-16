@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -53,11 +54,18 @@ public class cartController {
     @GetMapping("/cart/return")
     public ResponseEntity<String> handleReturn(HttpServletRequest request) {
         try {
-            // Log all params
+            System.out.println("VNPAY Callback Received:");
+            System.out.println("Request Method: " + request.getMethod());
+            System.out.println("Request URL: " + request.getRequestURL());
+            System.out.println("Query String: " + request.getQueryString());
             System.out.println("VNPay Callback Params:");
-            request.getParameterMap().forEach((key, value) ->
-                    System.out.println(key + ": " + String.join(",", value))
-            );
+            Map<String, String[]> paramMap = request.getParameterMap();
+            if (paramMap.isEmpty()) {
+                System.out.println("  (No parameters found)");
+            } else {
+                paramMap.forEach((key, value) ->
+                        System.out.println("  " + key + ": " + String.join(",", value)));
+            }
 
             String result = cartService.processReturn(request);
             return new ResponseEntity<>(result, HttpStatus.OK);
