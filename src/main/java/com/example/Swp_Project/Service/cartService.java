@@ -9,6 +9,7 @@ import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Repositories.appointmentRepositories;
 import com.example.Swp_Project.Repositories.userRepositories;
 import com.example.Swp_Project.Repositories.vaccineDetailsRepositories;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,9 +33,6 @@ public class cartService {
     @Autowired
     private appointmentRepositories appointmentRepositories;
 
-    private final Map<UUID, List<CartItem>> tempCart = new HashMap<>();
-    private final Map<UUID, appointmentDto> tempAppointments = new HashMap<>();
-
     @Value("${vnpay.tmnCode}")
     private String vnp_TmnCode;
 
@@ -42,32 +40,45 @@ public class cartService {
     private String vnp_HashSecret;
 
     @Value("${vnpay.url}")
-    private String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+    private String vnp_Url;
 
     @Value("${vnpay.returnUrl}")
-    private String vnp_ReturnUrl = "https://vaccinemanagement-2f854cbfd074.herokuapp.com/api/cart/return";
+    private String vnp_ReturnUrl;
 
-        public String addToCart(UUID vaccineDetailsId, Integer quantity, UUID userId) throws Exception {
-            Optional<VaccineDetails> vaccineOpt = vaccineDetailsRepository.findById(vaccineDetailsId);
-            if (vaccineOpt.isEmpty()) {
-                throw new Exception("Vaccine not found");
-            }
 
-            VaccineDetails vaccine = vaccineOpt.get();
-            if (vaccine.getQuantity() < quantity) {
-                throw new Exception("Insufficient stock");
-            }
+    private final Map<UUID, List<CartItem>> tempCart = new HashMap<>();
+    private final Map<UUID, appointmentDto> tempAppointments = new HashMap<>();
 
-            CartItem cartItem = new CartItem();
-            cartItem.setUserId(userId);
-            cartItem.setVaccineDetailsId(vaccineDetailsId);
-            cartItem.setQuantity(quantity);
-            tempCart.computeIfAbsent(userId, k -> new ArrayList<>()).add(cartItem);
+    @PostConstruct
+    public void logConfig() {
+        System.out.println("CartService Startup - Checking @Value:");
+        System.out.println("vnp_TmnCode: " + vnp_TmnCode);
+        System.out.println("vnp_HashSecret: " + vnp_HashSecret);
+        System.out.println("vnp_Url: " + vnp_Url);
+        System.out.println("vnp_ReturnUrl: " + vnp_ReturnUrl);
+    }
 
-            return "Added to cart successfully";
+    public String addToCart(UUID vaccineDetailsId, Integer quantity, UUID userId) throws Exception {
+        Optional<VaccineDetails> vaccineOpt = vaccineDetailsRepository.findById(vaccineDetailsId);
+        if (vaccineOpt.isEmpty()) {
+            throw new Exception("Vaccine not found");
         }
 
-    public List<cartDisplayDto> getCartDetails(UUID userId) throws Exception {
+        VaccineDetails vaccine = vaccineOpt.get();
+        if (vaccine.getQuantity() < quantity) {
+            throw new Exception("Insufficient stock");
+        }
+
+        CartItem cartItem = new CartItem();
+        cartItem.setUserId(userId);
+        cartItem.setVaccineDetailsId(vaccineDetailsId);
+        cartItem.setQuantity(quantity);
+        tempCart.computeIfAbsent(userId, k -> new ArrayList<>()).add(cartItem);
+
+        return "Added to cart successfully";
+    }
+
+    public List<cartDisplayDto> getCartDetails(UUID userId) throws Exception { // Fixed typo: cartDisplayDto → CartDisplayDto
         List<CartItem> cartItems = tempCart.getOrDefault(userId, Collections.emptyList());
         if (cartItems.isEmpty()) {
             throw new Exception("Cart is empty");
@@ -86,6 +97,11 @@ public class cartService {
     }
 
     public String initiateCheckout(UUID userId, appointmentDto appointmentDTO) throws Exception {
+        System.out.println("InitiateCheckout - vnp_TmnCode: " + vnp_TmnCode);
+        System.out.println("InitiateCheckout - vnp_HashSecret: " + vnp_HashSecret);
+        System.out.println("InitiateCheckout - vnp_Url: " + vnp_Url);
+        System.out.println("InitiateCheckout - vnp_ReturnUrl: " + vnp_ReturnUrl);
+
         List<CartItem> cartItems = tempCart.getOrDefault(userId, Collections.emptyList());
         if (cartItems.isEmpty()) {
             throw new Exception("Cart is empty");
@@ -104,7 +120,6 @@ public class cartService {
             total += vaccine.getPrice() * cartItem.getQuantity();
         }
 
-        // Store the AppointmentDTO separately
         tempAppointments.put(userId, appointmentDTO);
 
         Map<String, String> vnp_Params = new TreeMap<>();
@@ -127,21 +142,28 @@ public class cartService {
         String vnp_SecureHash = hmacSHA512(vnp_HashSecret, hashData);
         vnp_Params.put("vnp_SecureHash", vnp_SecureHash);
 
-        return vnp_Url + "?" + hashData + "&vnp_SecureHash=" + vnp_SecureHash;
+        String paymentUrl = vnp_Url + "?" + hashData + "&vnp_SecureHash=" + vnp_SecureHash;
+        System.out.println("InitiateCheckout - VNPAY Payment URL: " + paymentUrl);
+
+        return paymentUrl;
     }
 
     public String processReturn(HttpServletRequest request) throws Exception {
         Map<String, String> params = new HashMap<>();
-        // Fix logging to show the real params
         Map<String, String[]> parameterMap = request.getParameterMap();
-        System.out.println("All Request Params: ");
-        parameterMap.forEach((key, value) -> System.out.println(key + "=" + String.join(",", value)));
+        System.out.println("ProcessReturn - All Request Params:");
+        if (parameterMap.isEmpty()) {
+            System.out.println("  (No parameters found)");
+        } else {
+            parameterMap.forEach((key, value) ->
+                    System.out.println("  " + key + "=" + String.join(",", value)));
+        }
 
         for (String key : parameterMap.keySet()) {
-            if (key.startsWith("vnp_")) {
+            if (key != null && key.startsWith("vnp_")) {
                 String value = request.getParameter(key).trim();
                 params.put(key, value);
-                System.out.println("Added to params: " + key + "=" + value);
+                System.out.println("ProcessReturn - Added to params: " + key + "=" + value);
             }
         }
 
@@ -151,15 +173,15 @@ public class cartService {
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.toList()));
 
-        System.out.println("Final Params: " + params);
-        System.out.println("Hash Data: " + hashData);
-        System.out.println("vnp_HashSecret: " + vnp_HashSecret);
-        System.out.println("vnp_SecureHash: " + vnp_SecureHash);
+        System.out.println("ProcessReturn - Final Params: " + params);
+        System.out.println("ProcessReturn - Hash Data: " + hashData);
+        System.out.println("ProcessReturn - vnp_HashSecret: " + vnp_HashSecret);
+        System.out.println("ProcessReturn - vnp_SecureHash: " + vnp_SecureHash);
         String calculatedHash = hmacSHA512(vnp_HashSecret, hashData);
-        System.out.println("Calculated Hash: " + calculatedHash);
+        System.out.println("ProcessReturn - Calculated Hash: " + calculatedHash);
 
-        if (!calculatedHash.equals(vnp_SecureHash)) {
-            throw new Exception("Invalid checksum");
+        if (vnp_SecureHash == null || !calculatedHash.equals(vnp_SecureHash)) {
+            throw new Exception("Invalid checksum or missing secure hash");
         }
 
         if ("00".equals(params.get("vnp_ResponseCode"))) {

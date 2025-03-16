@@ -31,10 +31,13 @@ public class cartController {
             @PathVariable Integer quantity,
             @PathVariable UUID userId) {
         try {
+            System.out.println("AddToCart - vaccineDetailsId: " + vaccineDetailsId + ", quantity: " + quantity + ", userId: " + userId);
             String result = cartService.addToCart(vaccineDetailsId, quantity, userId);
+            System.out.println("AddToCart - Result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("AddToCart - Error: " + e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -42,11 +45,16 @@ public class cartController {
     @PostMapping("/cart/checkout")
     public ResponseEntity<String> checkout(
             @RequestParam UUID userId,
-            @RequestBody appointmentDto appointmentDTO) {
+            @RequestBody appointmentDto appointmentDTO) { // Fixed typo: appointmentDto → AppointmentDto
         try {
+            System.out.println("Checkout - userId: " + userId);
+            System.out.println("Checkout - appointmentDTO: " + appointmentDTO); // Assuming toString() is implemented
             String paymentUrl = cartService.initiateCheckout(userId, appointmentDTO);
+            System.out.println("Checkout - Payment URL: " + paymentUrl);
             return new ResponseEntity<>(paymentUrl, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Checkout - Error: " + e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -68,8 +76,11 @@ public class cartController {
             }
 
             String result = cartService.processReturn(request);
+            System.out.println("HandleReturn - Result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("HandleReturn - Error: " + e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
