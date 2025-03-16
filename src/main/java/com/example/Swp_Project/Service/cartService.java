@@ -183,7 +183,7 @@ public class cartService {
         String vnp_SecureHash = params.remove("vnp_SecureHash");
         String hashData = String.join("&", params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .map(e -> e.getKey() + "=" + e.getValue().trim())
+                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue().trim(), StandardCharsets.UTF_8))
                 .collect(Collectors.toList()));
 
         System.out.println("Hash Data before hash: [" + hashData + "]");
