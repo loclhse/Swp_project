@@ -188,7 +188,7 @@ public class cartService {
 
         System.out.println("Hash Data before hash: [" + hashData + "]");
         System.out.println("ProcessReturn - Hash Data: " + hashData);
-        System.out.println("ProcessReturn - vnp_HashSecret: " + vnp_HashSecret);
+        System.out.println("ProcessReturn - vnp_HashSecret: [" + vnp_HashSecret + "]"); // Log with brackets
         System.out.println("ProcessReturn - vnp_SecureHash: " + vnp_SecureHash);
         String calculatedHash = hmacSHA512(vnp_HashSecret, hashData);
         System.out.println("ProcessReturn - Calculated Hash: " + calculatedHash);
