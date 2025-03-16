@@ -59,13 +59,13 @@ public class cartService {
     }
 
     public String addToCart(UUID vaccineDetailsId, Integer quantity, UUID userId) throws Exception {
-        Optional<VaccineDetails> vaccineOpt = vaccineDetailsRepository.findById(vaccineDetailsId);
-        if (vaccineOpt.isEmpty()) {
+        Optional<VaccineDetails> vaccinedetailOpt = vaccineDetailsRepository.findById(vaccineDetailsId);
+        if (vaccinedetailOpt.isEmpty()) {
             throw new Exception("Vaccine not found");
         }
 
-        VaccineDetails vaccine = vaccineOpt.get();
-        if (vaccine.getQuantity() < quantity) {
+        VaccineDetails vaccinedetail = vaccinedetailOpt.get();
+        if (vaccinedetail.getQuantity() < quantity) {
             throw new Exception("Insufficient stock");
         }
 
@@ -78,29 +78,41 @@ public class cartService {
         return "Added to cart successfully";
     }
 
-    public List<cartDisplayDto> getCartDetails(UUID userId) throws Exception { // Fixed typo: cartDisplayDto → CartDisplayDto
+
+
+    public List<cartDisplayDto> getTempCart(UUID userId) throws Exception {
         List<CartItem> cartItems = tempCart.getOrDefault(userId, Collections.emptyList());
         if (cartItems.isEmpty()) {
             throw new Exception("Cart is empty");
         }
 
         List<cartDisplayDto> cartDetails = new ArrayList<>();
-        for (CartItem cartItem : cartItems) {
-            Optional<VaccineDetails> vaccineOpt = vaccineDetailsRepository.findById(cartItem.getVaccineDetailsId());
-            if (vaccineOpt.isEmpty()) {
-                throw new Exception("Vaccine not found in cart");
+            for (CartItem cartItem : cartItems) {
+            Optional<VaccineDetails> vaccinedetailsOpt = vaccineDetailsRepository.findById(cartItem.getVaccineDetailsId());
+
+            if (vaccinedetailsOpt.isEmpty()) {
+                throw new Exception("Vaccine not found for ID " + cartItem.getVaccineDetailsId());
             }
-            VaccineDetails vaccineDetails = vaccineOpt.get();
-            cartDetails.add(new cartDisplayDto(vaccineDetails.getDoseName(), vaccineDetails.getPrice(), cartItem.getQuantity()));
+
+            VaccineDetails vaccine = vaccinedetailsOpt.get();
+
+            cartDetails.add(new cartDisplayDto(
+                    vaccine.getDoseName(),
+                    vaccine.getPrice(),
+                    vaccine.getQuantity()
+            ));
         }
-        return cartDetails;
+            return cartDetails;
     }
 
+
     public String initiateCheckout(UUID userId, appointmentDto appointmentDTO) throws Exception {
-        System.out.println("InitiateCheckout - vnp_TmnCode: " + vnp_TmnCode);
-        System.out.println("InitiateCheckout - vnp_HashSecret: " + vnp_HashSecret);
-        System.out.println("InitiateCheckout - vnp_Url: " + vnp_Url);
-        System.out.println("InitiateCheckout - vnp_ReturnUrl: " + vnp_ReturnUrl);
+
+        System.out.println("InitiateCheckout - Verifying @Value:");
+        System.out.println("vnp_TmnCode: " + vnp_TmnCode);
+        System.out.println("vnp_HashSecret: " + vnp_HashSecret);
+        System.out.println("vnp_Url: " + vnp_Url);
+        System.out.println("vnp_ReturnUrl: " + vnp_ReturnUrl);
 
         List<CartItem> cartItems = tempCart.getOrDefault(userId, Collections.emptyList());
         if (cartItems.isEmpty()) {
@@ -109,15 +121,16 @@ public class cartService {
 
         double total = 0.0;
         for (CartItem cartItem : cartItems) {
-            Optional<VaccineDetails> vaccineOpt = vaccineDetailsRepository.findById(cartItem.getVaccineDetailsId());
-            if (vaccineOpt.isEmpty()) {
-                throw new Exception("Vaccine not found in cart");
+            Optional<VaccineDetails> vaccinedetailsOpt = vaccineDetailsRepository.findById(cartItem.getVaccineDetailsId());
+            if (vaccinedetailsOpt.isEmpty()) {
+                throw new Exception("there is no vaccine in cart");
             }
-            VaccineDetails vaccine = vaccineOpt.get();
-            if (vaccine.getQuantity() < cartItem.getQuantity()) {
-                throw new Exception("Insufficient stock for " + vaccine.getDoseName());
+            VaccineDetails vaccinedetail = vaccinedetailsOpt.get();
+            if (vaccinedetail.getQuantity() < cartItem.getQuantity()) {
+                throw new Exception("Outstock for " + vaccinedetail.getDoseName());
             }
-            total += vaccine.getPrice() * cartItem.getQuantity();
+
+            total += vaccinedetail.getPrice() * cartItem.getQuantity();
         }
 
         tempAppointments.put(userId, appointmentDTO);
@@ -135,7 +148,7 @@ public class cartService {
         vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", "127.0.0.1");
         vnp_Params.put("vnp_CreateDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
-
+        System.out.println("InitiateCheckout - vnp_Params: " + vnp_Params);
         String hashData = String.join("&", vnp_Params.entrySet().stream()
                 .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
                 .collect(Collectors.toList()));
@@ -144,7 +157,6 @@ public class cartService {
 
         String paymentUrl = vnp_Url + "?" + hashData + "&vnp_SecureHash=" + vnp_SecureHash;
         System.out.println("InitiateCheckout - VNPAY Payment URL: " + paymentUrl);
-
         return paymentUrl;
     }
 

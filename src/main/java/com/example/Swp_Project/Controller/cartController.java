@@ -42,15 +42,26 @@ public class cartController {
         }
     }
 
+    @GetMapping("/cart/check/{userId}")
+    public ResponseEntity<List<cartDisplayDto>> checkCart(@PathVariable UUID userId) {
+        try {
+            List<cartDisplayDto> cartItems = cartService.getTempCart(userId);
+            System.out.println("CheckCart - Cart Items: " + cartItems);
+            return new ResponseEntity<>(cartItems, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("CheckCart - Error: " + e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/cart/checkout")
     public ResponseEntity<String> checkout(
             @RequestParam UUID userId,
-            @RequestBody appointmentDto appointmentDTO) { // Fixed typo: appointmentDto → AppointmentDto
+            @RequestBody appointmentDto appointmentDTO) {
         try {
-            System.out.println("Checkout - userId: " + userId);
-            System.out.println("Checkout - appointmentDTO: " + appointmentDTO); // Assuming toString() is implemented
             String paymentUrl = cartService.initiateCheckout(userId, appointmentDTO);
-            System.out.println("Checkout - Payment URL: " + paymentUrl);
+            System.out.println("Checkout - Payment URL sent to VNPAY: " + paymentUrl);
             return new ResponseEntity<>(paymentUrl, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();

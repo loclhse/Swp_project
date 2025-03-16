@@ -34,4 +34,9 @@ public class cartDisplayDto {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
+    @Override
+    public String toString() {
+        return "SimpleCartItemDto{doseName='" + doseName + "', quantity=" + quantity + ", price=" + price + "}";
+    }
 }
