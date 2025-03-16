@@ -132,19 +132,25 @@ public class cartService {
 
     public String processReturn(HttpServletRequest request) throws Exception {
         Map<String, String> params = new HashMap<>();
+        // Log all request params first
+        System.out.println("All Request Params: " + request.getParameterMap());
         for (String key : request.getParameterMap().keySet()) {
-            if (key.startsWith("vnp_")) { // Only vnp_ params
-                params.put(key, request.getParameter(key));
+            if (key.startsWith("vnp_")) {
+                String value = request.getParameter(key).trim();
+                params.put(key, value);
+                System.out.println("Added to params: " + key + "=" + value);
             }
         }
 
         String vnp_SecureHash = params.remove("vnp_SecureHash");
         String hashData = String.join("&", params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .map(e -> e.getKey() + "=" + e.getValue()) // Raw values
+                .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.toList()));
 
+        System.out.println("Final Params: " + params);
         System.out.println("Hash Data: " + hashData);
+        System.out.println("vnp_HashSecret: " + vnp_HashSecret);
         System.out.println("vnp_SecureHash: " + vnp_SecureHash);
         String calculatedHash = hmacSHA512(vnp_HashSecret, hashData);
         System.out.println("Calculated Hash: " + calculatedHash);
