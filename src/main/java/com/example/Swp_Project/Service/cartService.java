@@ -132,7 +132,6 @@ public class cartService {
 
     public String processReturn(HttpServletRequest request) throws Exception {
         Map<String, String> params = new HashMap<>();
-        // Log all request params first
         System.out.println("All Request Params: " + request.getParameterMap());
         for (String key : request.getParameterMap().keySet()) {
             if (key.startsWith("vnp_")) {
@@ -141,7 +140,6 @@ public class cartService {
                 System.out.println("Added to params: " + key + "=" + value);
             }
         }
-
         String vnp_SecureHash = params.remove("vnp_SecureHash");
         String hashData = String.join("&", params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
@@ -154,7 +152,6 @@ public class cartService {
         System.out.println("vnp_SecureHash: " + vnp_SecureHash);
         String calculatedHash = hmacSHA512(vnp_HashSecret, hashData);
         System.out.println("Calculated Hash: " + calculatedHash);
-
         if (!calculatedHash.equals(vnp_SecureHash)) {
             throw new Exception("Invalid checksum");
         }
