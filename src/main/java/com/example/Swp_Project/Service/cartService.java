@@ -151,6 +151,7 @@ public class cartService {
         vnp_Params.put("vnp_CreateDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
         System.out.println("InitiateCheckout - vnp_Params: " + vnp_Params);
         String hashData = String.join("&", vnp_Params.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
                 .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
                 .collect(Collectors.toList()));
         String vnp_SecureHash = hmacSHA512(vnp_HashSecret, hashData);
@@ -181,9 +182,14 @@ public class cartService {
         }
 
         String vnp_SecureHash = params.remove("vnp_SecureHash");
+        System.out.println("ProcessReturn - Parameters before hash generation:");
+        params.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(e -> System.out.println("  " + e.getKey() + "=" + e.getValue()));
+                
         String hashData = String.join("&", params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue().trim(), StandardCharsets.UTF_8))
+                .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.toList()));
 
         System.out.println("Hash Data before hash: [" + hashData + "]");
