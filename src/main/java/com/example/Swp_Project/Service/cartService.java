@@ -11,6 +11,7 @@ import com.example.Swp_Project.Repositories.userRepositories;
 import com.example.Swp_Project.Repositories.vaccineDetailsRepositories;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -245,18 +246,15 @@ public class cartService {
     }
 
     private String hmacSHA512(String key, String data) throws Exception {
-        System.out.println("hmacSHA512 - Input data: [" + data + "]"); // Log with brackets to see empty vs null
-        Mac mac = Mac.getInstance("HmacSHA512");
-        mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512"));
-        byte[] hmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-        return bytesToHex(hmac);
+        System.out.println("hmacSHA512 - Input data: [" + data + "]");
+        return HmacUtils.hmacSha512Hex(key, data);
     }
 
-        private String bytesToHex(byte[] bytes) {
-            StringBuilder sb = new StringBuilder();
-            for (byte b : bytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b & 0xff)); // Ensure unsigned byte
         }
+        return sb.toString();
+    }
 }
