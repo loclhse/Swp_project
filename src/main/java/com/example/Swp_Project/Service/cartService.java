@@ -152,7 +152,7 @@ public class cartService {
         System.out.println("InitiateCheckout - vnp_Params: " + vnp_Params);
         String hashData = String.join("&", vnp_Params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
+                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue().trim(), StandardCharsets.UTF_8))
                 .collect(Collectors.toList()));
         String vnp_SecureHash = hmacSHA512(vnp_HashSecret, hashData);
         vnp_Params.put("vnp_SecureHash", vnp_SecureHash);
