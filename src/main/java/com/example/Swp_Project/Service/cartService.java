@@ -163,47 +163,37 @@ public class cartService {
     }
 
     public String processReturn(HttpServletRequest request) throws Exception {
-        Map<String, String> params = new HashMap<>();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        System.out.println("ProcessReturn - All Request Params:");
-        if (parameterMap.isEmpty()) {
-            System.out.println("  (No parameters found)");
-        } else {
-            parameterMap.forEach((key, value) ->
-                    System.out.println("  " + key + "=" + String.join(",", value)));
-        }
 
-        for (String key : parameterMap.keySet()) {
-            if (key != null && key.startsWith("vnp_")) {
-                String value = request.getParameter(key);
-                params.put(key, value);
-                System.out.println("ProcessReturn - Added to params: " + key + "=" + value);
+
+        Map<String, String> vnp_Params = new HashMap<>();
+        Map<String, String[]> parameterMap = request.getParameterMap();
+
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            String key = entry.getKey();
+            String[] values = entry.getValue();
+            if (key.startsWith("vnp_")) {
+                vnp_Params.put(key, values[0]);
             }
         }
 
-        String vnp_SecureHash = params.remove("vnp_SecureHash");
-        System.out.println("ProcessReturn - Parameters before hash generation:");
-        params.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .forEach(e -> System.out.println("  " + e.getKey() + "=" + e.getValue()));
-
-        String hashData = String.join("&", params.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(e -> e.getKey() + "=" + e.getValue())
-                .collect(Collectors.toList()));
-
-        System.out.println("Hash Data before hash: [" + hashData + "]");
-        System.out.println("ProcessReturn - Hash Data: " + hashData);
-        System.out.println("ProcessReturn - vnp_HashSecret: [" + vnp_HashSecret + "]"); // Log with brackets
-        System.out.println("ProcessReturn - vnp_SecureHash: " + vnp_SecureHash);
-        String calculatedHash = hmacSHA512(vnp_HashSecret, hashData);
-        System.out.println("ProcessReturn - Calculated Hash: " + calculatedHash);
-
+        // Remove the secure hash from params - we'll verify against this
+        String vnp_SecureHash = vnp_Params.remove("vnp_SecureHash");
         if (vnp_SecureHash == null) {
             throw new Exception("Missing secure hash");
         }
 
-        // Compare hashes case-insensitively
+        // Create hashData exactly like in checkout
+        String hashData = String.join("&", vnp_Params.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue().trim(), StandardCharsets.UTF_8))
+                .collect(Collectors.toList()));
+
+        System.out.println("Hash Data: " + hashData);
+        System.out.println("vnp_SecureHash: " + vnp_SecureHash);
+
+        String calculatedHash = hmacSHA512(vnp_HashSecret, hashData);
+        System.out.println("Calculated Hash: " + calculatedHash);
+
         if (!vnp_SecureHash.equalsIgnoreCase(calculatedHash)) {
             System.out.println("Hash comparison failed:");
             System.out.println("Expected: " + vnp_SecureHash.toLowerCase());
@@ -211,8 +201,8 @@ public class cartService {
             throw new Exception("Invalid checksum");
         }
 
-        if ("00".equals(params.get("vnp_ResponseCode"))) {
-            UUID userId = UUID.fromString(params.get("vnp_OrderInfo").split("user ")[1]);
+        if ("00".equals(vnp_Params.get("vnp_ResponseCode"))) {
+            UUID userId = UUID.fromString(vnp_Params.get("vnp_OrderInfo").split("user ")[1]);
             List<CartItem> cartItems = tempCart.getOrDefault(userId, Collections.emptyList());
             if (cartItems.isEmpty()) {
                 throw new Exception("Cart is empty on return");
@@ -261,16 +251,7 @@ public class cartService {
 
     private String hmacSHA512(String key, String data) throws Exception {
         System.out.println("hmacSHA512 - Input data: [" + data + "]");
-        Mac mac = Mac.getInstance("HmacSHA512");
-        mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512"));
-        byte[] hmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : hmac) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
-        }
-        return hexString.toString();
+        return new HmacUtils("HmacSHA512", key).hmacHex(data);
     }
 
     private String bytesToHex(byte[] bytes) {
