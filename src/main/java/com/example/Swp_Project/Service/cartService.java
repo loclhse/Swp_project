@@ -4,7 +4,7 @@ import com.example.Swp_Project.Dto.appointmentDto;
 import com.example.Swp_Project.Dto.cartDisplayDto;
 import com.example.Swp_Project.Model.Appointment;
 import com.example.Swp_Project.Model.CartItem;
-import com.example.Swp_Project.Model.User;
+
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Repositories.appointmentRepositories;
 import com.example.Swp_Project.Repositories.userRepositories;
@@ -15,9 +15,6 @@ import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -49,15 +46,6 @@ public class cartService {
 
     private final Map<UUID, List<CartItem>> tempCart = new HashMap<>();
     private final Map<UUID, appointmentDto> tempAppointments = new HashMap<>();
-
-    @PostConstruct
-    public void logConfig() {
-        System.out.println("CartService Startup - Checking @Value:");
-        System.out.println("vnp_TmnCode: " + vnp_TmnCode);
-        System.out.println("vnp_HashSecret: " + vnp_HashSecret);
-        System.out.println("vnp_Url: " + vnp_Url);
-        System.out.println("vnp_ReturnUrl: " + vnp_ReturnUrl);
-    }
 
     public String addToCart(UUID vaccineDetailsId, Integer quantity, UUID userId) throws Exception {
         Optional<VaccineDetails> vaccinedetailOpt = vaccineDetailsRepository.findById(vaccineDetailsId);
@@ -245,7 +233,7 @@ public class cartService {
 
             return "Payment and appointment creation successful";
         } else {
-            throw new Exception("Payment failed: " + params.get("vnp_ResponseCode"));
+            throw new Exception("Payment failed: " + vnp_Params.get("vnp_ResponseCode"));
         }
     }
 
