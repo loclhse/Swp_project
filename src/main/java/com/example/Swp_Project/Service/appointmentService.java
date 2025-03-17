@@ -94,28 +94,6 @@ private notificationsRepositories notificationsRepositories;
         appointment.setStatus("Verified Coming");
         appointment.setUpdateAt(LocalDateTime.now());
 
-        Children child = new Children();
-        child.setChildrenId(UUID.randomUUID());
-        child.setChildrenName(appointment.getChildrenName());
-        child.setUserId(appointment.getUserId());
-        child.setMedicalIssue(appointment.getMedicalIssue());
-        child.setGender(appointment.getChildrenGender());
-        child.setDateOfBirth(appointment.getDateOfBirth());
-        if (appointment.getVaccineDetailsList() == null || appointment.getVaccineDetailsList().isEmpty()) {
-            List<VaccineDetails> testList = new ArrayList<>();
-            VaccineDetails testVaccine = new VaccineDetails();
-            testVaccine.setVaccineId(UUID.randomUUID());
-            testVaccine.setVaccineDetailsId(UUID.randomUUID());
-            testVaccine.setDoseRequire(2); // Triggers 1 follow-up
-            testVaccine.setDoseName("Test Vaccine");
-            testVaccine.setDateBetweenDoses(30);
-            testVaccine.setPrice(50.0);
-            testVaccine.setStatus("Active");
-            testList.add(testVaccine);
-            appointment.setVaccineDetailsList(testList);
-            System.out.println("Added test vaccine details: " + testList);
-        }
-        childrenRepositories.save(child);
         createFollowUpAppointments(appointment);
         return appointmentRepository.save(appointment);
 
@@ -133,6 +111,7 @@ private notificationsRepositories notificationsRepositories;
                     nextAppointmentDate = nextAppointmentDate.plusDays(vaccine.getDateBetweenDoses());
 
                     Appointment followingAppointment = new Appointment();
+                    followingAppointment.setAppointmentId(UUID.randomUUID());
                     followingAppointment.setUserId(originalAppointment.getUserId());
                     followingAppointment.setChildrenName(originalAppointment.getChildrenName());
                     followingAppointment.setChildrenGender(originalAppointment.getChildrenGender());
