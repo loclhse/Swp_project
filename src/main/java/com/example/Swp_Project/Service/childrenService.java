@@ -1,5 +1,6 @@
 package com.example.Swp_Project.Service;
 
+import com.example.Swp_Project.Dto.childrenDto;
 import com.example.Swp_Project.Model.Children;
 import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Repositories.childrenRepositories;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.webjars.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,31 +29,46 @@ public class childrenService {
         return childrenRepository.findAll();
     }
 
-    public Children getChildrenById(UUID childrenId) {
-        return childrenRepository.findById(childrenId).orElse(null);
+    public Children childrenCreate(UUID userId, childrenDto childrenDTO) {
+        Children child = new Children();
+        child.setChildrenName(childrenDTO.getChildrenName());
+        child.setDateOfBirth(childrenDTO.getDateOfBirth());
+        child.setGender(childrenDTO.getGender());
+        child.setMedicalIssue(childrenDTO.getMedicalIssue());
+        child.setChildrenId(UUID.randomUUID());
+        child.setUserId(userId);
+        child.setCreatAt(LocalDateTime.now());
+        return childrenRepository.save(child);
     }
 
-    public Children createChildren(Children children) {
-        return childrenRepository.save(children);
-    }
-
-    public Children updateChildren(UUID childrenId, Children childrenDetails) {
-        Children children = childrenRepository.findById(childrenId).orElse(null);
-        if (children != null) {
-            children.setChildrenName(childrenDetails.getChildrenName());
-            children.setDateOfBirth(childrenDetails.getDateOfBirth());
-            children.setGender(childrenDetails.getGender());
-            children.setMedicalIssue(childrenDetails.getMedicalIssue());
-            children.setUserId(childrenDetails.getUserId());
-            return childrenRepository.save(children);
+    public Optional<Children> updateChild(UUID childrenId, childrenDto childrenDTO) {
+        Optional<Children> existingChild = childrenRepository.findById(childrenId);
+        if (existingChild.isPresent()) {
+            Children child = existingChild.get();
+            child.setChildrenName(childrenDTO.getChildrenName());
+            child.setDateOfBirth(childrenDTO.getDateOfBirth());
+            child.setGender(childrenDTO.getGender());
+            child.setMedicalIssue(childrenDTO.getMedicalIssue());
+            child.setUpdateAt(LocalDateTime.now()); // Update timestamp
+            return Optional.of(childrenRepository.save(child));
         }
-        return null;
+        return Optional.empty();
     }
 
-    public void deleteChildren(UUID childrenId) {
-        childrenRepository.deleteById(childrenId);
-    }
-    public List<Children> getChildrenByUserId(UUID userId) {
+    public List<Children> getAllChildrenByUserId(UUID userId) {
         return childrenRepository.findByUserId(userId);
     }
+
+    public Optional<Children> getChildById(UUID childrenId) {
+        return childrenRepository.findById(childrenId);
+    }
+
+    public void deleteChild(UUID childrenId) {
+        if (!childrenRepository.existsById(childrenId)) {
+            throw new NotFoundException("Child with ID " + childrenId + " not found");
+        }
+        childrenRepository.deleteById(childrenId);
+    }
+
 }
+
