@@ -63,7 +63,8 @@ public class vaccineDetailsController {
             return ResponseEntity.status(500).body(null);
         }
     }
-    @GetMapping("/vaccines/{vaccineId}/details")
+
+    @GetMapping("/vaccinesdetails-get/{vaccineId}")
     public ResponseEntity<List<VaccineDetails>> getAllVaccineDetailsByVaccineId(
             @PathVariable UUID vaccineId) {
         try {
@@ -72,15 +73,15 @@ public class vaccineDetailsController {
             if (vaccineDetails.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-
             return new ResponseEntity<>(vaccineDetails, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/vaccine-details/{id}")
-    public ResponseEntity<VaccineDetails> getVaccineDetailById(@PathVariable UUID id) {
-        return vaccineDetailService.findVaccinesDetailById(id)
+
+    @GetMapping("/vaccinedetails-get/{vaccineDetailsId}")
+    public ResponseEntity<VaccineDetails> getVaccineDetailById(@PathVariable UUID vaccineDetailsId) {
+        return vaccineDetailService.findVaccinesDetailById(vaccineDetailsId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }

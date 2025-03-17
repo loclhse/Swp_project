@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/children")
+@RequestMapping("/api")
 public class childrenController {
         @Autowired
         private childrenService childrenService;
@@ -24,7 +24,7 @@ public class childrenController {
             return childrenService.getAllChildren();
         }
 
-        @GetMapping("/{id}")
+        @GetMapping("/children-get/{id}")
         public ResponseEntity<Children> getChildrenById(@PathVariable(value = "id") UUID childrenId) {
             Children children = childrenService.getChildrenById(childrenId);
             if (children == null) {
@@ -33,7 +33,7 @@ public class childrenController {
             return ResponseEntity.ok().body(children);
         }
 
-        @PutMapping("/{id}")
+        @PutMapping("/children-update/{id}")
         public ResponseEntity<Children> updateChildren(@PathVariable(value = "id") UUID childrenId, @RequestBody Children childrenDetails) {
             Children updatedChildren = childrenService.updateChildren(childrenId, childrenDetails);
             if (updatedChildren == null) {
@@ -42,14 +42,14 @@ public class childrenController {
             return ResponseEntity.ok().body(updatedChildren);
         }
 
-        @DeleteMapping("/{id}")
+        @DeleteMapping("/children-delete/{id}")
         public ResponseEntity<Void> deleteChildren(@PathVariable(value = "id") UUID childrenId) {
             childrenService.deleteChildren(childrenId);
             return ResponseEntity.noContent().build();
         }
 
-        @GetMapping("/{userId}")
-    public ResponseEntity<List<Children>> getChildrenByUserId(@PathVariable(value = "userId") UUID userId) {
+        @GetMapping("/children-get/{userId}")
+        public ResponseEntity<List<Children>> getChildrenByUserId(@PathVariable(value = "userId") UUID userId) {
         List<Children> childrenList = childrenService.getChildrenByUserId(userId);
         if (childrenList.isEmpty()) {
             return ResponseEntity.notFound().build();

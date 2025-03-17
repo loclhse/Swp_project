@@ -5,6 +5,7 @@ import com.example.Swp_Project.Dto.cartDisplayDto;
 import com.example.Swp_Project.Model.Appointment;
 import com.example.Swp_Project.Model.CartItem;
 
+import com.example.Swp_Project.Model.Payment;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Repositories.appointmentRepositories;
 import com.example.Swp_Project.Repositories.userRepositories;
@@ -228,6 +229,7 @@ public class cartService {
             appointment.setVaccineDetailsList(vaccineDetailsList);
 
             appointmentRepositories.save(appointment);
+            Payment payment=new Payment();
             tempCart.remove(userId);
             tempAppointments.remove(userId);
 

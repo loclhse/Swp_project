@@ -13,21 +13,21 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/feedback")
+@RequestMapping("/api")
 public class feedbackController {
 
     @Autowired
     private feedbackService feedbackService;
 
-    @PostMapping("/users/{userId}/appointments/{appointmentId}/feedback")
-    public ResponseEntity<String> addFeedback(
+    @PostMapping("/feedback-create/{userId}/{appointmentId}")
+    public ResponseEntity<String> createFeedback(
             @PathVariable UUID userId,
             @PathVariable UUID appointmentId,
             @RequestBody Feedback feedback) {
         return feedbackService.addFeedback(userId, appointmentId, feedback);
     }
 
-    @GetMapping("/feedback/{feedbackId}")
+    @GetMapping("/feedback-get/{feedbackId}")
     public ResponseEntity<Feedback> getFeedbackById(@PathVariable UUID feedbackId) {
         try {
             Feedback feedback = feedbackService.getFeedbackById(feedbackId);
@@ -37,7 +37,7 @@ public class feedbackController {
         }
     }
 
-    @GetMapping("/users/{userId}/feedback")
+    @GetMapping("/feedback-get/{userId}")
     public ResponseEntity<List<Feedback>> getUserFeedbacks(@PathVariable UUID userId) {
         try {
             List<Feedback> feedbacks = feedbackService.getUserFeedbacks(userId);
@@ -47,7 +47,7 @@ public class feedbackController {
         }
     }
 
-    @GetMapping("/appointments/{appointmentId}/feedback")
+    @GetMapping("/feedback-get/{appointmentId}")
     public ResponseEntity<List<Feedback>> getAppointmentFeedbacks(@PathVariable UUID appointmentId) {
         try {
             List<Feedback> feedbacks = feedbackService.getAppointmentFeedbacks(appointmentId);
@@ -57,7 +57,7 @@ public class feedbackController {
         }
     }
 
-    @PutMapping("/users/{userId}/appointments/{appointmentId}/feedback/{feedbackId}")
+    @PutMapping("/feedback-update/{userId}/{appointmentId}/{feedbackId}")
     public ResponseEntity<Feedback> updateFeedback(
             @PathVariable UUID userId,
             @PathVariable UUID appointmentId,
@@ -71,7 +71,7 @@ public class feedbackController {
         }
     }
 
-    @DeleteMapping("/users/{userId}/appointments/{appointmentId}/feedback/{feedbackId}")
+    @DeleteMapping("/feedback-delete/{userId}/{appointmentId}/{feedbackId}")
     public ResponseEntity<String> deleteFeedback(
             @PathVariable UUID userId,
             @PathVariable UUID appointmentId,

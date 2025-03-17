@@ -13,29 +13,29 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api")
 public class adminController {
     @Autowired
     private adminService adminService;
 
-    @GetMapping
+    @GetMapping("/admin-all")
     public List<Admin> getAllAdmins() {
         return adminService.getAllAdmins();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/admin-get/{id}")
     public ResponseEntity<Admin> getAdminById(@PathVariable UUID id) {
         Optional<Admin> admin = adminService.getAdminById(id);
         return admin.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @PostMapping
+    @PostMapping("/admin-create")
     public ResponseEntity<Admin> createAdmin(@RequestBody adminDto admin) {
         Admin createdAdmin = adminService.createAdmin(admin);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAdmin);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin-update/{id}")
     public ResponseEntity<Admin> updateAdmin(@PathVariable UUID id, @RequestBody adminDto updatedAdmin) {
         Admin admin = adminService.updateAdmin(id, updatedAdmin);
         if (admin == null) {
@@ -44,7 +44,7 @@ public class adminController {
         return ResponseEntity.ok(admin);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin-delete/{id}")
     public ResponseEntity<Void> deleteAdmin(@PathVariable UUID id) {
         boolean deleted = adminService.deleteAdmin(id);
         if (!deleted) {

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@RequestMapping("/api/notifications")
+@RequestMapping("/api")
 @RestController
 public class notificationsController {
 
@@ -18,29 +18,29 @@ public class notificationsController {
     private notificationService notificationService;
 
 
-    @PostMapping
+    @PostMapping("/notification-create")
     public ResponseEntity<Notifications> createNotification(@RequestBody Notifications notifications) {
         Notifications notification = notificationService.createNotification(notifications);
         return ResponseEntity.ok(notification);
     }
 
-    @GetMapping
+    @GetMapping("/notification-all")
     public ResponseEntity<List<Notifications>> getAllNotifications() {
         return ResponseEntity.ok(notificationService.getAllNotificationsSorted());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/notification-get/{id}")
     public ResponseEntity<Notifications> getNotificationById(@PathVariable UUID id) {
         Optional<Notifications> notification = notificationService.getNotificationById(id);
         return notification.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/notification-update/{id}")
     public ResponseEntity<?>updateNotifications(@PathVariable UUID id,@RequestBody Notifications noti){
         return notificationService.updateNotification(id,noti);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/notification-delete/{id}")
     public ResponseEntity<Void> deleteNotification(@PathVariable UUID id) {
         notificationService.deleteNotification(id);
         return ResponseEntity.noContent().build();

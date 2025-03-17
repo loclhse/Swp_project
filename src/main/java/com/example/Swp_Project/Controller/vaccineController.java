@@ -29,7 +29,7 @@ public class vaccineController {
         return ResponseEntity.ok(vaccineService.getAllVaccines());
     }
 
-    @GetMapping("/vaccinesById/{vaccineId}")
+    @GetMapping("/vaccines-get/{vaccineId}")
     public ResponseEntity<Vaccin> getVaccineById(@PathVariable UUID vaccineId) {
         return ResponseEntity.ok(vaccineService.getVaccineById(vaccineId));
     }
