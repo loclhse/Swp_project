@@ -31,7 +31,7 @@ public class childrenController {
         return ResponseEntity.ok(children);
     }
 
-    @GetMapping("/child-get/{userId}")
+    @GetMapping("/child-get/{userId}/user")
     public ResponseEntity<List<Children>> getAllChildrenByUserId(@PathVariable UUID userId) {
         List<Children> children = childrenService.getAllChildrenByUserId(userId);
         return ResponseEntity.ok(children);
