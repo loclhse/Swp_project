@@ -97,7 +97,7 @@ private notificationsRepositories notificationsRepositories;
         appointmentRepository.save(appointment);
 
         Appointment newAppointment = new Appointment();
-        newAppointment.setAppointmentId(appointment.getAppointmentId());
+        newAppointment.setAppointmentId(UUID.randomUUID());
         newAppointment.setUserId(appointment.getUserId());
         newAppointment.setChildrenName(null);
         newAppointment.setNote(null);
