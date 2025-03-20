@@ -10,11 +10,10 @@ import com.example.Swp_Project.Service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.webjars.NotFoundException;
 
 import java.util.*;
 
@@ -155,6 +154,30 @@ public class userController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong"));
+        }
+    }
+
+    @PutMapping("/deactivate")
+    public ResponseEntity<Map<String, Object>> deactivateUser() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            customUsersDetail userDetails = (customUsersDetail) auth.getDetails();
+            UUID userId = userDetails.getUserID();
+
+            User deactivatedUser = usservice.deactivateUser(userId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User account deactivated successfully");
+            response.put("user", deactivatedUser);
+            return ResponseEntity.ok(response);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

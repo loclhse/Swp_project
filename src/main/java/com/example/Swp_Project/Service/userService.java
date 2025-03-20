@@ -20,8 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -129,20 +131,24 @@ public class userService {
        existingUser.setUpdateAt(LocalDateTime.now());
        return usrepo.save(existingUser);
    }
-    public void deleteUser(UUID userId) {
+
+   public void deleteUser(UUID userId) {
         Optional<User> userOpt = usrepo.findById(userId);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("User not found with ID: " + userId);
         }
         usrepo.deleteById(userId);
     }
+
     public Optional<User> findByUsername(String username) {
 
         return usrepo.findByUsername(username);
     }
+
     public User findByUserId(UUID id){
         return usrepo.findByUserID(id);
     }
+
     public User updateUserProfile(UUID userId, userDTO updatedUser) {
         User existingUser = usrepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
@@ -179,6 +185,20 @@ public class userService {
         return usrepo.save(existingUser);
     }
 
+    @Transactional
+    public User deactivateUser(UUID userID) {
+        User user = usrepo.findByUserID(userID);
+        if (user == null) {
+            throw new NotFoundException("User not found with ID: " + userID);
+        }
 
+        if ("Deactivated".equals(user.getStatus())) {
+            throw new IllegalStateException("User is already deactivated");
+        }
+
+        user.setStatus("Deactivated");
+        User updatedUser = usrepo.save(user);
+        return updatedUser;
+    }
 
 }
