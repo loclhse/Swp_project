@@ -83,5 +83,15 @@ public class feedbackController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    @GetMapping("/all")
+    public ResponseEntity<List<Feedback>> getAllFeedback() {
+        try {
+            List<Feedback> feedbacks = feedbackService.getAllFeedback();
+            return ResponseEntity.ok(feedbacks);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
 }
 

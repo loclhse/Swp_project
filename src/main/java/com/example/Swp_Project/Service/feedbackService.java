@@ -27,6 +27,11 @@ public class feedbackService {
     private userRepositories userRepositories;
 @Autowired
     private appointmentRepositories appointmentRepositories;
+
+    public List<Feedback>getAllFeedback(){
+       return feedbackRepository.findAll();
+    }
+
     public ResponseEntity<String> addFeedback(UUID userId, UUID appointmentId, Feedback feedback) {
         Optional<User> userOpt = userRepositories.findById(userId);
         if (userOpt.isEmpty()) {
