@@ -85,11 +85,12 @@ public class cartService {
             }
 
             VaccineDetails vaccine = vaccinedetailsOpt.get();
-
             cartDetails.add(new cartDisplayDto(
                     vaccine.getDoseName(),
+                    vaccine.getDoseRequire(),
+                    vaccine.getManufacturer(),
                     vaccine.getPrice(),
-                    vaccine.getQuantity()
+                    cartItem.getQuantity()
             ));
         }
             return cartDetails;
@@ -145,7 +146,6 @@ public class cartService {
                 .collect(Collectors.toList()));
         String vnp_SecureHash = hmacSHA512(vnp_HashSecret, hashData);
         vnp_Params.put("vnp_SecureHash", vnp_SecureHash);
-
         String paymentUrl = vnp_Url + "?" + hashData + "&vnp_SecureHash=" + vnp_SecureHash;
         System.out.println("InitiateCheckout - VNPAY Payment URL: " + paymentUrl);
         return paymentUrl;

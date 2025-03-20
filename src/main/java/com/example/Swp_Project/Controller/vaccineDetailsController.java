@@ -29,7 +29,7 @@ public class vaccineDetailsController {
         }
     }
 
-    @PutMapping("vaccine-details/{detailsId}/{vaccineId}")
+    @PutMapping("/vaccine-details/{vaccineId}/{detailsId}")
     public ResponseEntity<VaccineDetails> updateVaccineDetails(
             @PathVariable UUID vaccineId,
             @PathVariable UUID detailsId,

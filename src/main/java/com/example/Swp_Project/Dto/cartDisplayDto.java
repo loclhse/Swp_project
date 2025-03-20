@@ -3,12 +3,33 @@ package com.example.Swp_Project.Dto;
 public class cartDisplayDto {
     private String doseName;
     private Double price;
-    private Integer quantity;
+    private Integer doseRequire;
+    private String manufacturer;
+    private Integer amount;
 
-    public cartDisplayDto(String doseName,Double price,Integer quantity) {
+    public cartDisplayDto(String doseName,Integer doseRequire,String manufacturer,Double price,Integer amount) {
         this.doseName=doseName;
         this.price=price;
-        this.quantity=quantity;
+        this.doseRequire=doseRequire;
+        this.manufacturer=manufacturer;
+        this.amount=amount;
+
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public Integer getDoseRequire() {
+        return doseRequire;
+    }
+
+    public void setDoseRequire(Integer doseRequire) {
+        this.doseRequire = doseRequire;
     }
 
     public String getDoseName() {
@@ -27,16 +48,22 @@ public class cartDisplayDto {
         this.price = price;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public Integer getAmount() {
+        return amount;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setAmount(Integer amount) {
+        this.amount = amount;
     }
 
     @Override
     public String toString() {
-        return "SimpleCartItemDto{doseName='" + doseName + "', quantity=" + quantity + ", price=" + price + "}";
+        return "cartDisplayDto{" +
+                "doseName='" + doseName + '\'' +
+                ", price=" + price +
+                ", doseRequire=" + doseRequire +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", amount=" + amount +
+                '}';
     }
 }
