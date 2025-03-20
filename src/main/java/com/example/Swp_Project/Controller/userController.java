@@ -1,5 +1,4 @@
 package com.example.Swp_Project.Controller;
-
 import com.example.Swp_Project.Dto.userDTO;
 import com.example.Swp_Project.JwtUtils.JwtUtils;
 import com.example.Swp_Project.Model.customUsersDetail;
@@ -161,13 +160,9 @@ public class userController {
         }
     }
 
-    @PutMapping("/deactivate")
-    public ResponseEntity<Map<String, Object>> deactivateUser() {
+    @PutMapping("/deactivate/{userId}")
+    public ResponseEntity<Map<String, Object>> deactivateUser(@PathVariable UUID userId) {
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            customUsersDetail userDetails = (customUsersDetail) auth.getDetails();
-            UUID userId = userDetails.getUserID();
-
             User deactivatedUser = usservice.deactivateUser(userId);
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User account deactivated successfully");

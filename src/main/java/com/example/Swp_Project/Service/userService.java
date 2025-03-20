@@ -191,11 +191,9 @@ public class userService {
         if (user == null) {
             throw new NotFoundException("User not found with ID: " + userID);
         }
-
         if ("Deactivated".equals(user.getStatus())) {
             throw new IllegalStateException("User is already deactivated");
         }
-
         user.setStatus("Deactivated");
         User updatedUser = usrepo.save(user);
         return updatedUser;
