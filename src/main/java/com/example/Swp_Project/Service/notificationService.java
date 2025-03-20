@@ -29,19 +29,16 @@ public class notificationService {
         return notificationRepository.save(notification);
     }
 
-    // Get all notifications sorted by createdAt (newest first)
+
     public List<Notifications> getAllNotificationsSorted() {
         return notificationRepository.findAllByOrderByCreatedAtDesc();
     }
 
-    // Get notification by ID
     public Optional<Notifications> getNotificationById(UUID notificationId) {
         return notificationRepository.findById(notificationId);
     }
 
-    // Update a notification
-
-public ResponseEntity<?> updateNotification(UUID id,Notifications noti) {
+    public ResponseEntity<?> updateNotification(UUID id,Notifications noti) {
     Optional<Notifications> notifications = notificationRepository.findById(id);
     if (notifications.isPresent()) {
         Notifications existnotifications = new Notifications();
@@ -54,18 +51,19 @@ public ResponseEntity<?> updateNotification(UUID id,Notifications noti) {
        return ResponseEntity.status(500).body("not found notifications");
 
 }
-    // Delete a notification
 
-
-
-
-    public ResponseEntity<?> deleteNotification(UUID id) {
+     public ResponseEntity<?> deleteNotification(UUID id) {
         if (!notificationRepository.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notification not found.");
         }
 
         notificationRepository.deleteById(id);
         return ResponseEntity.ok("Notification deleted successfully.");
+    }
+
+    public List<Notifications>findNotificationOfUser(UUID userid){
+       return notificationRepository.findByUserID(userid);
+
     }
 
         }
