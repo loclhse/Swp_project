@@ -8,6 +8,7 @@ import com.example.Swp_Project.Model.CartItem;
 import com.example.Swp_Project.Model.Payment;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Repositories.appointmentRepositories;
+import com.example.Swp_Project.Repositories.paymentsRepositories;
 import com.example.Swp_Project.Repositories.userRepositories;
 import com.example.Swp_Project.Repositories.vaccineDetailsRepositories;
 import jakarta.annotation.PostConstruct;
@@ -20,17 +21,18 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class cartService {
     @Autowired
-    private userRepositories userRepo;
-    @Autowired
     private vaccineDetailsRepositories vaccineDetailsRepository;
     @Autowired
     private appointmentRepositories appointmentRepositories;
+    @Autowired
+    private paymentsRepositories paymentsRepositories;
 
     @Value("${vnpay.tmnCode}")
     private String vnp_TmnCode;
@@ -90,7 +92,8 @@ public class cartService {
                     vaccine.getDoseRequire(),
                     vaccine.getManufacturer(),
                     vaccine.getPrice(),
-                    cartItem.getQuantity()
+                    cartItem.getQuantity(),
+                    vaccine.getImageUrl()
             ));
         }
             return cartDetails;
@@ -165,13 +168,11 @@ public class cartService {
             }
         }
 
-        // Remove the secure hash from params - we'll verify against this
         String vnp_SecureHash = vnp_Params.remove("vnp_SecureHash");
         if (vnp_SecureHash == null) {
             throw new Exception("Missing secure hash");
         }
 
-        // Create hashData exactly like in checkout
         String hashData = String.join("&", vnp_Params.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue().trim(), StandardCharsets.UTF_8))
@@ -227,13 +228,31 @@ public class cartService {
                 vaccineDetailsList.add(vaccine);
             }
             appointment.setVaccineDetailsList(vaccineDetailsList);
-
             appointmentRepositories.save(appointment);
-            Payment payment=new Payment();
+
+            Payment payment = new Payment();
+            payment.setPaymentId(UUID.randomUUID());
+            payment.setUserId(userId);
+            payment.setAppointmentId(appointment.getAppointmentId());
+            payment.setTransactionId(vnp_Params.get("vnp_TransactionNo"));
+            payment.setOrderInfo(vnp_Params.get("vnp_OrderInfo"));
+            payment.setAmount(Long.parseLong(vnp_Params.get("vnp_Amount")) / 100);
+            payment.setBankCode(vnp_Params.get("vnp_BankCode"));
+            payment.setResponseCode(vnp_Params.get("vnp_ResponseCode"));
+            String payDateStr = vnp_Params.get("vnp_PayDate");
+            if (payDateStr != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                LocalDateTime payDate = LocalDateTime.parse(payDateStr, formatter);
+                payment.setPaymentDate(payDate);
+            }
+            payment.setStatus("SUCCESS");
+            payment.setCreatedAt(LocalDateTime.now());
+            paymentsRepositories.save(payment);
+
             tempCart.remove(userId);
             tempAppointments.remove(userId);
-
             return "Payment and appointment creation successful";
+
         } else {
             throw new Exception("Payment failed: " + vnp_Params.get("vnp_ResponseCode"));
         }

@@ -46,23 +46,6 @@ private notificationsRepositories notificationsRepositories;
         return appointmentRepository.findByUserId(userId);
     }
 
-    public Appointment createAppointment(UUID userId, appointmentDto appointmentDTO) {
-        Appointment appointment = new Appointment();
-        appointment.setUserId(userId);
-        appointment.setAppointmentId(UUID.randomUUID());
-        appointment.setChildrenName(appointmentDTO.getChildrenName());
-        appointment.setNote(appointmentDTO.getNote());
-        appointment.setMedicalIssue(appointmentDTO.getMedicalIssue());
-        appointment.setChildrenGender(appointmentDTO.getChildrenGender());
-        appointment.setDateOfBirth(appointmentDTO.getDateOfBirth());
-        appointment.setAppointmentDate(appointmentDTO.getAppointmentDate());
-        appointment.setVaccineDetailsList(new ArrayList<>());
-        appointment.setTimeStart(appointmentDTO.getTimeStart());
-        appointment.setStatus("Pending");
-        appointment.setCreateAt(LocalDateTime.now());
-        return appointmentRepository.save(appointment);
-    }
-
     public Appointment updateAppointment(UUID appointmentId, appointmentDto appointmentDTO) {
         Appointment appointmentt =appointmentRepository.findByAppointmentId (appointmentId);
         if (appointmentt == null) {
@@ -97,6 +80,62 @@ private notificationsRepositories notificationsRepositories;
         createFollowUpAppointments(appointment);
         return appointmentRepository.save(appointment);
 
+    }
+
+    @Transactional
+    public Appointment cancelAppointment(UUID appointmentId) {
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new NotFoundException("Appointment not found with ID: " + appointmentId));
+
+        if (!"Pending".equals(appointment.getStatus())) {
+            throw new IllegalStateException("Appointment must be in Pending status to cancel");
+        }
+
+        appointment.setStatus("Canceled");
+        appointment.setUpdateAt(LocalDateTime.now());
+        appointmentRepository.save(appointment);
+
+        Appointment newAppointment = new Appointment();
+        newAppointment.setAppointmentId(appointment.getAppointmentId());
+        newAppointment.setUserId(appointment.getUserId());
+        newAppointment.setChildrenName(null);
+        newAppointment.setNote(null);
+        newAppointment.setMedicalIssue(null);
+        newAppointment.setChildrenGender(null);
+        newAppointment.setDateOfBirth(null);
+        newAppointment.setAppointmentDate(null);
+        newAppointment.setTimeStart(null);
+        newAppointment.setStatus("Stored Vaccine");
+        newAppointment.setVaccineDetailsList(appointment.getVaccineDetailsList());
+
+        return appointmentRepository.save(newAppointment);
+
+    }
+
+    @Transactional
+    public Appointment createAppointmentFromStored(UUID appointmentId, appointmentDto appointmentDto) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new NotFoundException("Stored Vaccine appointment not found with ID: " + appointmentId));
+
+        if (!"Stored Vaccine".equals(appointment.getStatus())) {
+            throw new IllegalStateException("Appointment must be in Stored Vaccine status to create a new appointment");
+        }
+
+        appointment.setChildrenName(appointmentDto.getChildrenName());
+        appointment.setNote(appointmentDto.getNote());
+        appointment.setMedicalIssue(appointmentDto.getMedicalIssue());
+        appointment.setChildrenGender(appointmentDto.getChildrenGender());
+        appointment.setDateOfBirth(appointmentDto.getDateOfBirth());
+        appointment.setAppointmentDate(appointmentDto.getAppointmentDate());
+        appointment.setTimeStart(appointmentDto.getTimeStart());
+        appointment.setStatus("Pending");
+        appointment.setCreateAt(LocalDateTime.now());
+
+        Appointment updatedAppointment = appointmentRepository.save(appointment);
+        createNotification(updatedAppointment);
+
+        return updatedAppointment;
     }
 
     private void createFollowUpAppointments(Appointment originalAppointment) {

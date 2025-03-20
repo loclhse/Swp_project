@@ -3,17 +3,28 @@ package com.example.Swp_Project.Dto;
 public class cartDisplayDto {
     private String doseName;
     private Double price;
+    private String imgUrl;
     private Integer doseRequire;
     private String manufacturer;
     private Integer amount;
 
-    public cartDisplayDto(String doseName,Integer doseRequire,String manufacturer,Double price,Integer amount) {
+
+    public cartDisplayDto(String doseName,Integer doseRequire,String manufacturer,Double price,Integer amount,String imgUrl) {
         this.doseName=doseName;
         this.price=price;
         this.doseRequire=doseRequire;
         this.manufacturer=manufacturer;
         this.amount=amount;
+        this.imgUrl=imgUrl;
 
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public String getManufacturer() {

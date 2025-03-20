@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.webjars.NotFoundException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -34,32 +36,13 @@ public class appointmentController {
     }
 
 
-    @GetMapping("/users/{userId}/appointments")
+    @GetMapping("/appointment-getbyuserid/{userId}")
     public ResponseEntity<List<Appointment>> getAppointmentsByUserId(@PathVariable UUID userId) {
         List<Appointment> appointmentList = appointmentService.getAppointmentsByUserId(userId);
         if (appointmentList.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(appointmentList);
-    }
-
-    @PostMapping("/appointments/users/{userId}")
-    public ResponseEntity<Appointment> createAppointment(
-            @PathVariable UUID userId, // Changed from @RequestParam to @PathVariable for consistency
-            @RequestBody appointmentDto appointmentDto) { // Assuming "appointmentDto" should be "AppointmentDto"
-        try {
-            if (userId == null) {
-                return ResponseEntity.badRequest().body(null);
-            }
-            Appointment createdAppointment = appointmentService.createAppointment(userId, appointmentDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdAppointment);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
-        } catch (MongoException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
 
     @PutMapping("/appointments/{appointmentId}")
@@ -94,6 +77,51 @@ public class appointmentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PutMapping("/{appointmentId}/cancel")
+    public ResponseEntity<Map<String, Object>> cancelAppointment(@PathVariable UUID appointmentId) {
+        try {
+            Appointment newAppointment = appointmentService.cancelAppointment(appointmentId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Appointment canceled successfully. A Vaccine now being stored in Your Vaccine.");
+            response.put("appointment canceled: ", newAppointment);
+
+            return ResponseEntity.ok(response);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong"));
+        }
+    }
+
+    @PutMapping("/{appointmentId}/create-from-stored")
+    public ResponseEntity<Map<String, Object>> createAppointmentFromStored(
+            @PathVariable UUID appointmentId,
+            @RequestBody appointmentDto appointmentDto) {
+        try {
+            Appointment appointmentFromStored = appointmentService.createAppointmentFromStored(appointmentId, appointmentDto);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Appointment created successfully from Stored Vaccine!");
+            response.put("appointment", appointmentFromStored);
+            return ResponseEntity.ok(response);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong"));
+        }
+    }
+
+
 
 }
 

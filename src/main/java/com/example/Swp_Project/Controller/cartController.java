@@ -2,16 +2,18 @@ package com.example.Swp_Project.Controller;
 
 import com.example.Swp_Project.Dto.appointmentDto;
 import com.example.Swp_Project.Dto.cartDisplayDto;
-import com.example.Swp_Project.Model.CartItem;
-import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Service.cartService;
 import com.example.Swp_Project.Service.vaccineDetailService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -71,7 +73,7 @@ public class cartController {
     }
 
     @GetMapping("/cart/return")
-    public ResponseEntity<String> handleReturn(HttpServletRequest request) {
+    public void handleReturn(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             System.out.println("VNPAY Callback Received:");
             System.out.println("Request Method: " + request.getMethod());
@@ -87,12 +89,12 @@ public class cartController {
             }
 
             String result = cartService.processReturn(request);
-            System.out.println("HandleReturn - Result: " + result);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            response.sendRedirect("http://localhost:3000/paymentsuccess?status=success&message=" + URLEncoder.encode(result, StandardCharsets.UTF_8));
+
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("HandleReturn - Error: " + e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            response.sendRedirect("http://localhost:3000/paymentfailure?status=failed&message=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
         }
     }
 

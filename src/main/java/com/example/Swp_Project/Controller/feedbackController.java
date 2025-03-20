@@ -83,7 +83,7 @@ public class feedbackController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-    @GetMapping("/all")
+    @GetMapping("/feedback-all")
     public ResponseEntity<List<Feedback>> getAllFeedback() {
         try {
             List<Feedback> feedbacks = feedbackService.getAllFeedback();
