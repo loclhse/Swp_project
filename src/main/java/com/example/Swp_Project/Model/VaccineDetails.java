@@ -18,6 +18,7 @@ public class VaccineDetails {
     private UUID vaccineDetailsId;
     private UUID vaccineId;
     private Integer doseRequire;
+    private Integer currentDose;
     private String doseName;
     private String imageUrl;
     private String manufacturer;
@@ -29,6 +30,14 @@ public class VaccineDetails {
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateAt;
+
+    public Integer getCurrentDose() {
+        return currentDose;
+    }
+
+    public void setCurrentDose(Integer currentDose) {
+        this.currentDose = currentDose;
+    }
 
     public LocalDateTime getUpdateAt() {
         return updateAt;

@@ -225,6 +225,19 @@ public class cartService {
                 VaccineDetails vaccine = vaccineOpt.get();
                 vaccine.setQuantity(vaccine.getQuantity() - cartItem.getQuantity());
                 vaccineDetailsRepository.save(vaccine);
+
+                VaccineDetails vaccineForAppointment = new VaccineDetails();
+                vaccineForAppointment.setVaccineId(vaccine.getVaccineId());
+                vaccineForAppointment.setVaccineDetailsId(vaccine.getVaccineDetailsId());
+                vaccineForAppointment.setDoseName(vaccine.getDoseName());
+                vaccineForAppointment.setManufacturer(vaccine.getManufacturer());
+                vaccineForAppointment.setDateBetweenDoses(vaccine.getDateBetweenDoses());
+                vaccineForAppointment.setDoseRequire(vaccine.getDoseRequire());
+                vaccineForAppointment.setPrice(vaccine.getPrice());
+                vaccineForAppointment.setStatus(vaccine.getStatus());
+                vaccineForAppointment.setQuantity(cartItem.getQuantity());
+                vaccineForAppointment.setCurrentDose(1);
+                vaccineDetailsList.add(vaccineForAppointment);
                 vaccineDetailsList.add(vaccine);
             }
             appointment.setVaccineDetailsList(vaccineDetailsList);
