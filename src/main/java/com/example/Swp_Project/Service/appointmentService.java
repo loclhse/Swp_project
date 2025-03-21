@@ -123,7 +123,7 @@ private notificationsRepositories notificationsRepositories;
         appointment.setCreateAt(LocalDateTime.now());
 
         Appointment updatedAppointment = appointmentRepository.save(appointment);
-        createNotification(updatedAppointment);
+        createNotificationCancel(updatedAppointment);
 
         return updatedAppointment;
     }
@@ -139,8 +139,6 @@ private notificationsRepositories notificationsRepositories;
                         originalAppointment.getUserId(), vaccine.getVaccineId(), nextDose)) {
                     continue;
                 }
-
-
 
                     LocalDate nextAppointmentDate = originalAppointment.getAppointmentDate().plusDays(vaccine.getDateBetweenDoses());
                     Appointment followingAppointment = new Appointment();
