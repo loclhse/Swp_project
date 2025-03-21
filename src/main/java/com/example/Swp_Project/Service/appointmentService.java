@@ -43,7 +43,7 @@ private notificationsRepositories notificationsRepositories;
     }
 
     public List<Appointment> getAppointmentsByUserId(UUID userId) {
-        return appointmentRepository.findByUserId(userId);
+        return appointmentRepository.findByUserIdOrderByCreateAtDesc(userId);
     }
 
     public Appointment updateAppointment(UUID appointmentId, appointmentDto appointmentDTO) {
@@ -76,7 +76,6 @@ private notificationsRepositories notificationsRepositories;
 
         appointment.setStatus("Verified Coming");
         appointment.setUpdateAt(LocalDateTime.now());
-
         createFollowUpAppointments(appointment);
         return appointmentRepository.save(appointment);
 
@@ -142,10 +141,15 @@ private notificationsRepositories notificationsRepositories;
         List<VaccineDetails> vaccineDetailsList = originalAppointment.getVaccineDetailsList();
 
         for (VaccineDetails vaccine : vaccineDetailsList) {
-            if (vaccine.getDoseRequire() != null && vaccine.getCurrentDose() != null && vaccine.getCurrentDose() < vaccine.getDoseRequire()) {
+            if (vaccine.getDoseRequire() != null && vaccine.getCurrentDose() != null
+                    && vaccine.getCurrentDose() < vaccine.getDoseRequire()) {
+                int nextDose = vaccine.getCurrentDose() + 1;
+                if (appointmentRepository.existsByUserIdAndVaccineDetailsListVaccineIdAndVaccineDetailsListCurrentDose(
+                        originalAppointment.getUserId(), vaccine.getVaccineId(), nextDose)) {
+                    continue;
+                }
 
                     LocalDate nextAppointmentDate = originalAppointment.getAppointmentDate().plusDays(vaccine.getDateBetweenDoses());
-
                     Appointment followingAppointment = new Appointment();
                     followingAppointment.setAppointmentId(UUID.randomUUID());
                     followingAppointment.setUserId(originalAppointment.getUserId());
@@ -153,24 +157,24 @@ private notificationsRepositories notificationsRepositories;
                     followingAppointment.setChildrenGender(originalAppointment.getChildrenGender());
                     followingAppointment.setDateOfBirth(originalAppointment.getDateOfBirth());
                     followingAppointment.setAppointmentDate(nextAppointmentDate);
-                    followingAppointment.setTimeStart(originalAppointment.getTimeStart());
+                    followingAppointment.setTimeStart(null);
                     followingAppointment.setStatus("Pending");
                     followingAppointment.setCreateAt(LocalDateTime.now());
-                    followingAppointment.setUpdateAt(LocalDateTime.now());
 
                     List<VaccineDetails> newVaccineList = new ArrayList<>();
-                    VaccineDetails followingVaccine = new VaccineDetails();
-                    followingVaccine.setVaccineId(vaccine.getVaccineId());
-                    followingVaccine.setVaccineDetailsId(vaccine.getVaccineDetailsId());
-                    followingVaccine.setDoseRequire(vaccine.getDoseRequire());
-                    followingVaccine.setDoseName(vaccine.getDoseName() + " (Dose " + (vaccine.getCurrentDose() + 1)+ ")");
-                    followingVaccine.setManufacturer(vaccine.getManufacturer());
-                    followingVaccine.setDateBetweenDoses(vaccine.getDateBetweenDoses());
-                    followingVaccine.setPrice(vaccine.getPrice());
-                    followingVaccine.setStatus(vaccine.getStatus());
-                    followingVaccine.setCurrentDose(vaccine.getCurrentDose() + 1);
-                    newVaccineList.add(followingVaccine);
+                    VaccineDetails nextAppointmentVaccine = new VaccineDetails();
+                nextAppointmentVaccine.setVaccineId(vaccine.getVaccineId());
+                nextAppointmentVaccine.setVaccineDetailsId(vaccine.getVaccineDetailsId());
+                nextAppointmentVaccine.setDoseRequire(vaccine.getDoseRequire());
+                nextAppointmentVaccine.setDoseName(vaccine.getDoseName() + " (Dose " + (vaccine.getCurrentDose() + 1)+ ")");
+                nextAppointmentVaccine.setManufacturer(vaccine.getManufacturer());
+                nextAppointmentVaccine.setDateBetweenDoses(vaccine.getDateBetweenDoses());
+                nextAppointmentVaccine.setPrice(vaccine.getPrice());
+                nextAppointmentVaccine.setStatus(vaccine.getStatus());
+                nextAppointmentVaccine.setCurrentDose(vaccine.getCurrentDose() + 1);
+                    newVaccineList.add(nextAppointmentVaccine);
                     followingAppointment.setVaccineDetailsList(newVaccineList);
+
                     Appointment savedAppointment = appointmentRepository.save(followingAppointment);
                     createNotification(savedAppointment);
 
@@ -195,7 +199,14 @@ private notificationsRepositories notificationsRepositories;
         notificationsRepositories.save(notification);
     }
 
+    public void deleteAppointment(UUID appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found with id: " + appointmentId));
+        appointmentRepository.delete(appointment);
+    }
 }
+
+
 
 
 

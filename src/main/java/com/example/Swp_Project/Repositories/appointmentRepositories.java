@@ -8,6 +8,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface appointmentRepositories extends MongoRepository<Appointment, UUID> {
-    List<Appointment>findByUserId(UUID userId);
+    List<Appointment> findByUserIdOrderByCreateAtDesc(UUID userId);
     Appointment findByAppointmentId(UUID appointmentId);
+    boolean existsByUserIdAndVaccineDetailsListVaccineIdAndVaccineDetailsListCurrentDose(
+            UUID userId,
+            UUID vaccineId,
+            Integer currentDose);
 }
