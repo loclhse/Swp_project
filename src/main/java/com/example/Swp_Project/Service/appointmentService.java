@@ -95,20 +95,11 @@ private notificationsRepositories notificationsRepositories;
         appointment.setUpdateAt(LocalDateTime.now());
         appointmentRepository.save(appointment);
 
-        Appointment newAppointment = new Appointment();
-        newAppointment.setAppointmentId(UUID.randomUUID());
-        newAppointment.setUserId(appointment.getUserId());
-        newAppointment.setChildrenName(null);
-        newAppointment.setNote(null);
-        newAppointment.setMedicalIssue(null);
-        newAppointment.setChildrenGender(null);
-        newAppointment.setDateOfBirth(null);
-        newAppointment.setAppointmentDate(null);
-        newAppointment.setTimeStart(null);
-        newAppointment.setStatus("Stored Vaccine");
-        newAppointment.setVaccineDetailsList(appointment.getVaccineDetailsList());
-
-        return appointmentRepository.save(newAppointment);
+        VaccineStorage vaccineStorage = new VaccineStorage();
+        vaccineStorage.setUserId(appointment.getUserId());
+        vaccineStorage.setVaccineDetailsStorage(appointment.getVaccineDetailsList());
+        vaccineStorage.setCreatAt(LocalDateTime.now());
+        return appointment;
 
     }
 
@@ -149,6 +140,8 @@ private notificationsRepositories notificationsRepositories;
                     continue;
                 }
 
+
+
                     LocalDate nextAppointmentDate = originalAppointment.getAppointmentDate().plusDays(vaccine.getDateBetweenDoses());
                     Appointment followingAppointment = new Appointment();
                     followingAppointment.setAppointmentId(UUID.randomUUID());
@@ -158,20 +151,24 @@ private notificationsRepositories notificationsRepositories;
                     followingAppointment.setDateOfBirth(originalAppointment.getDateOfBirth());
                     followingAppointment.setAppointmentDate(nextAppointmentDate);
                     followingAppointment.setTimeStart(null);
-                    followingAppointment.setStatus("Pending");
                     followingAppointment.setCreateAt(LocalDateTime.now());
+                    if(vaccine.getCurrentDose()==vaccine.getDoseRequire()-1){
+                        followingAppointment.setStatus("Completed");
+                    }else{
+                        followingAppointment.setStatus("Pending");
+                    }
 
                     List<VaccineDetails> newVaccineList = new ArrayList<>();
                     VaccineDetails nextAppointmentVaccine = new VaccineDetails();
-                nextAppointmentVaccine.setVaccineId(vaccine.getVaccineId());
-                nextAppointmentVaccine.setVaccineDetailsId(vaccine.getVaccineDetailsId());
-                nextAppointmentVaccine.setDoseRequire(vaccine.getDoseRequire());
-                nextAppointmentVaccine.setDoseName(vaccine.getDoseName() + " (Dose " + (vaccine.getCurrentDose() + 1)+ ")");
-                nextAppointmentVaccine.setManufacturer(vaccine.getManufacturer());
-                nextAppointmentVaccine.setDateBetweenDoses(vaccine.getDateBetweenDoses());
-                nextAppointmentVaccine.setPrice(vaccine.getPrice());
-                nextAppointmentVaccine.setStatus(vaccine.getStatus());
-                nextAppointmentVaccine.setCurrentDose(vaccine.getCurrentDose() + 1);
+                    nextAppointmentVaccine.setVaccineId(vaccine.getVaccineId());
+                    nextAppointmentVaccine.setVaccineDetailsId(vaccine.getVaccineDetailsId());
+                    nextAppointmentVaccine.setDoseRequire(vaccine.getDoseRequire());
+                    nextAppointmentVaccine.setDoseName(vaccine.getDoseName() + " (Dose " + (vaccine.getCurrentDose() + 1)+ ")");
+                    nextAppointmentVaccine.setManufacturer(vaccine.getManufacturer());
+                    nextAppointmentVaccine.setDateBetweenDoses(vaccine.getDateBetweenDoses());
+                    nextAppointmentVaccine.setPrice(vaccine.getPrice());
+                    nextAppointmentVaccine.setStatus(vaccine.getStatus());
+                    nextAppointmentVaccine.setCurrentDose(vaccine.getCurrentDose() + 1);
                     newVaccineList.add(nextAppointmentVaccine);
                     followingAppointment.setVaccineDetailsList(newVaccineList);
 
@@ -193,6 +190,21 @@ private notificationsRepositories notificationsRepositories;
                 appointment.getAppointmentDate().toString(),
                 appointment.getTimeStart().toString(),
                 appointment.getVaccineDetailsList().get(0).getDoseName()
+        ));
+        notification.setCreatedAt(LocalDateTime.now());
+
+        notificationsRepositories.save(notification);
+    }
+
+    private void createNotificationCancel(Appointment appointment) {
+        Notifications notification = new Notifications();
+        notification.setNotificationId(UUID.randomUUID());
+        notification.setTitle("Dear Customer.");
+        notification.setUserID(appointment.getUserId());
+        notification.setMessages(String.format(
+                "The vaccine %s has been stored at %s",
+                appointment.getVaccineDetailsList().get(0).getDoseName(),
+                appointment.getCreateAt().toString()
         ));
         notification.setCreatedAt(LocalDateTime.now());
 
