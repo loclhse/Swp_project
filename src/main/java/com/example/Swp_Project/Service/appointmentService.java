@@ -152,11 +152,8 @@ private notificationsRepositories notificationsRepositories;
                     followingAppointment.setAppointmentDate(nextAppointmentDate);
                     followingAppointment.setTimeStart(null);
                     followingAppointment.setCreateAt(LocalDateTime.now());
-                    if(vaccine.getCurrentDose()==vaccine.getDoseRequire()-1){
-                        followingAppointment.setStatus("Completed");
-                    }else{
-                        followingAppointment.setStatus("Pending");
-                    }
+                    followingAppointment.setStatus("Pending");
+
 
                     List<VaccineDetails> newVaccineList = new ArrayList<>();
                     VaccineDetails nextAppointmentVaccine = new VaccineDetails();
