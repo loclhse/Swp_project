@@ -99,28 +99,6 @@ public class appointmentController {
         }
     }
 
-    @PutMapping("/{appointmentId}/create-from-stored")
-    public ResponseEntity<Map<String, Object>> createAppointmentFromStored(
-            @PathVariable UUID appointmentId,
-            @RequestBody appointmentDto appointmentDto) {
-        try {
-            Appointment appointmentFromStored = appointmentService.createAppointmentFromStored(appointmentId, appointmentDto);
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Appointment created successfully from Stored Vaccine!");
-            response.put("appointment", appointmentFromStored);
-            return ResponseEntity.ok(response);
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Something went wrong"));
-        }
-    }
-
     @DeleteMapping("/{appointmentId}")
     public ResponseEntity<String> deleteAppointment(@PathVariable UUID appointmentId) {
         try {
