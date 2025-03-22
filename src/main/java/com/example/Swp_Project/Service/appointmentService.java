@@ -99,33 +99,8 @@ private notificationsRepositories notificationsRepositories;
         vaccineStorage.setUserId(appointment.getUserId());
         vaccineStorage.setVaccineDetailsStorage(appointment.getVaccineDetailsList());
         vaccineStorage.setCreatAt(LocalDateTime.now());
+        createNotificationCancel(appointment);
         return appointment;
-
-    }
-
-    @Transactional
-    public Appointment createAppointmentFromStored(UUID appointmentId, appointmentDto appointmentDto) {
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new NotFoundException("Stored Vaccine appointment not found with ID: " + appointmentId));
-
-        if (!"Stored Vaccine".equals(appointment.getStatus())) {
-            throw new IllegalStateException("Appointment must be in Stored Vaccine status to create a new appointment");
-        }
-
-        appointment.setChildrenName(appointmentDto.getChildrenName());
-        appointment.setNote(appointmentDto.getNote());
-        appointment.setMedicalIssue(appointmentDto.getMedicalIssue());
-        appointment.setChildrenGender(appointmentDto.getChildrenGender());
-        appointment.setDateOfBirth(appointmentDto.getDateOfBirth());
-        appointment.setAppointmentDate(appointmentDto.getAppointmentDate());
-        appointment.setTimeStart(appointmentDto.getTimeStart());
-        appointment.setStatus("Pending");
-        appointment.setCreateAt(LocalDateTime.now());
-
-        Appointment updatedAppointment = appointmentRepository.save(appointment);
-        createNotificationCancel(updatedAppointment);
-
-        return updatedAppointment;
     }
 
     private void createFollowUpAppointments(Appointment originalAppointment) {
@@ -139,7 +114,6 @@ private notificationsRepositories notificationsRepositories;
                         originalAppointment.getUserId(), vaccine.getVaccineId(), nextDose)) {
                     continue;
                 }
-
                     LocalDate nextAppointmentDate = originalAppointment.getAppointmentDate().plusDays(vaccine.getDateBetweenDoses());
                     Appointment followingAppointment = new Appointment();
                     followingAppointment.setAppointmentId(UUID.randomUUID());
@@ -151,7 +125,6 @@ private notificationsRepositories notificationsRepositories;
                     followingAppointment.setTimeStart(null);
                     followingAppointment.setCreateAt(LocalDateTime.now());
                     followingAppointment.setStatus("Pending");
-
 
                     List<VaccineDetails> newVaccineList = new ArrayList<>();
                     VaccineDetails nextAppointmentVaccine = new VaccineDetails();
@@ -166,11 +139,9 @@ private notificationsRepositories notificationsRepositories;
                     nextAppointmentVaccine.setCurrentDose(vaccine.getCurrentDose() + 1);
                     newVaccineList.add(nextAppointmentVaccine);
                     followingAppointment.setVaccineDetailsList(newVaccineList);
-
                     Appointment savedAppointment = appointmentRepository.save(followingAppointment);
                     createNotification(savedAppointment);
-
-                }
+              }
             }
         }
 
