@@ -17,41 +17,18 @@ public class notificationsController {
     @Autowired
     private notificationService notificationService;
 
-
-    @PostMapping("/notification-create")
-    public ResponseEntity<Notifications> createNotification(@RequestBody Notifications notifications) {
-        Notifications notification = notificationService.createNotification(notifications);
-        return ResponseEntity.ok(notification);
-    }
-
-    @GetMapping("/notification-all")
-    public ResponseEntity<List<Notifications>> getAllNotifications() {
-        return ResponseEntity.ok(notificationService.getAllNotificationsSorted());
-    }
-
-    @GetMapping("/notification-get/{id}")
-    public ResponseEntity<Notifications> getNotificationById(@PathVariable UUID id) {
-        Optional<Notifications> notification = notificationService.getNotificationById(id);
-        return notification.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PutMapping("/notification-update/{id}")
-    public ResponseEntity<?>updateNotifications(@PathVariable UUID id,@RequestBody Notifications noti){
-        return notificationService.updateNotification(id,noti);
-    }
-
     @DeleteMapping("/notification-delete/{id}")
     public ResponseEntity<Void> deleteNotification(@PathVariable UUID id) {
         notificationService.deleteNotification(id);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/notifications-getByUserId/{userId}")
     public ResponseEntity<List<Notifications>> getNotificationsByUserId(@PathVariable UUID userId) {
         try {
             List<Notifications> notifications = notificationService.findNotificationOfUser(userId);
             return ResponseEntity.ok(notifications);
         } catch (NotFoundException e) {
-
             System.out.println("NotFoundException: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -63,6 +40,18 @@ public class notificationsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .header("X-Error-Message", "Failed to fetch notifications: " + e.getMessage())
                     .body(Collections.emptyList());
+        }
+    }
+
+    @DeleteMapping("/user/{userId}")
+    public ResponseEntity<String> deleteNotificationsByUserId(@PathVariable UUID userId) {
+        try {
+            notificationService.deleteNotification(userId);
+            return ResponseEntity.ok("Notifications deleted successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete notifications");
         }
     }
 

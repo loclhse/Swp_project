@@ -177,10 +177,12 @@ private notificationsRepositories notificationsRepositories;
         notificationsRepositories.save(notification);
     }
 
-    public void deleteAppointment(UUID appointmentId) {
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found with id: " + appointmentId));
-        appointmentRepository.delete(appointment);
+    public void deleteAppointmentByUserId(UUID userId) {
+        List<Appointment> notifications = appointmentRepository.findByUserIdOrderByCreateAtDesc(userId);
+        if (notifications.isEmpty()) {
+            throw new NotFoundException("No notifications found for user with ID: " + userId);
+        }
+        appointmentRepository.deleteAll(notifications);
     }
 }
 

@@ -99,13 +99,16 @@ public class appointmentController {
         }
     }
 
-    @DeleteMapping("/{appointmentId}")
-    public ResponseEntity<String> deleteAppointment(@PathVariable UUID appointmentId) {
+    @DeleteMapping("/appointments/user/{userId}")
+    public ResponseEntity<String> deleteAppointmentsByUserId(@PathVariable UUID userId) {
         try {
-            appointmentService.deleteAppointment(appointmentId);
-            return ResponseEntity.ok("Appointment deleted successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            appointmentService.deleteAppointmentByUserId(userId);
+            return ResponseEntity.ok("Appointments deleted successfully for user with ID: " + userId);
+        } catch (NotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while deleting appointments.");
         }
     }
 
