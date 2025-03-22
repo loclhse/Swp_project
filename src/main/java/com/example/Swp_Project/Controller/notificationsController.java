@@ -43,7 +43,7 @@ public class notificationsController {
         }
     }
 
-    @DeleteMapping("/user/{userId}")
+    @DeleteMapping("/notifications-deletebyUserId/{userId}")
     public ResponseEntity<String> deleteNotificationsByUserId(@PathVariable UUID userId) {
         try {
             notificationService.deleteNotification(userId);
