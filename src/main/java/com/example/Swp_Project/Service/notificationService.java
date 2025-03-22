@@ -18,6 +18,10 @@ public class notificationService {
     @Autowired
     private notificationsRepositories notificationRepository;
 
+    public List<Notifications>findAllNotifications(){
+        return notificationRepository.findAll();
+    }
+
     public Optional<Notifications> getNotificationById(UUID notificationId) {
         return notificationRepository.findById(notificationId);
     }

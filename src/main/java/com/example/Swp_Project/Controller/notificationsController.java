@@ -17,6 +17,11 @@ public class notificationsController {
     @Autowired
     private notificationService notificationService;
 
+    @GetMapping("/notifications-all")
+    public List<Notifications> getAllNotifications() {
+        return notificationService.findAllNotifications();
+    }
+
     @DeleteMapping("/notification-delete/{id}")
     public ResponseEntity<Void> deleteNotification(@PathVariable UUID id) {
         notificationService.deleteNotification(id);
