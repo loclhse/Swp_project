@@ -116,7 +116,7 @@ private notificationsRepositories notificationsRepositories;
         finalDoseAppointment.setUpdateAt(LocalDateTime.now());
         appointmentRepository.save(finalDoseAppointment);
 
-        List<Appointment> relatedAppointments = appointmentRepository.findAllByAppointmentId(finalDoseAppointment.getAppointmentId());
+        List<Appointment> relatedAppointments = appointmentRepository.findByProcessId(finalDoseAppointment.getAppointmentId());
         for (Appointment appointment : relatedAppointments) {
             appointment.setStatus("Completed");
             appointment.setUpdateAt(LocalDateTime.now());
@@ -134,15 +134,18 @@ private notificationsRepositories notificationsRepositories;
         for (VaccineDetails vaccine : vaccineDetailsList) {
             if (vaccine.getDoseRequire() != null && vaccine.getCurrentDose() != null
                     && vaccine.getCurrentDose() < vaccine.getDoseRequire()) {
+
                 int nextDose = vaccine.getCurrentDose() + 1;
+
                 if (appointmentRepository.existsByUserIdAndVaccineDetailsListVaccineIdAndVaccineDetailsListCurrentDose(
                         originalAppointment.getUserId(), vaccine.getVaccineId(), nextDose)) {
                     continue;
                 }
                     LocalDate nextAppointmentDate = originalAppointment.getAppointmentDate().plusDays(vaccine.getDateBetweenDoses());
                     Appointment followingAppointment = new Appointment();
-                    followingAppointment.setAppointmentId(originalAppointment.getAppointmentId());
+                    followingAppointment.setAppointmentId(UUID.randomUUID());
                     followingAppointment.setUserId(originalAppointment.getUserId());
+                    followingAppointment.setProcessId(originalAppointment.getProcessId());
                     followingAppointment.setChildrenName(originalAppointment.getChildrenName());
                     followingAppointment.setChildrenGender(originalAppointment.getChildrenGender());
                     followingAppointment.setDateOfBirth(originalAppointment.getDateOfBirth());

@@ -206,6 +206,7 @@ public class cartService {
             Appointment appointment = new Appointment();
             appointment.setUserId(userId);
             appointment.setAppointmentId(UUID.randomUUID());
+            appointment.setProcessId(UUID.randomUUID());
             appointment.setChildrenName(appointmentDTO.getChildrenName());
             appointment.setNote(appointmentDTO.getNote());
             appointment.setMedicalIssue(appointmentDTO.getMedicalIssue());
@@ -241,6 +242,16 @@ public class cartService {
                 vaccineDetailsList.add(vaccine);
             }
             appointment.setVaccineDetailsList(vaccineDetailsList);
+
+            boolean isFinalDose = true;
+            for (VaccineDetails vaccine : vaccineDetailsList) {
+                if (vaccine.getDoseRequire() > 1) {
+                    isFinalDose = false;
+                    break;
+                }
+            }
+
+            appointment.setFinalDose(isFinalDose);
             appointmentRepositories.save(appointment);
 
             Payment payment = new Payment();

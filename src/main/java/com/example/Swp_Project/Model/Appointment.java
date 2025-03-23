@@ -16,6 +16,7 @@ import java.util.*;
 public class Appointment {
     @Id
     private UUID appointmentId;
+    private UUID processId;
     private UUID userId;
     private String childrenName;
     private String note;
@@ -45,6 +46,14 @@ public class Appointment {
         this.childrenName = childrenName;
         this.appointmentDate = appointmentDate;
         this.timeStart = timeStart;
+    }
+
+    public UUID getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(UUID processId) {
+        this.processId = processId;
     }
 
     public boolean isFinalDose() {
