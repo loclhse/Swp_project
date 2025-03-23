@@ -78,7 +78,7 @@ public class appointmentController {
         }
     }
 
-    @PutMapping("/{appointmentId}/cancel")
+    @PutMapping("/appointments/{appointmentId}/cancel")
     public ResponseEntity<Map<String, Object>> cancelAppointment(@PathVariable UUID appointmentId) {
         try {
             Appointment newAppointment = appointmentService.cancelAppointment(appointmentId);

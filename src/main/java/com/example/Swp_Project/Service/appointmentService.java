@@ -99,7 +99,7 @@ private notificationsRepositories notificationsRepositories;
         vaccineStorage.setUserId(appointment.getUserId());
         vaccineStorage.setVaccineDetailsStorage(appointment.getVaccineDetailsList());
         vaccineStorage.setCreatAt(LocalDateTime.now());
-        CancelingNotify(appointment);
+        cancelingNotify(appointment);
         return appointment;
     }
 
@@ -169,12 +169,12 @@ private notificationsRepositories notificationsRepositories;
                     newVaccineList.add(nextAppointmentVaccine);
                     followingAppointment.setVaccineDetailsList(newVaccineList);
                     Appointment savedAppointment = appointmentRepository.save(followingAppointment);
-                    FollowingAppointmentNotify(savedAppointment);
+                    followingAppointmentNotify(savedAppointment);
               }
             }
         }
 
-    private void FollowingAppointmentNotify(Appointment appointment) {
+    private void followingAppointmentNotify(Appointment appointment) {
         Notifications notification = new Notifications();
         notification.setNotificationId(UUID.randomUUID());
         notification.setTitle("Dear Customer.");
@@ -191,7 +191,7 @@ private notificationsRepositories notificationsRepositories;
         notificationsRepositories.save(notification);
     }
 
-    private void CancelingNotify(Appointment appointment) {
+    private void cancelingNotify(Appointment appointment) {
         Notifications notification = new Notifications();
         notification.setNotificationId(UUID.randomUUID());
         notification.setTitle("Dear Customer.");
