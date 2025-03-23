@@ -112,5 +112,11 @@ public class appointmentController {
         }
     }
 
+    @PostMapping("/appointments/{appointmentId}/mark-successful")
+    public ResponseEntity<Void> markFinalDoseAsSuccessful(@PathVariable UUID appointmentId) {
+        appointmentService.markFinalDoseAsSuccessful(appointmentId);
+        return ResponseEntity.ok().build();
+    }
+
 }
 

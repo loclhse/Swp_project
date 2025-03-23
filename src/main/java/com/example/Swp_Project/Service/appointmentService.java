@@ -99,8 +99,33 @@ private notificationsRepositories notificationsRepositories;
         vaccineStorage.setUserId(appointment.getUserId());
         vaccineStorage.setVaccineDetailsStorage(appointment.getVaccineDetailsList());
         vaccineStorage.setCreatAt(LocalDateTime.now());
-        createNotificationCancel(appointment);
+        createNotificationForCancel(appointment);
         return appointment;
+    }
+
+    @Transactional
+    public void markFinalDoseAsSuccessful(UUID appointmentId) {
+        Appointment finalDoseAppointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new NotFoundException("Appointment not found with ID: " + appointmentId));
+
+        if (!"Pending".equals(finalDoseAppointment.getStatus())) {
+            throw new IllegalStateException("Appointment must be in Pending status to mark as successful");
+        }
+
+        finalDoseAppointment.setStatus("Completed");
+        finalDoseAppointment.setUpdateAt(LocalDateTime.now());
+        appointmentRepository.save(finalDoseAppointment);
+
+        List<Appointment> relatedAppointments = appointmentRepository.findAllByAppointmentId(finalDoseAppointment.getAppointmentId());
+        for (Appointment appointment : relatedAppointments) {
+            appointment.setStatus("Completed");
+            appointment.setUpdateAt(LocalDateTime.now());
+            appointmentRepository.save(appointment);
+        }
+        createNotification(finalDoseAppointment);
+        for (Appointment appointment : relatedAppointments) {
+            createNotificationforCompleted(appointment);
+        }
     }
 
     private void createFollowUpAppointments(Appointment originalAppointment) {
@@ -116,7 +141,7 @@ private notificationsRepositories notificationsRepositories;
                 }
                     LocalDate nextAppointmentDate = originalAppointment.getAppointmentDate().plusDays(vaccine.getDateBetweenDoses());
                     Appointment followingAppointment = new Appointment();
-                    followingAppointment.setAppointmentId(UUID.randomUUID());
+                    followingAppointment.setAppointmentId(originalAppointment.getAppointmentId());
                     followingAppointment.setUserId(originalAppointment.getUserId());
                     followingAppointment.setChildrenName(originalAppointment.getChildrenName());
                     followingAppointment.setChildrenGender(originalAppointment.getChildrenGender());
@@ -125,6 +150,7 @@ private notificationsRepositories notificationsRepositories;
                     followingAppointment.setTimeStart(null);
                     followingAppointment.setCreateAt(LocalDateTime.now());
                     followingAppointment.setStatus("Pending");
+                    followingAppointment.setFinalDose(nextDose == vaccine.getDoseRequire());
 
                     List<VaccineDetails> newVaccineList = new ArrayList<>();
                     VaccineDetails nextAppointmentVaccine = new VaccineDetails();
@@ -162,7 +188,7 @@ private notificationsRepositories notificationsRepositories;
         notificationsRepositories.save(notification);
     }
 
-    private void createNotificationCancel(Appointment appointment) {
+    private void createNotificationForCancel(Appointment appointment) {
         Notifications notification = new Notifications();
         notification.setNotificationId(UUID.randomUUID());
         notification.setTitle("Dear Customer.");
@@ -183,6 +209,20 @@ private notificationsRepositories notificationsRepositories;
             throw new NotFoundException("No notifications found for user with ID: " + userId);
         }
         appointmentRepository.deleteAll(notifications);
+    }
+
+    private void createNotificationforCompleted(Appointment appointment) {
+        Notifications notification = new Notifications();
+        notification.setNotificationId(UUID.randomUUID());
+        notification.setTitle("Dear Customer.");
+        notification.setUserID(appointment.getUserId());
+        notification.setMessages(String.format(
+                "You have now completed all dose of %s",
+                appointment.getVaccineDetailsList().get(0).getDoseName()
+        ));
+        notification.setCreatedAt(LocalDateTime.now());
+
+        notificationsRepositories.save(notification);
     }
 }
 

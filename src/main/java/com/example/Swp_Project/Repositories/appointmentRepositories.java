@@ -14,4 +14,5 @@ public interface appointmentRepositories extends MongoRepository<Appointment, UU
             UUID userId,
             UUID vaccineId,
             Integer currentDose);
+    List<Appointment>findAllByAppointmentId(UUID appointmentId);
 }
