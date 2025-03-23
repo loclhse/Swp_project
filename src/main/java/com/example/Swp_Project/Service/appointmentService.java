@@ -99,7 +99,7 @@ private notificationsRepositories notificationsRepositories;
         vaccineStorage.setUserId(appointment.getUserId());
         vaccineStorage.setVaccineDetailsStorage(appointment.getVaccineDetailsList());
         vaccineStorage.setCreatAt(LocalDateTime.now());
-        createNotificationForCancel(appointment);
+        CancelingNotify(appointment);
         return appointment;
     }
 
@@ -122,7 +122,7 @@ private notificationsRepositories notificationsRepositories;
             appointment.setUpdateAt(LocalDateTime.now());
             appointmentRepository.save(appointment);
         }
-        createNotification(finalDoseAppointment);
+        createNotificationforCompleted(finalDoseAppointment);
         for (Appointment appointment : relatedAppointments) {
             createNotificationforCompleted(appointment);
         }
@@ -169,12 +169,12 @@ private notificationsRepositories notificationsRepositories;
                     newVaccineList.add(nextAppointmentVaccine);
                     followingAppointment.setVaccineDetailsList(newVaccineList);
                     Appointment savedAppointment = appointmentRepository.save(followingAppointment);
-                    createNotification(savedAppointment);
+                    FollowingAppointmentNotify(savedAppointment);
               }
             }
         }
 
-    private void createNotification(Appointment appointment) {
+    private void FollowingAppointmentNotify(Appointment appointment) {
         Notifications notification = new Notifications();
         notification.setNotificationId(UUID.randomUUID());
         notification.setTitle("Dear Customer.");
@@ -191,7 +191,7 @@ private notificationsRepositories notificationsRepositories;
         notificationsRepositories.save(notification);
     }
 
-    private void createNotificationForCancel(Appointment appointment) {
+    private void CancelingNotify(Appointment appointment) {
         Notifications notification = new Notifications();
         notification.setNotificationId(UUID.randomUUID());
         notification.setTitle("Dear Customer.");
