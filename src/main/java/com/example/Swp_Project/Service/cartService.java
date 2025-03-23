@@ -239,7 +239,7 @@ public class cartService {
                 vaccineForAppointment.setQuantity(cartItem.getQuantity());
                 vaccineForAppointment.setCurrentDose(1);
                 vaccineDetailsList.add(vaccineForAppointment);
-                vaccineDetailsList.add(vaccine);
+
             }
             appointment.setVaccineDetailsList(vaccineDetailsList);
 
