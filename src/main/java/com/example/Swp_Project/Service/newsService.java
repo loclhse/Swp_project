@@ -1,6 +1,6 @@
 package com.example.Swp_Project.Service;
 
-import com.example.Swp_Project.Dto.newsDto;
+import com.example.Swp_Project.DTO.newsDto;
 import com.example.Swp_Project.Model.News;
 import com.example.Swp_Project.Repositories.newsRepositories;
 import org.springframework.beans.factory.annotation.Autowired;

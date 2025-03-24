@@ -1,16 +1,12 @@
 package com.example.Swp_Project.Service;
 
-import com.example.Swp_Project.Dto.staffDto;
-import com.example.Swp_Project.JwtUtils.JwtUtils;
-import com.example.Swp_Project.Model.Admin;
+import com.example.Swp_Project.DTO.staffDto;
 import com.example.Swp_Project.Model.Staff;
 import com.example.Swp_Project.Repositories.staffRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

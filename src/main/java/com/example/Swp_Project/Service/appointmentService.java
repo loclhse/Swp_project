@@ -1,6 +1,6 @@
 package com.example.Swp_Project.Service;
 
-import com.example.Swp_Project.Dto.appointmentDto;
+import com.example.Swp_Project.DTO.appointmentDto;
 import com.example.Swp_Project.Model.*;
 import com.example.Swp_Project.Repositories.appointmentRepositories;
 import com.example.Swp_Project.Repositories.childrenRepositories;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
-import javax.management.Notification;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -76,7 +76,6 @@ private notificationsRepositories notificationsRepositories;
 
         appointment.setStatus("Verified Coming");
         appointment.setUpdateAt(LocalDateTime.now());
-        createFollowUpAppointments(appointment);
         return appointmentRepository.save(appointment);
 
     }
@@ -99,34 +98,28 @@ private notificationsRepositories notificationsRepositories;
         vaccineStorage.setUserId(appointment.getUserId());
         vaccineStorage.setVaccineDetailsStorage(appointment.getVaccineDetailsList());
         vaccineStorage.setCreatAt(LocalDateTime.now());
-        cancelingNotify(appointment);
         return appointment;
     }
 
-    @Transactional
-    public void markFinalDoseAsSuccessful(UUID appointmentId) {
-        Appointment finalDoseAppointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new NotFoundException("Appointment not found with ID: " + appointmentId));
+        @Transactional
+        public Appointment markAppointmentAsCompleted(UUID appointmentId) {
+            Appointment appointment = appointmentRepository.findByAppointmentId(appointmentId);
+            if (appointment == null) {
+                throw new NotFoundException("Appointment not found with ID: " + appointmentId);
+            }
 
-        if (!"Pending".equals(finalDoseAppointment.getStatus())) {
-            throw new IllegalStateException("Appointment must be in Pending status to mark as successful");
-        }
+            if (!"Verified Coming".equals(appointment.getStatus())) {
+                throw new IllegalStateException("Appointment must be in 'Verified Coming' status to mark as completed");
+            }
 
-        finalDoseAppointment.setStatus("Completed");
-        finalDoseAppointment.setUpdateAt(LocalDateTime.now());
-        appointmentRepository.save(finalDoseAppointment);
-
-        List<Appointment> relatedAppointments = appointmentRepository.findByProcessId(finalDoseAppointment.getAppointmentId());
-        for (Appointment appointment : relatedAppointments) {
             appointment.setStatus("Completed");
+            createFollowUpAppointments(appointment);
             appointment.setUpdateAt(LocalDateTime.now());
-            appointmentRepository.save(appointment);
+            Appointment savedAppointment = appointmentRepository.save(appointment);
+            createFollowUpAppointments(savedAppointment);
+            notifyUserAboutNextAppointment(savedAppointment);
+            return appointmentRepository.save(savedAppointment);
         }
-        createNotificationforCompleted(finalDoseAppointment);
-        for (Appointment appointment : relatedAppointments) {
-            createNotificationforCompleted(appointment);
-        }
-    }
 
     private void createFollowUpAppointments(Appointment originalAppointment) {
         List<VaccineDetails> vaccineDetailsList = originalAppointment.getVaccineDetailsList();
@@ -136,9 +129,10 @@ private notificationsRepositories notificationsRepositories;
                     && vaccine.getCurrentDose() < vaccine.getDoseRequire()) {
 
                 int nextDose = vaccine.getCurrentDose() + 1;
+                UUID seriesId=vaccine.getVaccinationSeriesId();
 
-                if (appointmentRepository.existsByUserIdAndVaccineDetailsListVaccineIdAndVaccineDetailsListCurrentDose(
-                        originalAppointment.getUserId(), vaccine.getVaccineId(), nextDose)) {
+                if (appointmentRepository.existsByUserIdAndVaccineDetailsListVaccineIdAndVaccineDetailsListCurrentDoseAndVaccineDetailsListVaccinationSeriesId(
+                        originalAppointment.getUserId(), vaccine.getVaccineId(), nextDose, seriesId)) {
                     continue;
                 }
                     LocalDate nextAppointmentDate = originalAppointment.getAppointmentDate().plusDays(vaccine.getDateBetweenDoses());
@@ -159,6 +153,7 @@ private notificationsRepositories notificationsRepositories;
                     VaccineDetails nextAppointmentVaccine = new VaccineDetails();
                     nextAppointmentVaccine.setVaccineId(vaccine.getVaccineId());
                     nextAppointmentVaccine.setVaccineDetailsId(vaccine.getVaccineDetailsId());
+                    nextAppointmentVaccine.setVaccinationSeriesId(vaccine.getVaccinationSeriesId());
                     nextAppointmentVaccine.setDoseRequire(vaccine.getDoseRequire());
                     nextAppointmentVaccine.setDoseName(vaccine.getDoseName() + " (Dose " + (vaccine.getCurrentDose() + 1)+ ")");
                     nextAppointmentVaccine.setManufacturer(vaccine.getManufacturer());
@@ -168,41 +163,53 @@ private notificationsRepositories notificationsRepositories;
                     nextAppointmentVaccine.setCurrentDose(vaccine.getCurrentDose() + 1);
                     newVaccineList.add(nextAppointmentVaccine);
                     followingAppointment.setVaccineDetailsList(newVaccineList);
-                    Appointment savedAppointment = appointmentRepository.save(followingAppointment);
-                    followingAppointmentNotify(savedAppointment);
+                    appointmentRepository.save(followingAppointment);
+
               }
             }
         }
 
-    private void followingAppointmentNotify(Appointment appointment) {
+    @Transactional
+    public void notifyUserAboutNextAppointment(Appointment appointment) {
+
+        if (appointment == null || appointment.getAppointmentDate() == null) {
+            throw new IllegalArgumentException("Invalid appointment provided for notification");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate appointmentDate = appointment.getAppointmentDate();
+        long daysUntilAppointment = ChronoUnit.DAYS.between(today, appointmentDate);
+        String title;
+        String message;
+
+        if (daysUntilAppointment <= 1) {
+            title = "Urgent: Appointment Tomorrow";
+            message = "Your vaccination appointment for " + appointment.getChildrenName() +
+                    " is scheduled for tomorrow, " + appointmentDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
+        } else if (daysUntilAppointment <= 7) {
+            title = "Upcoming Appointment";
+            message = "Your vaccination appointment for " + appointment.getChildrenName() +
+                    " is scheduled in " + daysUntilAppointment + " days, on " +
+                    appointmentDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
+        } else {
+            title = "Scheduled Appointment";
+            message = "Your next vaccination appointment for " + appointment.getChildrenName() +
+                    " is scheduled for " + appointmentDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
+        }
+        if (appointment.getVaccineDetailsList() != null && !appointment.getVaccineDetailsList().isEmpty()) {
+            message += ". Vaccines scheduled: ";
+            List<String> vaccineNames = new ArrayList<>();
+            for (VaccineDetails vaccine : appointment.getVaccineDetailsList()) {
+                vaccineNames.add(vaccine.getDoseName());
+            }
+            message += String.join(", ", vaccineNames);
+        }
         Notifications notification = new Notifications();
         notification.setNotificationId(UUID.randomUUID());
-        notification.setTitle("Dear Customer.");
         notification.setUserID(appointment.getUserId());
-        notification.setMessages(String.format(
-                "A new following appointment has been scheduled for %s on %s at %s for %s",
-                appointment.getChildrenName(),
-                appointment.getAppointmentDate().toString(),
-                appointment.getTimeStart().toString(),
-                appointment.getVaccineDetailsList().get(0).getDoseName()
-        ));
+        notification.setTitle(title);
+        notification.setMessages(message);
         notification.setCreatedAt(LocalDateTime.now());
-
-        notificationsRepositories.save(notification);
-    }
-
-    private void cancelingNotify(Appointment appointment) {
-        Notifications notification = new Notifications();
-        notification.setNotificationId(UUID.randomUUID());
-        notification.setTitle("Dear Customer.");
-        notification.setUserID(appointment.getUserId());
-        notification.setMessages(String.format(
-                "The vaccine %s has been stored at %s",
-                appointment.getVaccineDetailsList().get(0).getDoseName(),
-                appointment.getCreateAt().toString()
-        ));
-        notification.setCreatedAt(LocalDateTime.now());
-
         notificationsRepositories.save(notification);
     }
 
@@ -214,19 +221,7 @@ private notificationsRepositories notificationsRepositories;
         appointmentRepository.deleteAll(notifications);
     }
 
-    private void createNotificationforCompleted(Appointment appointment) {
-        Notifications notification = new Notifications();
-        notification.setNotificationId(UUID.randomUUID());
-        notification.setTitle("Dear Customer.");
-        notification.setUserID(appointment.getUserId());
-        notification.setMessages(String.format(
-                "You have now completed all dose of %s",
-                appointment.getVaccineDetailsList().get(0).getDoseName()
-        ));
-        notification.setCreatedAt(LocalDateTime.now());
 
-        notificationsRepositories.save(notification);
-    }
 }
 
 

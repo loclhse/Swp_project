@@ -1,17 +1,13 @@
 package com.example.Swp_Project.Service;
-
-import com.example.Swp_Project.Dto.appointmentDto;
-import com.example.Swp_Project.Dto.cartDisplayDto;
+import com.example.Swp_Project.DTO.appointmentDto;
+import com.example.Swp_Project.DTO.cartDisplayDto;
 import com.example.Swp_Project.Model.Appointment;
 import com.example.Swp_Project.Model.CartItem;
-
 import com.example.Swp_Project.Model.Payment;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Repositories.appointmentRepositories;
 import com.example.Swp_Project.Repositories.paymentsRepositories;
-import com.example.Swp_Project.Repositories.userRepositories;
 import com.example.Swp_Project.Repositories.vaccineDetailsRepositories;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -62,7 +59,6 @@ public class cartService {
         }
 
         CartItem cartItem = new CartItem();
-        cartItem.setUserId(userId);
         cartItem.setVaccineDetailsId(vaccineDetailsId);
         cartItem.setQuantity(quantity);
         tempCart.computeIfAbsent(userId, k -> new ArrayList<>()).add(cartItem);
@@ -70,33 +66,39 @@ public class cartService {
         return "Added to cart successfully";
     }
 
+    public String deleteFromCart(UUID vaccineDetailsId, UUID userId) throws Exception {
+        List<CartItem> userCart = tempCart.get(userId);
+        if (userCart == null || userCart.isEmpty()) {
+            throw new Exception("Cart is empty for user: " + userId);
+        }
 
+        boolean removed = userCart.removeIf(item -> item.getVaccineDetailsId().equals(vaccineDetailsId));
+        if (!removed) {
+            throw new Exception("Item with vaccineDetailsId " + vaccineDetailsId + " not found in cart for user: " + userId);
+        }
 
-    public List<cartDisplayDto> getTempCart(UUID userId) throws Exception {
+        if (userCart.isEmpty()) {
+            tempCart.remove(userId);
+        }
+
+        return "Item removed from cart successfully";
+    }
+
+    public List<cartDisplayDto> getCart(UUID userId) throws Exception {
         List<CartItem> cartItems = tempCart.getOrDefault(userId, Collections.emptyList());
-        if (cartItems.isEmpty()) {
-            throw new Exception("Cart is empty");
-        }
+        List<cartDisplayDto> cartItemResponses = new ArrayList<>();
 
-        List<cartDisplayDto> cartDetails = new ArrayList<>();
-            for (CartItem cartItem : cartItems) {
-            Optional<VaccineDetails> vaccinedetailsOpt = vaccineDetailsRepository.findById(cartItem.getVaccineDetailsId());
-
-            if (vaccinedetailsOpt.isEmpty()) {
-                throw new Exception("Vaccine not found for ID " + cartItem.getVaccineDetailsId());
+        for (CartItem cartItem : cartItems) {
+            Optional<VaccineDetails> vaccineDetailsOpt = vaccineDetailsRepository.findById(cartItem.getVaccineDetailsId());
+            if (vaccineDetailsOpt.isEmpty()) {
+                throw new Exception("Vaccine not found for ID: " + cartItem.getVaccineDetailsId());
             }
-
-            VaccineDetails vaccine = vaccinedetailsOpt.get();
-            cartDetails.add(new cartDisplayDto(
-                    vaccine.getDoseName(),
-                    vaccine.getDoseRequire(),
-                    vaccine.getManufacturer(),
-                    vaccine.getPrice(),
-                    cartItem.getQuantity(),
-                    vaccine.getImageUrl()
-            ));
+            VaccineDetails vaccineDetails = vaccineDetailsOpt.get();
+            cartDisplayDto response = new cartDisplayDto(cartItem, vaccineDetails);
+            cartItemResponses.add(response);
         }
-            return cartDetails;
+
+        return cartItemResponses;
     }
 
 
@@ -155,8 +157,6 @@ public class cartService {
     }
 
     public String processReturn(HttpServletRequest request) throws Exception {
-
-
         Map<String, String> vnp_Params = new HashMap<>();
         Map<String, String[]> parameterMap = request.getParameterMap();
 
@@ -230,6 +230,7 @@ public class cartService {
                 VaccineDetails vaccineForAppointment = new VaccineDetails();
                 vaccineForAppointment.setVaccineId(vaccine.getVaccineId());
                 vaccineForAppointment.setVaccineDetailsId(vaccine.getVaccineDetailsId());
+                vaccineForAppointment.setVaccinationSeriesId(UUID.randomUUID());
                 vaccineForAppointment.setDoseName(vaccine.getDoseName());
                 vaccineForAppointment.setManufacturer(vaccine.getManufacturer());
                 vaccineForAppointment.setDateBetweenDoses(vaccine.getDateBetweenDoses());

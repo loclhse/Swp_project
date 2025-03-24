@@ -1,6 +1,6 @@
 package com.example.Swp_Project.Controller;
 
-import com.example.Swp_Project.Dto.vaccineDetailsDto;
+import com.example.Swp_Project.DTO.vaccineDetailsDto;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Service.vaccineDetailService;
 import org.springframework.beans.factory.annotation.Autowired;

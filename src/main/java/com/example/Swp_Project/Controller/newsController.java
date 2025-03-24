@@ -1,13 +1,12 @@
 package com.example.Swp_Project.Controller;
 
-import com.example.Swp_Project.Dto.newsDto;
+import com.example.Swp_Project.DTO.newsDto;
 import com.example.Swp_Project.Model.News;
 import com.example.Swp_Project.Service.newsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 

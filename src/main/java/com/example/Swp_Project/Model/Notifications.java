@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class Notifications {
     @Id
-    private UUID notificationId; // Unique ID (Primary Key)
+    private UUID notificationId;
     private UUID userID;
     private String title;
     private String messages;

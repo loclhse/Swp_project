@@ -1,28 +1,19 @@
 package com.example.Swp_Project.Service;
 
 
-import com.example.Swp_Project.Dto.userDTO;
+import com.example.Swp_Project.DTO.userDTO;
 import com.example.Swp_Project.JwtUtils.JwtUtils;
 import com.example.Swp_Project.Model.Admin;
 import com.example.Swp_Project.Model.Staff;
 import com.example.Swp_Project.Model.User;
-import com.example.Swp_Project.Model.customUsersDetail;
 import com.example.Swp_Project.Repositories.adminRepositories;
-import com.example.Swp_Project.Repositories.childrenRepositories;
 import com.example.Swp_Project.Repositories.staffRepositories;
 import com.example.Swp_Project.Repositories.userRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;

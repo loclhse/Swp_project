@@ -1,9 +1,8 @@
 package com.example.Swp_Project.Controller;
-import com.example.Swp_Project.Dto.appointmentDto;
+import com.example.Swp_Project.DTO.appointmentDto;
 import com.example.Swp_Project.Model.Appointment;
 import com.example.Swp_Project.Repositories.userRepositories;
 import com.example.Swp_Project.Service.appointmentService;
-import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -114,7 +113,7 @@ public class appointmentController {
 
     @PostMapping("/appointments/{appointmentId}/mark-successful")
     public ResponseEntity<Void> markFinalDoseAsSuccessful(@PathVariable UUID appointmentId) {
-        appointmentService.markFinalDoseAsSuccessful(appointmentId);
+        appointmentService.markAppointmentAsCompleted(appointmentId);
         return ResponseEntity.ok().build();
     }
 

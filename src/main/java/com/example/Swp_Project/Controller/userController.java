@@ -1,9 +1,9 @@
 package com.example.Swp_Project.Controller;
-import com.example.Swp_Project.Dto.userDTO;
+import com.example.Swp_Project.DTO.userDTO;
 import com.example.Swp_Project.JwtUtils.JwtUtils;
 import com.example.Swp_Project.Model.customUsersDetail;
 import com.example.Swp_Project.Model.User;
-import com.example.Swp_Project.Dto.LoginRequest;
+import com.example.Swp_Project.DTO.LoginRequest;
 import com.example.Swp_Project.Service.userDetailsService;
 import com.example.Swp_Project.Service.userService;
 import org.springframework.beans.factory.annotation.Autowired;

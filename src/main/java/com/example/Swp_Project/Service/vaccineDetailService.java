@@ -1,16 +1,14 @@
 package com.example.Swp_Project.Service;
 
-import com.example.Swp_Project.Dto.vaccineDetailsDto;
+import com.example.Swp_Project.DTO.vaccineDetailsDto;
 import com.example.Swp_Project.Model.Vaccin;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Repositories.vaccineDetailsRepositories;
 import com.example.Swp_Project.Repositories.vaccineRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

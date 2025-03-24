@@ -6,19 +6,9 @@ import java.util.UUID;
 
 public class CartItem {
     private UUID vaccineDetailsId;
-    private UUID userId;
     private int quantity;
 
     public CartItem() {
-
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
     }
 
     public UUID getVaccineDetailsId() {
@@ -32,11 +22,9 @@ public class CartItem {
     public int getQuantity() {
         return quantity;
     }
+
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-    @Override
-    public String toString() {
-        return "CartItem{userId=" + userId + ", vaccineDetailsId=" + vaccineDetailsId + ", quantity=" + quantity + "}";
-    }
+
 }

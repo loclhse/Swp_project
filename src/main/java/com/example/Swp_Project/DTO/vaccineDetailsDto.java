@@ -1,4 +1,4 @@
-package com.example.Swp_Project.Dto;
+package com.example.Swp_Project.DTO;
 
 public class vaccineDetailsDto {
     private Integer doseRequire;

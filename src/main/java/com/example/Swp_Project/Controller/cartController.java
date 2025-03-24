@@ -1,7 +1,7 @@
 package com.example.Swp_Project.Controller;
 
-import com.example.Swp_Project.Dto.appointmentDto;
-import com.example.Swp_Project.Dto.cartDisplayDto;
+import com.example.Swp_Project.DTO.appointmentDto;
+import com.example.Swp_Project.DTO.cartDisplayDto;
 import com.example.Swp_Project.Service.cartService;
 import com.example.Swp_Project.Service.vaccineDetailService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -26,6 +25,14 @@ public class cartController {
     private cartService cartService;
     @Autowired
     private vaccineDetailService vaccineDetailService;
+
+    @DeleteMapping("/cart/remove/{userId}/{vaccineDetailsId}")
+    public ResponseEntity<String> deleteFromCart(
+            @PathVariable UUID userId,
+            @PathVariable UUID vaccineDetailsId) throws Exception {
+        String result = cartService.deleteFromCart(vaccineDetailsId, userId);
+        return ResponseEntity.ok(result);
+    }
 
     @PostMapping("/cart/add/{vaccineDetailsId}/{quantity}/{userId}")
     public ResponseEntity<String> addToCart(
@@ -47,7 +54,7 @@ public class cartController {
     @GetMapping("/cart/check/{userId}")
     public ResponseEntity<List<cartDisplayDto>> checkCart(@PathVariable UUID userId) {
         try {
-            List<cartDisplayDto> cartItems = cartService.getTempCart(userId);
+            List<cartDisplayDto> cartItems = cartService.getCart(userId);
             System.out.println("CheckCart - Cart Items: " + cartItems);
             return new ResponseEntity<>(cartItems, HttpStatus.OK);
         } catch (Exception e) {
@@ -60,9 +67,9 @@ public class cartController {
     @PostMapping("/cart/checkout")
     public ResponseEntity<String> checkout(
             @RequestParam UUID userId,
-            @RequestBody appointmentDto appointmentDTO) {
+            @RequestBody appointmentDto appointmentdto) {
         try {
-            String paymentUrl = cartService.initiateCheckout(userId, appointmentDTO);
+            String paymentUrl = cartService.initiateCheckout(userId, appointmentdto);
             System.out.println("Checkout - Payment URL sent to VNPAY: " + paymentUrl);
             return new ResponseEntity<>(paymentUrl, HttpStatus.OK);
         } catch (Exception e) {

@@ -1,5 +1,5 @@
 package com.example.Swp_Project.Controller;
-import com.example.Swp_Project.Dto.childrenDto;
+import com.example.Swp_Project.DTO.childrenDto;
 import com.example.Swp_Project.Model.Children;
 import com.example.Swp_Project.Service.childrenService;
 import org.springframework.beans.factory.annotation.Autowired;

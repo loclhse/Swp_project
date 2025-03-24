@@ -1,20 +1,17 @@
-package com.example.Swp_Project.Dto;
+package com.example.Swp_Project.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public class LoginRequest {
+public class adminDto {
+    private String adminName;
     private String email;
     private String password;
 
+    public String getAdminName() {
+        return adminName;
+    }
 
-
+    public void setAdminName(String adminName) {
+        this.adminName = adminName;
+    }
 
     public String getEmail() {
         return email;
@@ -31,4 +28,5 @@ public class LoginRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

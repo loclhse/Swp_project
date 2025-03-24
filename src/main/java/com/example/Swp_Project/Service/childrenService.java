@@ -1,19 +1,13 @@
 package com.example.Swp_Project.Service;
 
-import com.example.Swp_Project.Dto.childrenDto;
+import com.example.Swp_Project.DTO.childrenDto;
 import com.example.Swp_Project.Model.Children;
-import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Repositories.childrenRepositories;
 import com.example.Swp_Project.Repositories.userRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.webjars.NotFoundException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 

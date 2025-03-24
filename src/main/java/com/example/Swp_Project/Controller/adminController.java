@@ -1,6 +1,6 @@
 package com.example.Swp_Project.Controller;
 
-import com.example.Swp_Project.Dto.adminDto;
+import com.example.Swp_Project.DTO.adminDto;
 import com.example.Swp_Project.Model.Admin;
 import com.example.Swp_Project.Service.adminService;
 import org.springframework.beans.factory.annotation.Autowired;

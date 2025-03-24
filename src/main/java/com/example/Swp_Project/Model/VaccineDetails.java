@@ -17,6 +17,7 @@ public class VaccineDetails {
     @Id
     private UUID vaccineDetailsId;
     private UUID vaccineId;
+    private UUID vaccinationSeriesId;
     private Integer doseRequire;
     private Integer currentDose;
     private String doseName;
@@ -37,6 +38,14 @@ public class VaccineDetails {
 
     public void setCurrentDose(Integer currentDose) {
         this.currentDose = currentDose;
+    }
+
+    public UUID getVaccinationSeriesId() {
+        return vaccinationSeriesId;
+    }
+
+    public void setVaccinationSeriesId(UUID vaccinationSeriesId) {
+        this.vaccinationSeriesId = vaccinationSeriesId;
     }
 
     public LocalDateTime getUpdateAt() {
