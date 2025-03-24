@@ -16,5 +16,6 @@ public interface appointmentRepositories extends MongoRepository<Appointment, UU
             Integer currentDose,
             UUID seriesId
     );
-    List<Appointment> findByProcessId(UUID processId);
+    List<Appointment> findByUserIdAndStatus(UUID userId, String status);
+
 }

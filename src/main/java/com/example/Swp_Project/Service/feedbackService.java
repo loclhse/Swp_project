@@ -1,5 +1,6 @@
 package com.example.Swp_Project.Service;
 
+import com.example.Swp_Project.DTO.feedbackDto;
 import com.example.Swp_Project.Model.Appointment;
 import com.example.Swp_Project.Model.Feedback;
 import com.example.Swp_Project.Model.User;
@@ -11,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,29 +34,32 @@ public class feedbackService {
        return feedbackRepository.findAll();
     }
 
-    public ResponseEntity<String> addFeedback(UUID userId, UUID appointmentId, Feedback feedback) {
+    @Transactional
+    public Feedback createFeedback(UUID userId, UUID appointmentId, feedbackDto feedbackDto) throws Exception {
+
         Optional<User> userOpt = userRepositories.findById(userId);
         if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-        }
-        Optional<Appointment> appointmentOpt = appointmentRepositories.findById(appointmentId);
-        if (appointmentOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
+            throw new Exception("User not found for ID: " + userId);
         }
         User user = userOpt.get();
-           Appointment appointment = appointmentOpt.get();
-           feedback.setFeedbackId(UUID.randomUUID());
-           feedback.setUserId(userId);
-           feedback.setAppointmentsId(appointmentId);
 
-        user.getFeedbacks().add(feedback);
-        appointment.getFeedbacks().add(feedback);
 
-        userRepositories.save(user);
-        appointmentRepositories.save(appointment);
-        feedbackRepository.save(feedback);
+        Optional<Appointment> appointmentOpt = appointmentRepositories.findById(appointmentId);
+        if (appointmentOpt.isEmpty()) {
+            throw new Exception("Appointment not found for ID: " + appointmentId);
+        }
 
-        return ResponseEntity.ok("Feedback submitted successfully.");
+        Feedback feedback = new Feedback();
+        feedback.setFeedbackId(UUID.randomUUID());
+        feedback.setUserId(userId);
+        feedback.setUsername(user.getUsername());
+        feedback.setAppointmentsId(appointmentId);
+        feedback.setRating(feedbackDto.getRating());
+        feedback.setContext(feedbackDto.getContext());
+        feedback.setCreateAt(LocalDateTime.now());
+        feedback.setUpdateAt(LocalDateTime.now());
+
+        return feedbackRepository.save(feedback);
     }
 
     public Feedback getFeedbackById(UUID feedbackId) {
@@ -105,6 +110,7 @@ public class feedbackService {
             userFeedback.setRating(updatedFeedback.getRating());
             appointmentFeedback.setRating(updatedFeedback.getRating());
         }
+        updatedFeedback.setUpdateAt(LocalDateTime.now());
         userRepositories.save(user);
         appointmentRepositories.save(appointment);
         Feedback savedFeedback = feedbackRepository.save(userFeedback);

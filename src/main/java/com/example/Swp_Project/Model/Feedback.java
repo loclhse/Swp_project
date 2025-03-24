@@ -26,7 +26,16 @@ public class Feedback {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateAt;
     private UUID userId;
+    private String username;
     private UUID appointmentsId;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public LocalDateTime getUpdateAt() {
         return updateAt;

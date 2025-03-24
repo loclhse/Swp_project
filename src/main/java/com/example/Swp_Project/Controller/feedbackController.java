@@ -1,6 +1,8 @@
 package com.example.Swp_Project.Controller;
 
+import com.example.Swp_Project.DTO.feedbackDto;
 import com.example.Swp_Project.Model.Feedback;
+import com.example.Swp_Project.Model.Notifications;
 import com.example.Swp_Project.Service.feedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,12 +22,14 @@ public class feedbackController {
     private feedbackService feedbackService;
 
     @PostMapping("/feedback-create/{userId}/{appointmentId}")
-    public ResponseEntity<String> createFeedback(
+    public ResponseEntity<Feedback> createFeedback(
             @PathVariable UUID userId,
             @PathVariable UUID appointmentId,
-            @RequestBody Feedback feedback) {
-        return feedbackService.addFeedback(userId, appointmentId, feedback);
+            @RequestBody feedbackDto feedbackDto) throws Exception {
+        Feedback feedback = feedbackService.createFeedback(userId, appointmentId, feedbackDto);
+        return ResponseEntity.ok(feedback);
     }
+
 
     @GetMapping("/feedback-get/{feedbackId}")
     public ResponseEntity<Feedback> getFeedbackById(@PathVariable UUID feedbackId) {

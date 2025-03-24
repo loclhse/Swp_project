@@ -154,7 +154,7 @@ private notificationsRepositories notificationsRepositories;
                     nextAppointmentVaccine.setVaccineDetailsId(vaccine.getVaccineDetailsId());
                     nextAppointmentVaccine.setVaccinationSeriesId(vaccine.getVaccinationSeriesId());
                     nextAppointmentVaccine.setDoseRequire(vaccine.getDoseRequire());
-                    nextAppointmentVaccine.setDoseName(vaccine.getDoseName() + " (Dose " + (vaccine.getCurrentDose() + 1)+ ")");
+                    nextAppointmentVaccine.setDoseName(vaccine.getDoseName());
                     nextAppointmentVaccine.setManufacturer(vaccine.getManufacturer());
                     nextAppointmentVaccine.setDateBetweenDoses(vaccine.getDateBetweenDoses());
                     nextAppointmentVaccine.setPrice(vaccine.getPrice());
@@ -220,6 +220,9 @@ private notificationsRepositories notificationsRepositories;
         appointmentRepository.deleteAll(notifications);
     }
 
+    public List<Appointment> getCompletedAppointmentsByUserId(UUID userId) {
+        return appointmentRepository.findByUserIdAndStatus(userId,"Completed");
+    }
 
 }
 

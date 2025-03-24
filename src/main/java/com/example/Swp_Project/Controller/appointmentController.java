@@ -117,5 +117,10 @@ public class appointmentController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/appointments/{userId}/completed")
+    public List<Appointment> getCompletedAppointmentsByUserId(@PathVariable UUID userId) {
+        return appointmentService.getCompletedAppointmentsByUserId(userId);
+    }
+
 }
 
