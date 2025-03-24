@@ -113,7 +113,6 @@ private notificationsRepositories notificationsRepositories;
             }
 
             appointment.setStatus("Completed");
-            createFollowUpAppointments(appointment);
             appointment.setUpdateAt(LocalDateTime.now());
             Appointment savedAppointment = appointmentRepository.save(appointment);
             createFollowUpAppointments(savedAppointment);
@@ -192,8 +191,8 @@ private notificationsRepositories notificationsRepositories;
                     " is scheduled in " + daysUntilAppointment + " days, on " +
                     appointmentDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
         } else {
-            title = "Scheduled Appointment";
-            message = "Your next vaccination appointment for " + appointment.getChildrenName() +
+            title = "Dear Customer";
+            message = "You have an appointment for " + appointment.getChildrenName() +
                     " is scheduled for " + appointmentDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
         }
         if (appointment.getVaccineDetailsList() != null && !appointment.getVaccineDetailsList().isEmpty()) {
