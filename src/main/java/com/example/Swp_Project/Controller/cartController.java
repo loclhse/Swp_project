@@ -96,12 +96,12 @@ public class cartController {
             }
 
             String result = cartService.processReturn(request);
-            response.sendRedirect("http://localhost:3000/paymentsuccess?status=success&message=" + URLEncoder.encode(result, StandardCharsets.UTF_8));
+            response.sendRedirect("https://steady-duckanoo-a4608b.netlify.app/paymentsuccess?status=success&message=" + URLEncoder.encode(result, StandardCharsets.UTF_8));
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("HandleReturn - Error: " + e.getMessage());
-            response.sendRedirect("http://localhost:3000/paymentfailure?status=failed&message=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
+            response.sendRedirect("https://steady-duckanoo-a4608b.netlify.app/paymentfailure?status=failed&message=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
         }
     }
 
