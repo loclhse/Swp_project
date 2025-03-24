@@ -57,8 +57,6 @@ public class feedbackService {
         feedback.setRating(feedbackDto.getRating());
         feedback.setContext(feedbackDto.getContext());
         feedback.setCreateAt(LocalDateTime.now());
-        feedback.setUpdateAt(LocalDateTime.now());
-
         return feedbackRepository.save(feedback);
     }
 
