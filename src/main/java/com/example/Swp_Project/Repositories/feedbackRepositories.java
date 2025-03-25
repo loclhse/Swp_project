@@ -12,5 +12,7 @@ import java.util.UUID;
 public interface feedbackRepositories extends MongoRepository<Feedback,UUID> {
 
 List<Feedback>findAllByOrderByCreateAtDesc();
+List<Feedback>findByAppointmentsId(UUID appointmentsId);
+List<Feedback>findByUserId(UUID userId);
 
 }

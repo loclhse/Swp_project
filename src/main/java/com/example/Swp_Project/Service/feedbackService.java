@@ -35,7 +35,7 @@ public class feedbackService {
     }
 
     @Transactional
-    public Feedback createFeedback(UUID userId, UUID appointmentId, feedbackDto feedbackDto) throws Exception {
+    public Feedback createFeedback(UUID userId, UUID appointmentId, feedbackDto feedbackdto) throws Exception {
 
         Optional<User> userOpt = userRepositories.findById(userId);
         if (userOpt.isEmpty()) {
@@ -54,33 +54,29 @@ public class feedbackService {
         feedback.setUserId(userId);
         feedback.setUsername(user.getUsername());
         feedback.setAppointmentsId(appointmentId);
-        feedback.setRating(feedbackDto.getRating());
-        feedback.setContext(feedbackDto.getContext());
+        feedback.setRating(feedbackdto.getRating());
+        feedback.setContext(feedbackdto.getContext());
         feedback.setCreateAt(LocalDateTime.now());
         return feedbackRepository.save(feedback);
     }
 
     public Feedback getFeedbackById(UUID feedbackId) {
         return feedbackRepository.findById(feedbackId)
-                .orElseThrow(() -> new RuntimeException("Feedback not found with ID: " + feedbackId + ", fam!"));
+                .orElseThrow(() -> new RuntimeException("Feedback not found with ID: " + feedbackId));
     }
 
     public List<Feedback> getUserFeedbacks(UUID userId) {
-        User user = userRepositories.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId + ", fam!"));
-        List<Feedback> feedbacks = user.getFeedbacks();
+        List<Feedback> feedbacks = feedbackRepository.findByUserId(userId);
         if (feedbacks == null || feedbacks.isEmpty()) {
-            throw new RuntimeException("No feedback found for user with ID: " + userId + ", dawg!");
+            throw new RuntimeException("No feedback found for user with ID: " + userId);
         }
         return feedbacks;
     }
 
     public List<Feedback> getAppointmentFeedbacks(UUID appointmentId) {
-        Appointment appointment = appointmentRepositories.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found with ID: " + appointmentId + ", fam!"));
-        List<Feedback> feedbacks = appointment.getFeedbacks();
+        List<Feedback> feedbacks = feedbackRepository.findByAppointmentsId(appointmentId);
         if (feedbacks == null || feedbacks.isEmpty()) {
-            throw new RuntimeException("No feedback found for appointment with ID: " + appointmentId + ", dawg!");
+            throw new RuntimeException("No feedback found for appointment with ID: " + appointmentId);
         }
         return feedbacks;
     }

@@ -25,13 +25,13 @@ public class feedbackController {
     public ResponseEntity<Feedback> createFeedback(
             @PathVariable UUID userId,
             @PathVariable UUID appointmentId,
-            @RequestBody feedbackDto feedbackDto) throws Exception {
-        Feedback feedback = feedbackService.createFeedback(userId, appointmentId, feedbackDto);
+            @RequestBody feedbackDto feedbackdto) throws Exception {
+        Feedback feedback = feedbackService.createFeedback(userId, appointmentId, feedbackdto);
         return ResponseEntity.ok(feedback);
     }
 
 
-    @GetMapping("/feedback-get/{feedbackId}")
+    @GetMapping("/feedback-getById/{feedbackId}")
     public ResponseEntity<Feedback> getFeedbackById(@PathVariable UUID feedbackId) {
         try {
             Feedback feedback = feedbackService.getFeedbackById(feedbackId);
@@ -41,7 +41,7 @@ public class feedbackController {
         }
     }
 
-    @GetMapping("/feedback-get/{userId}")
+    @GetMapping("/feedbacks/{userId}/user")
     public ResponseEntity<List<Feedback>> getUserFeedbacks(@PathVariable UUID userId) {
         try {
             List<Feedback> feedbacks = feedbackService.getUserFeedbacks(userId);
@@ -51,7 +51,7 @@ public class feedbackController {
         }
     }
 
-    @GetMapping("/feedback-get/{appointmentId}")
+    @GetMapping("/feedbacks-getByAppointmentId/{appointmentId}")
     public ResponseEntity<List<Feedback>> getAppointmentFeedbacks(@PathVariable UUID appointmentId) {
         try {
             List<Feedback> feedbacks = feedbackService.getAppointmentFeedbacks(appointmentId);
