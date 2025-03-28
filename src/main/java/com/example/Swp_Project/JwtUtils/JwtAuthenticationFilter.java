@@ -1,8 +1,8 @@
 
 package com.example.Swp_Project.JwtUtils;
 
-import com.example.Swp_Project.Model.customUsersDetail;
-import com.example.Swp_Project.Service.userDetailsService;
+import com.example.Swp_Project.Model.CustomUsersDetail;
+import com.example.Swp_Project.Service.UserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.management.Query;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -25,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtUtils jwtUtil;
 
     @Autowired
-    private userDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -47,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                   UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 UsernamePasswordAuthenticationToken authentication=new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                customUsersDetail userDetailsWithInfo = new customUsersDetail(userID,username,email,role);
+                CustomUsersDetail userDetailsWithInfo = new CustomUsersDetail(userID,username,email,role);
                 authentication.setDetails(userDetailsWithInfo);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
