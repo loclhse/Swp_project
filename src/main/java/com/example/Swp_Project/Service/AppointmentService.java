@@ -73,9 +73,6 @@ public class AppointmentService {
         if (appointment==null){
                 throw new NotFoundException("Appointment not found with ID: " + appointmentId);
         }
-        if (!"Pending".equals(appointment.getStatus())) {
-            throw new IllegalStateException("Appointment must be in Pending status to verify");
-        }
 
         appointment.setStatus("Verified Coming");
         appointment.setUpdateAt(LocalDateTime.now());

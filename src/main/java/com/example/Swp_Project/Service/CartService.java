@@ -203,7 +203,7 @@ public class CartService {
         appointment.setDateOfBirth(appointmentDTO.getDateOfBirth());
         appointment.setAppointmentDate(appointmentDTO.getAppointmentDate());
         appointment.setTimeStart(appointmentDTO.getTimeStart());
-        appointment.setStatus("Pending");
+        appointment.setStatus("Not Paid");
         appointment.setCreateAt(LocalDateTime.now());
 
         List<VaccineDetails> vaccineDetailsList = new ArrayList<>();
