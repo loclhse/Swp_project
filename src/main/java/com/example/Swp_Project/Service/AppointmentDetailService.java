@@ -197,31 +197,32 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
     }
 
     @Transactional
-       public AppointmentDetail updateStatusToPaid(UUID appointmentId){
-    AppointmentDetail appointmentDetail=appointmentDetailsRepositories.findByAppointmentDetailId(appointmentId);
+       public AppointmentDetail updateStatusToPaid(UUID appointmentDetails){
+   Optional<AppointmentDetail> appointmentDetail=appointmentDetailsRepositories.findByAppointmentDetailId(appointmentDetails);
            if(appointmentDetail==null){
-               logger.warn("there is no appointment found with Id: " + appointmentId);
+               logger.warn("there is no appointment found with Id: " + appointmentDetails);
           }
-           Payment payment=paymentsRepositories.findByPaymentId(appointmentDetail.getPaymentId());
+           AppointmentDetail appdetails=appointmentDetail.get();
+           Payment payment=paymentsRepositories.findByPaymentId(appdetails.getPaymentId());
            if (payment==null) {
-               logger.error("Payment not found for ID: {}", appointmentDetail.getPaymentId());
-               throw new NotFoundException("Payment not found for ID: " + appointmentDetail.getPaymentId());
+               logger.error("Payment not found for ID: {}", appdetails.getPaymentId());
+               throw new NotFoundException("Payment not found for ID: " + appdetails.getPaymentId());
            }
-           Optional<Appointment>appointment=appointmentRepositories.findById(appointmentId);
+           Optional<Appointment>appointment=appointmentRepositories.findById(appdetails.getAppointmentId());
            if(appointment.isEmpty()){
-               throw new NotFoundException("there is no appointment found with ID: "+ appointmentId);
+               throw new NotFoundException("there is no appointment found with ID");
            }
            Appointment appointmentt=appointment.get();
            appointmentt.setStatus("Pending");
            appointmentRepositories.save(appointmentt);
 
-           appointmentDetail.setPaymentStatus("Paid");
-           appointmentDetailsRepositories.save(appointmentDetail);
+           appdetails.setPaymentStatus("Paid");
+           appointmentDetailsRepositories.save(appdetails);
 
            payment.setStatus("Success");
            paymentsRepositories.save(payment);
 
-    return appointmentDetail;
+    return appdetails;
 
     }
 

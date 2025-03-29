@@ -17,6 +17,7 @@ import java.util.UUID;
 public class NewsService {
     @Autowired
     private NewsRepositories newsrepo;
+
     public News createNews(NewsDTO news) {
         News nw=new News();
         nw.setNewsId(UUID.randomUUID());
@@ -30,6 +31,7 @@ public class NewsService {
     }
 
     public List<News> getAllNews() {
+
         return newsrepo.findAll();
     }
 

@@ -30,7 +30,8 @@ public class SecurityConfig {
                                 "/api/vaccinedetails-all",
                                 "/api/vaccines/{vaccineId}/details",
                                 "/api/cart/return",
-                                "/api/news-get/{id}").permitAll()
+                                "/api/news-get/{id}",
+                                "/api/news-getall").permitAll()
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

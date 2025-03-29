@@ -28,7 +28,7 @@ public class NewsController {
         return newsservice.getAllNews();
     }
 
-    @PutMapping("/news/{id}")
+    @PutMapping("/news-update/{id}")
     public ResponseEntity<?> updateNews(@PathVariable UUID id, @RequestBody NewsDTO news) {
         return newsservice.updateNews(id, news);
     }
@@ -39,7 +39,7 @@ public class NewsController {
         return ResponseEntity.ok(news.get());
     }
 
-    @DeleteMapping("/news/{id}")
+    @DeleteMapping("/news-delete/{id}")
     public ResponseEntity<?> deleteNews(@PathVariable UUID id) {
         return newsservice.deleteNews(id);
     }
