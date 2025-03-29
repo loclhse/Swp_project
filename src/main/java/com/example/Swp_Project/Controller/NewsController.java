@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequestMapping("/api")
@@ -30,6 +31,12 @@ public class NewsController {
     @PutMapping("/news/{id}")
     public ResponseEntity<?> updateNews(@PathVariable UUID id, @RequestBody NewsDTO news) {
         return newsservice.updateNews(id, news);
+    }
+
+    @GetMapping("/news-get/{id}")
+    public ResponseEntity<News> getNewsById(@PathVariable UUID id) {
+        Optional<News> news = newsservice.findById(id);
+        return ResponseEntity.ok(news.get());
     }
 
     @DeleteMapping("/news/{id}")
