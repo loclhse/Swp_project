@@ -30,7 +30,7 @@ public class SecurityConfig {
                                 "/api/vaccinedetails-all",
                                 "/api/vaccines/{vaccineId}/details",
                                 "/api/cart/return",
-                                "/api/news-get/{id}",
+                                "/api/news-getById/{id}",
                                 "/api/news-getall").permitAll()
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
                 )
