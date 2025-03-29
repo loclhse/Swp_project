@@ -241,7 +241,7 @@ public class CartService {
 
         appointmentRepositories.save(appointment);
 
-        CashPayment payment = new CashPayment();
+        Payment payment = new Payment();
         payment.setPaymentId(UUID.randomUUID());
         payment.setUserId(userId);
         payment.setAppointmentId(appointment.getAppointmentId());

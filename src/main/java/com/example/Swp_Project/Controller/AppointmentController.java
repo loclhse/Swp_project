@@ -8,20 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.webjars.NotFoundException;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
 public class AppointmentController {
-
     @Autowired
     private AppointmentService appointmentService;
-    @Autowired
-    private UserRepositories userRepositories;
+
 
     @GetMapping("/appointments-all")
     public List<Appointment> getAllAppointments() {
@@ -59,46 +54,7 @@ public class AppointmentController {
         }
     }
 
-    @PutMapping("/appointments/{appointmentId}/verify")
-    public ResponseEntity<Appointment> updateAppointmentStatusToVerified(
-            @PathVariable UUID appointmentId) {
-        try {
-            Appointment verifiedAppointment = appointmentService.updateAppointmentStatusToVerified(appointmentId);
-            return ResponseEntity.ok(verifiedAppointment);
-        } catch (NotFoundException e) {
-            System.out.println("Not Found: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (IllegalStateException e) {
-            System.out.println("Conflict: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PutMapping("/appointments/{appointmentId}/cancel")
-    public ResponseEntity<Map<String, Object>> cancelAppointment(@PathVariable UUID appointmentId) {
-        try {
-            Appointment newAppointment = appointmentService.cancelAppointment(appointmentId);
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Appointment canceled successfully. A Vaccine now being stored in Your Vaccine.");
-            response.put("appointment canceled: ", newAppointment);
-
-            return ResponseEntity.ok(response);
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Something went wrong"));
-        }
-    }
-
-    @DeleteMapping("/appointments/user/{userId}")
+    @DeleteMapping("/appointments/{userId}/user")
     public ResponseEntity<String> deleteAppointmentsByUserId(@PathVariable UUID userId) {
         try {
             appointmentService.deleteAppointmentByUserId(userId);
@@ -108,23 +64,6 @@ public class AppointmentController {
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while deleting appointments.");
-        }
-    }
-
-    @PutMapping("/appointments/{appointmentId}/mark-successful")
-    public ResponseEntity<Appointment> markFinalDoseAsSuccessful(@PathVariable UUID appointmentId) {
-        try {
-            Appointment completedAppointment = appointmentService.markAppointmentAsCompleted(appointmentId);
-            return ResponseEntity.ok(completedAppointment);
-        } catch (NotFoundException e) {
-            System.out.println("Not Found: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (IllegalStateException e) {
-            System.out.println("Conflict: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
