@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -206,6 +207,13 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
                logger.error("Payment not found for ID: {}", appointmentDetail.getPaymentId());
                throw new NotFoundException("Payment not found for ID: " + appointmentDetail.getPaymentId());
            }
+           Optional<Appointment>appointment=appointmentRepositories.findById(appointmentId);
+           if(appointment.isEmpty()){
+               throw new NotFoundException("there is no appointment found with ID: "+ appointmentId);
+           }
+           Appointment appointmentt=appointment.get();
+           appointmentt.setStatus("Pending");
+           appointmentRepositories.save(appointmentt);
 
            appointmentDetail.setPaymentStatus("Paid");
            appointmentDetailsRepositories.save(appointmentDetail);
