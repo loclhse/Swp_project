@@ -377,7 +377,7 @@ public class CartService {
             appointmentDetail.setAppointmentId(appointment.getAppointmentId());
             appointmentDetail.setUserId(userId);
             appointmentDetail.setPaymentMethod("VNPay");
-            appointmentDetail.setPaymentStatus("Completed");
+            appointmentDetail.setPaymentStatus("Paid");
             appointmentDetail.setCreateAt(LocalDateTime.now());
             appointmentDetailsRepositories.save(appointmentDetail);
 
@@ -396,7 +396,7 @@ public class CartService {
                 LocalDateTime payDate = LocalDateTime.parse(payDateStr, formatter);
                 payment.setPaymentDate(payDate);
             }
-            payment.setStatus("SUCCESS");
+            payment.setStatus("Success");
             payment.setCreatedAt(LocalDateTime.now());
             paymentsRepositories.save(payment);
 
