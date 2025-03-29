@@ -33,7 +33,7 @@ public class NewsController {
         return newsservice.updateNews(id, news);
     }
 
-    @GetMapping("/news-get/{id}")
+    @GetMapping("/news-getById/{id}")
     public ResponseEntity<News> getNewsById(@PathVariable UUID id) {
         Optional<News> news = newsservice.findById(id);
         return ResponseEntity.ok(news.get());
