@@ -14,6 +14,7 @@ import java.util.UUID;
 public class News {
     @Id
     private  UUID newsId;
+    private String img;
     private String title;
     private String description;
     private String source;
@@ -32,8 +33,15 @@ public class News {
             this.createdAt = createdAt;
         }
 
+    public String getImg() {
+        return img;
+    }
 
-        public String getTitle() {
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public String getTitle() {
             return title;
         }
 

@@ -5,6 +5,15 @@ public class NewsDTO {
     private String description;
     private String source;
     private String category;
+    private String img;
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
 
     public String getTitle() {
         return title;

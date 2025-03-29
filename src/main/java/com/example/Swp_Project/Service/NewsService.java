@@ -23,6 +23,7 @@ public class NewsService {
         nw.setCategory(news.getCategory());
         nw.setSource(news.getSource());
         nw.setDescription(news.getDescription());
+        nw.setImg(news.getImg());
         nw.setCreatedAt(LocalDateTime.now());
         return newsrepo.save(nw);
     }
@@ -43,6 +44,7 @@ public class NewsService {
         existingNews.setDescription(updatedNews.getDescription());
         existingNews.setSource(updatedNews.getSource());
         existingNews.setCategory(updatedNews.getCategory());
+        existingNews.setImg(updatedNews.getImg());
         newsrepo.save(existingNews);
         return ResponseEntity.ok(existingNews);
     }
