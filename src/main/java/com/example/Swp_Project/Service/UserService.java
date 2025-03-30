@@ -190,4 +190,21 @@ public class UserService {
         return updatedUser;
     }
 
+    public User saveOrUpdateGoogleUser(String email, String name) {
+        Optional<User> userOpt = usrepo.findByEmail(email);
+        User user;
+        if (userOpt.isPresent()) {
+            user = userOpt.get();
+            user.setUsername(name);
+        } else {
+            user = new User();
+            user.setUserID(UUID.randomUUID());
+            user.setEmail(email);
+            user.setUsername(name);
+            user.setRole("User");
+            user.setStatus("Active");
+        }
+        return usrepo.save(user);
+    }
+
 }

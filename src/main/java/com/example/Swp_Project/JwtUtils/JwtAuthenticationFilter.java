@@ -83,7 +83,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.startsWith("/vaccines/{vaccineId}/details")
                 || path.startsWith("/api/news/getById")
                 || path.equals("/api/cart/return") || (path.startsWith("/api/cart/return"))
-                || path.startsWith("/api/news-getall");
+                || path.startsWith("/api/news-getall")
+                ||path.startsWith("/api/auth/google-signIn-success");
     }
 }
 

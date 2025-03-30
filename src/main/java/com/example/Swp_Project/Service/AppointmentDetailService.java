@@ -196,7 +196,7 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
 
     }
 
-    @Transactional
+       @Transactional
        public AppointmentDetail updateStatusToPaid(UUID appointmentDetails){
    Optional<AppointmentDetail> appointmentDetail=appointmentDetailsRepositories.findByAppointmentDetailId(appointmentDetails);
            if(appointmentDetail==null){
@@ -208,6 +208,15 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
                logger.error("Payment not found for ID: {}", appdetails.getPaymentId());
                throw new NotFoundException("Payment not found for ID: " + appdetails.getPaymentId());
            }
+           CashPayment cashPayment=new CashPayment();
+           cashPayment.setPaymentId(payment.getPaymentId());
+           cashPayment.setUserId(payment.getUserId());
+           cashPayment.setStatus("Success");
+           cashPayment.setAppointmentId(payment.getAppointmentId());
+           cashPayment.setAmount(payment.getAmount());
+           cashPayment.setPaydate(LocalDateTime.now());
+           cashPayment.setCreatedAt(LocalDateTime.now());
+           paymentsRepositories.save(cashPayment);
            Optional<Appointment>appointment=appointmentRepositories.findById(appdetails.getAppointmentId());
            if(appointment.isEmpty()){
                throw new NotFoundException("there is no appointment found with ID");
@@ -219,8 +228,7 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
            appdetails.setPaymentStatus("Paid");
            appointmentDetailsRepositories.save(appdetails);
 
-           payment.setStatus("Success");
-           paymentsRepositories.save(payment);
+
 
     return appdetails;
 

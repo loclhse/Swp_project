@@ -31,10 +31,14 @@ public class SecurityConfig {
                                 "/api/vaccines/{vaccineId}/details",
                                 "/api/cart/return",
                                 "/api/news-getall",
-                                "/api/news/getById").permitAll()
+                                "/api/news/getById",
+                                "/api/auth/google-signIn-success").permitAll()
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
+                ).oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("/api/auth/google-signIn-success", true)
+                        .failureUrl("http://localhost:3000/auth/error")
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
