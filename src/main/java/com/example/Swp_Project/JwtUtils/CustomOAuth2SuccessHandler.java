@@ -33,6 +33,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         response.addCookie(authCookie);
 
         // Redirect to the frontend
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("http://localhost:3000//auth/google-callback");
     }
 }
