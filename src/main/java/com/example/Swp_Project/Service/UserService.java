@@ -260,7 +260,7 @@ public class UserService {
         }
 
         User user = userOptional.get();
-        user.setPassword(newPassword.getNewPassword());
+        user.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
         user.setOtp(null);
         user.setOtpExpiration(0);
         usrepo.save(user);
