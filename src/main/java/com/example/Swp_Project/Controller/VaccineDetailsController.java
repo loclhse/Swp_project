@@ -79,8 +79,8 @@ public class VaccineDetailsController {
         }
     }
 
-    @GetMapping("/vaccinedetails-get/{vaccineDetailsId}")
-    public ResponseEntity<VaccineDetails> getVaccineDetailById(@PathVariable UUID vaccineDetailsId) {
+    @GetMapping("/vaccinedetails-getById")
+    public ResponseEntity<VaccineDetails> getVaccineDetailById(@RequestParam UUID vaccineDetailsId) {
         return vaccineDetailService.findVaccinesDetailById(vaccineDetailsId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());

@@ -35,7 +35,10 @@ public class SecurityConfig {
                                 "/api/news/getById",
                                 "/api/auth/**",
                                 "/api/home",
-                                "/favicon.ico").permitAll()
+                                "/favicon.ico",
+                                "/api/auth/forgot-password",
+                                "/api/auth/verify-otp",
+                                "/api/auth/reset-password").permitAll()
 
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
 
