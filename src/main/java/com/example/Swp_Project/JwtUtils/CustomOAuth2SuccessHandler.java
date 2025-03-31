@@ -2,6 +2,7 @@ package com.example.Swp_Project.JwtUtils;
 
 import com.example.Swp_Project.DTO.AuthResponseDTO;
 import com.example.Swp_Project.Service.GoogleUserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,18 +22,19 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        // Fetch the AuthResponseDTO
+
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         AuthResponseDTO authResponse = googleUserService.processGoogleUser(oauthToken);
 
-        // Store the AuthResponseDTO in an HTTP-only cookie (or session attribute)
-        Cookie authCookie = new Cookie("authResponse", authResponse.toString());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Cookie authCookie = new Cookie("authResponse", objectMapper.writeValueAsString(authResponse));
         authCookie.setHttpOnly(true);
         authCookie.setPath("/");
         authCookie.setSecure(request.getScheme().equals("https")); // Secure in production (HTTPS)
         response.addCookie(authCookie);
 
-        // Redirect to the frontend
+
         response.sendRedirect("http://localhost:3000/auth/google-callback");
     }
 }

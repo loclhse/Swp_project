@@ -27,7 +27,7 @@ public class JwtUtils {
     }
 
     public String generateRefreshToken() {
-        byte[] randomBytes = new byte[32]; // 32 bytes = 256 bits
+        byte[] randomBytes = new byte[32];
         secureRandom.nextBytes(randomBytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes); // Base64 URL-encoded, ~43 characters
     }
