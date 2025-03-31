@@ -1,5 +1,6 @@
 package com.example.Swp_Project.JwtUtils;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,7 +15,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 public class SecurityConfig {
-
+    @Autowired
+    private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         http
@@ -30,6 +32,7 @@ public class SecurityConfig {
                                  "/api/vaccines-all",
                                 "/api/vaccinedetails-all",
                                 "/api/vaccines/{vaccineId}/details",
+                                "api/vaccinedetails-getById",
                                 "/api/cart/return",
                                 "/api/news-getall",
                                 "/api/news/getById",
@@ -44,7 +47,7 @@ public class SecurityConfig {
 
                        ).oauth2Login(oauth2 -> oauth2
                         .loginPage("/api/auth/login")
-                        .defaultSuccessUrl("/api/home", true) // Redirect to /home after successful login
+                        .successHandler(customOAuth2SuccessHandler)
                       )
                         .logout(logout -> logout.logoutUrl("/logout")
                         .logoutSuccessUrl("/auth/login?logout=true")

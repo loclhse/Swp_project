@@ -89,7 +89,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 ||path.startsWith("/favicon.ico")
                 ||path.startsWith("/api/auth/forgot-password")
                 ||path.startsWith("/api/auth/verify-otp")
-                ||path.startsWith("/api/auth/reset-password");
+                ||path.startsWith("/api/auth/reset-password")
+                ||path.startsWith("api/vaccinedetails-getById");
 
     }
 }
