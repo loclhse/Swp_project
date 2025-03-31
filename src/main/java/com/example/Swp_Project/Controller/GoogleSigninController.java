@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 
 @RestController
@@ -35,22 +36,37 @@ public class GoogleSigninController {
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/api/home")
-
     public ResponseEntity<?> home() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication instanceof OAuth2AuthenticationToken)) {
-            System.out.println("Authentication is null or not an OAuth2AuthenticationToken in /api/home; redirecting to /api/auth/login");
-            return ResponseEntity.status(401).body("User not authenticated");
-        }
-
-        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         try {
-            AuthResponseDTO authResponse = googleUserService.processGoogleUser(oauthToken);
-            return ResponseEntity.ok(authResponse);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            System.out.println("AUTH TYPE: " + (authentication != null ? authentication.getClass().getName() : "null"));
+            System.out.println("AUTH DETAILS: " + (authentication != null ? authentication.getDetails() : "null"));
+
+            if (authentication == null || !(authentication instanceof OAuth2AuthenticationToken)) {
+                System.out.println("Authentication is invalid in /api/home");
+                return ResponseEntity.status(401).body("User not authenticated");
+            }
+
+            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+            System.out.println("Processing OAuth token for: " + oauthToken.getPrincipal().getAttribute("email"));
+
+            try {
+                AuthResponseDTO authResponse = googleUserService.processGoogleUser(oauthToken);
+                System.out.println("Auth response created successfully for: " + authResponse.getEmail());
+                return ResponseEntity.ok(authResponse);
+            } catch (Exception e) {
+                System.err.println("Error in processGoogleUser: " + e.getMessage());
+                e.printStackTrace();
+                return ResponseEntity.status(500).body("Error processing Google Sign-In: " + e.getMessage() + "\n\n" + Arrays.toString(e.getStackTrace()));
+            }
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error processing Google Sign-In: " + e.getMessage());
+            System.err.println("Unexpected error in /api/home: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected error: " + e.getMessage() + "\n\n" + Arrays.toString(e.getStackTrace()));
         }
     }
+
 
 
     @GetMapping("/api/auth/login")
