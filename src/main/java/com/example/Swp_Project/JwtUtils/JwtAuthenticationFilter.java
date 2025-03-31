@@ -84,7 +84,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.startsWith("/api/news/getById")
                 || path.equals("/api/cart/return") || (path.startsWith("/api/cart/return"))
                 || path.startsWith("/api/news-getall")
-                ||path.startsWith("/api/auth/google-signIn-success");
+                ||path.startsWith("/api/auth/login")
+                ||path.startsWith("/api/home")
+                ||path.startsWith("/favicon.ico");
     }
 }
 

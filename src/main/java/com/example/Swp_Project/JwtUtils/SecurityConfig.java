@@ -9,6 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -32,14 +33,28 @@ public class SecurityConfig {
                                 "/api/cart/return",
                                 "/api/news-getall",
                                 "/api/news/getById",
-                                "/api/auth/google-signIn-success").permitAll()
+                                "/api/auth/**",
+                                "/api/home",
+                                "/favicon.ico").permitAll()
+
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
-                ).oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/api/auth/google-signIn-success", true)
-                        .failureUrl("http://localhost:3000/auth/error")
+
+                       ).oauth2Login(oauth2 -> oauth2
+                        .loginPage("/api/auth/login")
+                        .defaultSuccessUrl("/api/home", true) // Redirect to /home after successful login
+                      )
+                        .logout(logout -> logout.logoutUrl("/logout")
+                        .logoutSuccessUrl("/auth/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                 )
-                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionManagement(session ->
+                           session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+
+
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

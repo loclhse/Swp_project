@@ -3,12 +3,15 @@ package com.example.Swp_Project.JwtUtils;
 import io.jsonwebtoken.*;
 import org.springframework.stereotype.Component;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 @Component
 public class JwtUtils {
 
     private String secretKey = "6jSBqNjDF+HlVUMA5nOguNrWRqckFYfAPPgt3CpDOCo=";
+    private final SecureRandom secureRandom=new SecureRandom();
 
     public String generateToken(String username, String email, UUID userID,String role) {
         Claims claims = Jwts.claims().setSubject(username);
@@ -21,6 +24,12 @@ public class JwtUtils {
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // Set expiry time (1 day)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    public String generateRefreshToken() {
+        byte[] randomBytes = new byte[32]; // 32 bytes = 256 bits
+        secureRandom.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes); // Base64 URL-encoded, ~43 characters
     }
 
 

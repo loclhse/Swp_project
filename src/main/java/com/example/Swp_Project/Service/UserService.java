@@ -1,6 +1,7 @@
 package com.example.Swp_Project.Service;
 
 
+import com.example.Swp_Project.DTO.RequestResetPasswordDTO;
 import com.example.Swp_Project.DTO.UserDTO;
 import com.example.Swp_Project.JwtUtils.JwtUtils;
 import com.example.Swp_Project.Model.Admin;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -31,6 +33,8 @@ public class UserService {
     private AdminRepositories adminRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private OtpService otpService;
 
     public User register(UserDTO user) {
         if (user.getUsername() == null || user.getEmail() == null || user.getPassword() == null) {
@@ -205,6 +209,63 @@ public class UserService {
             user.setStatus("Active");
         }
         return usrepo.save(user);
+    }
+
+    public String initiateForgotPassword(String email) {
+        Optional<User> userOptional = usrepo.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
+            return "User not found with the provided email.";
+        }
+
+        User user = userOptional.get();
+        String otp = otpService.generateOtp();
+        user.setOtp(otp);
+        user.setOtpExpiration(Instant.now().plusSeconds(600).toEpochMilli());
+        usrepo.save(user);
+
+        // Send OTP via email
+        otpService.sendOtpEmail(email, otp);
+
+        return "OTP sent to your email.";
+    }
+
+    public String verifyOtp(String email, String otp) {
+        Optional<User> userOptional = usrepo.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
+            return "User not found.";
+        }
+
+        User user = userOptional.get();
+        if (user.getOtp() == null || !user.getOtp().equals(otp)) {
+            return "Invalid OTP.";
+        }
+
+        if (Instant.now().toEpochMilli() > user.getOtpExpiration()) {
+            return "OTP has expired.";
+        }
+
+        return "OTP verified successfully.";
+    }
+
+    public String resetPassword(String email, RequestResetPasswordDTO newPassword) {
+        Optional<User> userOptional = usrepo.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
+            return "User not found.";
+        }
+        if(!newPassword.getNewPassword().equals(newPassword.getConfirmNewpassword())){
+            return "not match, pls do again";
+        }
+
+        User user = userOptional.get();
+        user.setPassword(newPassword.getNewPassword());
+        user.setOtp(null);
+        user.setOtpExpiration(0);
+        usrepo.save(user);
+
+        return "Password reset successfully.";
     }
 
 }
