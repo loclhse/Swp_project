@@ -36,13 +36,10 @@ public class SecurityConfig {
                                 "/api/cart/return",
                                 "/api/news-getall",
                                 "/api/news/getById",
-                                "/api/auth/**",
-                                "/api/home",
-                                "/favicon.ico",
                                 "/api/auth/forgot-password",
                                 "/api/auth/verify-otp",
-                                "/api/auth/reset-password",
-                        " /api/auth/user-info").permitAll()
+                                "/api/auth/reset-password"
+                                ).permitAll()
 
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
 
