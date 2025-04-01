@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -41,28 +42,32 @@ public class SecurityConfig {
                                 "/favicon.ico",
                                 "/api/auth/forgot-password",
                                 "/api/auth/verify-otp",
-                                "/api/auth/reset-password").permitAll()
+                                "/api/auth/reset-password",
+                        " /api/auth/user-info").permitAll()
 
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
 
                        ).oauth2Login(oauth2 -> oauth2
-                        .loginPage("/api/auth/login")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(this.oidcUserService())
+                        )
                         .successHandler(customOAuth2SuccessHandler)
-                      )
-                        .logout(logout -> logout.logoutUrl("/logout")
-                        .logoutSuccessUrl("/auth/login?logout=true")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
                 )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/")
+                        .permitAll()
+                )
+
                         .sessionManagement(session ->
-                           session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                           session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 
-
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
+    }
+
+    private OidcUserService oidcUserService() {
+        return new OidcUserService();
     }
 
     @Bean

@@ -38,10 +38,16 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
    @Transactional
     public Appointment updateAppointmentStatusToVerified(UUID appointmentId) {
 
+
+
+
         Appointment appointment = appointmentRepositories.findByAppointmentId(appointmentId);
         if (appointment==null){
             throw new NotFoundException("Appointment not found with ID: " + appointmentId);
         }
+       if (!"Pending".equals(appointment.getStatus())) {
+           throw new IllegalStateException("Appointment must be in Pending status to Verified");
+       }
 
         appointment.setStatus("Verified Coming");
         appointment.setUpdateAt(LocalDateTime.now());

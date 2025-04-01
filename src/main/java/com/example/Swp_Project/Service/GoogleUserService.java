@@ -43,8 +43,9 @@ public class GoogleUserService {
             userRepositories.save(user);
         }
 
-        // Generate and store refresh token
+
         String accessToken = jwtUtils.generateToken(name, email, user.getUserID(), user.getRole());
+
         return new AuthResponseDTO(email, accessToken, user.getRole(), user.getUserID());
 
 
