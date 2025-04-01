@@ -16,8 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 public class SecurityConfig {
-    @Autowired
-    private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         http
@@ -47,28 +46,17 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()
 
-                       ).oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .oidcUserService(this.oidcUserService())
-                        )
-                        .successHandler(customOAuth2SuccessHandler)
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/")
-                        .permitAll()
-                )
+                       )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+               .sessionManagement(session ->
+                           session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-                        .sessionManagement(session ->
-                           session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
 
         return http.build();
     }
 
-    private OidcUserService oidcUserService() {
-        return new OidcUserService();
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
