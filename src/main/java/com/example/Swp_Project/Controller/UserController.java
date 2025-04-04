@@ -199,13 +199,4 @@ public class UserController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserDTO user) {
-        try {
-            User registeredUser = usservice.register(user);
-            return ResponseEntity.ok(registeredUser);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 }
