@@ -72,7 +72,7 @@ public class UserService {
         us.setRole("User");
         us.setStatus("Active");
         us.setCreatedAt(LocalDateTime.now());
-        us.setPassword(passwordEncoder.encode(user.getPassword()));
+
 
         try {
             User savedUser = usrepo.save(us);
