@@ -27,7 +27,7 @@ public class PaymentController {
         }
     }
 
-    @GetMapping("payments-getByUserId/{userId}")
+    @GetMapping("/payments-getByUserId/{userId}")
     public ResponseEntity<List<Payment>> getPaymentsByUserId(@PathVariable UUID userId) {
         try {
             List<Payment> payments = paymentService.getPaymentsByUserId(userId);

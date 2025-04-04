@@ -67,6 +67,7 @@ public class UserService {
             throw new RuntimeException("Unexpected error: " + ex.getMessage(), ex);
         }
     }
+
     public String authenticateUser(String email, String password) {
 
         User user = usrepo.findByEmail(email).orElse(null);
@@ -108,10 +109,12 @@ public class UserService {
 
         throw new RuntimeException("User not found");
     }
+
     public List<User> getAllUsers() {
         return usrepo.findAll();
     }
-   public User updateUser(UUID userId, UserDTO updatedUser) {
+
+    public User updateUser(UUID userId, UserDTO updatedUser) {
        Optional<User> existingUserOpt = usrepo.findById(userId);
        if (existingUserOpt.isEmpty()) {
            throw new RuntimeException("User not found with ID: " + userId);

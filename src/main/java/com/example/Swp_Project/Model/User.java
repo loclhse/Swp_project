@@ -34,7 +34,7 @@ public class User {
         private LocalDateTime updateAt;// Auto-set timestamp
         private List<Feedback>feedbacks=new ArrayList<>();
         private List<Appointment>appointments=new ArrayList<>();
-    private String otp; // Store OTP temporarily
+    private String otp;
     private long otpExpiration;
 
         public User(){

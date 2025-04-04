@@ -13,6 +13,15 @@ public class UserDTO {
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate dateOfBirth;
     private String confirmPassword;
+    private String otp;
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
 
     public String getConfirmPassword() {
         return confirmPassword;
