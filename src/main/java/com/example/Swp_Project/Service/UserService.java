@@ -5,6 +5,7 @@ import com.example.Swp_Project.DTO.RequestResetPasswordDTO;
 import com.example.Swp_Project.DTO.UserDTO;
 import com.example.Swp_Project.JwtUtils.JwtUtils;
 import com.example.Swp_Project.Model.Admin;
+import com.example.Swp_Project.Model.OtpStorage;
 import com.example.Swp_Project.Model.Staff;
 import com.example.Swp_Project.Model.User;
 import com.example.Swp_Project.Repositories.AdminRepositories;
@@ -35,6 +36,8 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private OtpService otpService;
+    @Autowired
+    private OtpStorage otpStorage;
 
     public User register(UserDTO user) {
         if (user.getUsername() == null || user.getEmail() == null || user.getPassword() == null) {
@@ -45,6 +48,18 @@ public class UserService {
         }
         if (!user.getPassword().equals(user.getConfirmPassword())) {
             throw new IllegalArgumentException("Passwords do not match.");
+        }
+
+        OtpStorage.OtpData otpData = otpStorage.getOtpData(user.getEmail());
+        if (otpData == null) {
+            throw new IllegalStateException("No OTP found for this email. Please request an OTP first.");
+        }
+        if (!otpData.getOtp().equals(user.getOtp())) {
+            throw new IllegalArgumentException("Invalid OTP.");
+        }
+        if (LocalDateTime.now().isAfter(otpData.getExpirationTime())) {
+            otpStorage.removeOtp(user.getEmail()); // Clean up expired OTP
+            throw new IllegalStateException("OTP has expired. Please request a new OTP.");
         }
         User us=new User();
         us.setUserID(UUID.randomUUID());
@@ -60,7 +75,10 @@ public class UserService {
         us.setPassword(passwordEncoder.encode(user.getPassword()));
 
         try {
-            return usrepo.save(us);
+            User savedUser = usrepo.save(us);
+
+            otpStorage.removeOtp(user.getEmail());
+            return savedUser;
         } catch (DataAccessException ex) {
             throw new RuntimeException("Database error: " + ex.getMessage(), ex);
         } catch (Exception ex) {
@@ -269,6 +287,25 @@ public class UserService {
         usrepo.save(user);
 
         return "Password reset successfully.";
+    }
+
+    public void sendOtpForRegistration(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email is required to send OTP.");
+        }
+        if (usrepo.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email already exists.");
+        }
+
+        // Generate OTP and set expiration time (10 minutes)
+        String otp = otpService.generateOtp();
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
+
+        // Store the OTP
+        otpStorage.storeOtp(email, otp, expirationTime);
+
+        // Send the OTP to the user's email
+        otpService.sendOtpEmail(email, otp);
     }
 
 }

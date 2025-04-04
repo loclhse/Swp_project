@@ -188,4 +188,24 @@ public class UserController {
                     .body(Map.of("error", "Something went wrong"));
         }
     }
+
+    @PostMapping("/send-otp")
+    public ResponseEntity<String> sendOtp(@RequestParam String email) {
+        try {
+            usservice.sendOtpForRegistration(email);
+            return ResponseEntity.ok("OTP sent to " + email);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserDTO user) {
+        try {
+            User registeredUser = usservice.register(user);
+            return ResponseEntity.ok(registeredUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
