@@ -9,8 +9,10 @@ import java.util.UUID;
 public class InjectionHistory {
     @Id
     private UUID id;
+    private String childrenName;
     private UUID childrenId;
     private UUID vaccineDetailsId;
+    private String doseName;
     private Integer doseNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime injectionDate;
@@ -19,12 +21,15 @@ public class InjectionHistory {
     public InjectionHistory() {
     }
 
-    public InjectionHistory(UUID childrenId, UUID vaccineDetailsId, Integer doseNumber, LocalDateTime injectionDate, UUID appointmentId) {
+    public InjectionHistory(UUID childrenId,String childrenName, UUID vaccineDetailsId,String doseName, Integer doseNumber, LocalDateTime injectionDate, UUID appointmentId) {
         this.childrenId = childrenId;
+        this.childrenName=childrenName;
         this.vaccineDetailsId = vaccineDetailsId;
+        this.doseName=doseName;
         this.doseNumber = doseNumber;
         this.injectionDate = injectionDate;
         this.appointmentId = appointmentId;
+
     }
 
     public UUID getAppointmentId() {

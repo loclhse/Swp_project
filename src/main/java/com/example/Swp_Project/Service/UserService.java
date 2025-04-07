@@ -210,27 +210,15 @@ public class UserService {
         if ("Deactivated".equals(user.getStatus())) {
             throw new IllegalStateException("User is already deactivated");
         }
+        user.setUsername(null);
+        user.setPassword(null);
+        user.setEmail(null);
         user.setStatus("Deactivated");
         User updatedUser = usrepo.save(user);
         return updatedUser;
     }
 
-    public User saveOrUpdateGoogleUser(String email, String name) {
-        Optional<User> userOpt = usrepo.findByEmail(email);
-        User user;
-        if (userOpt.isPresent()) {
-            user = userOpt.get();
-            user.setUsername(name);
-        } else {
-            user = new User();
-            user.setUserID(UUID.randomUUID());
-            user.setEmail(email);
-            user.setUsername(name);
-            user.setRole("User");
-            user.setStatus("Active");
-        }
-        return usrepo.save(user);
-    }
+
 
     public String initiateForgotPassword(String email) {
         Optional<User> userOptional = usrepo.findByEmail(email);

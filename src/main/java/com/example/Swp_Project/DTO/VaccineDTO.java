@@ -3,7 +3,7 @@ package com.example.Swp_Project.DTO;
 public class VaccineDTO {
     private String illnessName;
     private String descriptions;
-    private Integer ageLimit;
+
 
     public String getIllnessName() {
         return illnessName;
@@ -21,11 +21,5 @@ public class VaccineDTO {
         this.descriptions = descriptions;
     }
 
-    public Integer getAgeLimit() {
-        return ageLimit;
-    }
 
-    public void setAgeLimit(Integer ageLimit) {
-        this.ageLimit = ageLimit;
-    }
 }

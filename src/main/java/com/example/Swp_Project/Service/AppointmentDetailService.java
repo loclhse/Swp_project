@@ -88,17 +88,20 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
 
         if (savedAppointment.isFinalDose()) {
             logger.info("Storing injection history for appointment {} as it is the final dose", appointmentId);
-            UUID childrenId = savedAppointment.getChildrenId();
+            Optional<Children> children = childrenRepositories.findById(savedAppointment.getChildrenId());
             for (VaccineDetails vaccineDetail : savedAppointment.getVaccineDetailsList()) {
                 Integer doseRequire = vaccineDetail.getDoseRequire();
                 if (doseRequire == null) {
                     logger.warn("doseRequire is null for vaccineDetail with ID: {}. Skipping injection history for this vaccine.", vaccineDetail.getVaccineDetailsId());
                     continue;
                 }
+                Children childrenn=children.get();
 
                 InjectionHistory injectionHistory = new InjectionHistory(
-                        childrenId,
+                        childrenn.getChildrenId(),
+                        childrenn.getChildrenName(),
                         vaccineDetail.getVaccineDetailsId(),
+                        vaccineDetail.getDoseName(),
                         doseRequire,
                         now,
                         appointmentId
