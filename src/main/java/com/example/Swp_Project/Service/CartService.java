@@ -144,7 +144,7 @@ public class CartService {
 
                 int childrenAgeInYears = Period.between(appointmentDTO.getDateOfBirth(), LocalDate.now()).getYears();
                 if (childrenAgeInYears < vaccinedetail.getAgeRequired()) {
-                    String errorMessage = "Children's age (" + childrenAgeInYears + " years) does not meet the minimum age requirement (" + vaccinedetail.getAgeRequired() + " months) for Young Kid vaccine " + vaccinedetail.getVaccineId() + ".";
+                    String errorMessage = "Tuổi đứa trẻ của bạn :  (" + childrenAgeInYears + " years) đang bé hơn tuổi mà mũi tiêm này yêu cầu tối thiểu (" + vaccinedetail.getAgeRequired() + " years old" + vaccinedetail.getVaccineId() + ".";
                     logger.error(errorMessage);
                    throw new InvalidDosageException(errorMessage);
 
@@ -229,8 +229,8 @@ public class CartService {
 
             if (vaccineDetail.getAgeRequired() != null && appointmentDTO.getDateOfBirth() != null) {
                 int childrenAgeInYears = Period.between(appointmentDTO.getDateOfBirth(), LocalDate.now()).getYears();
-                if (childrenAgeInYears > vaccineDetail.getAgeRequired()) {
-                    String errorMessage = "Tuổi đứa trẻ của bạn :  (" + childrenAgeInYears + " years) đang lớn hơn tuổi mà mũi tiêm này yêu cầu (" + vaccineDetail.getAgeRequired() + " years old" + vaccineDetail.getVaccineId() + ".";
+                if (childrenAgeInYears < vaccineDetail.getAgeRequired()) {
+                    String errorMessage = "Tuổi đứa trẻ của bạn :  (" + childrenAgeInYears + " years) đang bé hơn tuổi mà mũi tiêm này yêu cầu tối thiểu (" + vaccineDetail.getAgeRequired() + " years old" + vaccineDetail.getVaccineId() + ".";
                     logger.error(errorMessage);
                     throw new InvalidDosageException(errorMessage);
                 }

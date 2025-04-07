@@ -4,6 +4,7 @@ import com.example.Swp_Project.DTO.AppointmentDTO;
 import com.example.Swp_Project.DTO.CartDisplayDTO;
 import com.example.Swp_Project.Service.CartService;
 import com.example.Swp_Project.Service.VaccineDetailService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -27,6 +28,8 @@ public class CartController {
     private CartService cartService;
     @Autowired
     private VaccineDetailService vaccineDetailService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);
 
@@ -69,50 +72,55 @@ public class CartController {
     }
 
     @PostMapping("/cart/checkout")
-    public ResponseEntity<Map<String,Object>> checkout(
+    public ResponseEntity<String> checkout(
             @RequestParam UUID userId,
             @RequestBody AppointmentDTO appointmentdto) throws Exception {
         try {
             String paymentUrl = cartService.initiateCheckout(userId, appointmentdto);
-            Map<String, Object> successResponse = new HashMap<>();
-            successResponse.put("message", paymentUrl);
-            return ResponseEntity.ok(successResponse);
+            System.out.println("Checkout - Payment URL sent to VNPAY: " + paymentUrl);
+            return new ResponseEntity<>(paymentUrl, HttpStatus.OK);
         } catch (CartService.CartEmptyException e) {
+            logger.error("Cart empty error: {}", e.getMessage());
             Map<String, Object> errorResponse = new HashMap<>();
-
+            errorResponse.put("error", "CartEmpty");
             errorResponse.put("message", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(convertToJsonString(errorResponse), HttpStatus.BAD_REQUEST);
         } catch (CartService.MissingDataException e) {
+            logger.error("Missing data error: {}", e.getMessage());
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "MissingData");
             errorResponse.put("message", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(convertToJsonString(errorResponse), HttpStatus.BAD_REQUEST);
         } catch (CartService.ResourceNotFoundException e) {
+            logger.error("Not found error: {}", e.getMessage());
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "ResourceNotFound");
             errorResponse.put("message", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(convertToJsonString(errorResponse), HttpStatus.NOT_FOUND);
         } catch (CartService.OutOfStockException e) {
+            logger.error("Out of stock error: {}", e.getMessage());
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "OutOfStock");
             errorResponse.put("message", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(convertToJsonString(errorResponse), HttpStatus.BAD_REQUEST);
         } catch (CartService.InvalidDosageException e) {
+            logger.error("Invalid dosage error: {}", e.getMessage());
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "InvalidDosage");
             errorResponse.put("message", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-        } catch (CartService.TooManyDoseInCartException e){
-                logger.error("Too many vaccines error: {}", e.getMessage());
-                Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("error", "TooManyVaccines");
-                errorResponse.put("message", e.getMessage());
-                return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(convertToJsonString(errorResponse), HttpStatus.BAD_REQUEST);
+        } catch (CartService.TooManyDoseInCartException e) {
+            logger.error("Too many vaccines error: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "TooManyVaccines");
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(convertToJsonString(errorResponse), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
+            logger.error("Internal server error: {}", e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "InternalServerError");
             errorResponse.put("message", "An unexpected error occurred: " + e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(convertToJsonString(errorResponse), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -172,16 +180,10 @@ public class CartController {
         errorResponse.put("message", e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     } catch (CartService.InvalidDosageException e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "InvalidDosage");
-            errorResponse.put("message", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-        } catch (CartService.TooManyDoseInCartException e){
-                logger.error("Too many vaccines error: {}", e.getMessage());
-                Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("error", "TooManyVaccines");
-                errorResponse.put("message", e.getMessage());
-                return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "InvalidDosage");
+        errorResponse.put("message", e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", "InternalServerError");
@@ -189,6 +191,14 @@ public class CartController {
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+    private String convertToJsonString(Map<String, Object> map) {
+        try {
+            return objectMapper.writeValueAsString(map);
+        } catch (Exception e) {
+            logger.error("Failed to convert error response to JSON: {}", e.getMessage(), e);
+            return "{\"error\":\"SerializationError\",\"message\":\"Failed to serialize error response\"}";
+        }
+    }
     }
 
 
