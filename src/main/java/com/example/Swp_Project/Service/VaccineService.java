@@ -22,7 +22,7 @@ public class VaccineService {
         Vaccin vaccin=new Vaccin();
         vaccin.setVaccineId(UUID.randomUUID());
         vaccin.setIllnessName(vaccine.getIllnessName());
-        vaccin.setAgeLimit(vaccine.getAgeLimit());
+
         vaccin.setDescriptions(vaccine.getDescriptions());
         return vaccineRepositories.save(vaccin);
     }

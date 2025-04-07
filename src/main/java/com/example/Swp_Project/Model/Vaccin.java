@@ -17,7 +17,7 @@ public class Vaccin {
     private UUID vaccineId;
     private String illnessName;
     private String descriptions;
-    private Integer ageLimit;
+
     private List<VaccineDetails>vaccineDetailsList=new ArrayList<>();
 
     public UUID getVaccineId() {
@@ -44,13 +44,6 @@ public class Vaccin {
         this.descriptions = descriptions;
     }
 
-    public Integer getAgeLimit() {
-        return ageLimit;
-    }
-
-    public void setAgeLimit(Integer ageLimit) {
-        this.ageLimit = ageLimit;
-    }
 
     public List<VaccineDetails> getVaccineDetailsList() {
         return vaccineDetailsList;
