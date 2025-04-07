@@ -56,7 +56,7 @@ public class VaccineDetailService {
            existing.setPrice(updatedDetails.getPrice());
            existing.setDosageAmount(updatedDetails.getDosageAmount());
            existing.setAgeRequired(updatedDetails.getAgeRequired());
-           existing.setBoosterInteval(updatedDetails.getBoosterInterval());
+           existing.setBoosterInterval(updatedDetails.getBoosterInterval());
            existing.setUpdateAt(LocalDateTime.now());
            vaccineRepositories.save(vaccin);
            vaccineDetailsRepositories.save(existing);
@@ -91,7 +91,7 @@ public class VaccineDetailService {
        vaccineDetails.setPrice(details.getPrice());
        vaccineDetails.setDosageAmount(details.getDosageAmount());
        vaccineDetails.setAgeRequired(details.getAgeRequired());
-       vaccineDetails.setBoosterInteval(details.getBoosterInterval());
+       vaccineDetails.setBoosterInterval(details.getBoosterInterval());
        vaccineDetails.setCreatedAt(LocalDateTime.now());
        detailsList.add(vaccineDetails);
        vaccineRepositories.save(vaccin);

@@ -36,11 +36,11 @@ public class VaccineDetails {
     private LocalDateTime updateAt;
 
 
-    public Integer getBoosterInteval() {
+    public Integer getBoosterInterval() {
         return boosterInterval;
     }
 
-    public void setBoosterInteval(Integer boosterInteval) {
+    public void setBoosterInterval(Integer boosterInteval) {
         this.boosterInterval = boosterInteval;
     }
 

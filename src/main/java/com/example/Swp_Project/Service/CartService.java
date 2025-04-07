@@ -267,7 +267,7 @@ public class CartService {
             vaccineForAppointment.setManufacturer(vaccine.getManufacturer());
             vaccineForAppointment.setDateBetweenDoses(vaccine.getDateBetweenDoses());
             vaccineForAppointment.setDoseRequire(vaccine.getDoseRequire());
-            vaccineForAppointment.setBoosterInteval(vaccine.getBoosterInteval());
+            vaccineForAppointment.setBoosterInterval(vaccine.getBoosterInterval());
             vaccineForAppointment.setAgeRequired(vaccine.getAgeRequired());
             vaccineForAppointment.setDosageAmount(vaccine.getDosageAmount());
             vaccineForAppointment.setPrice(vaccine.getPrice());
@@ -386,7 +386,7 @@ public class CartService {
                     vaccineForAppointment.setManufacturer(vaccine.getManufacturer());
                     vaccineForAppointment.setDateBetweenDoses(vaccine.getDateBetweenDoses());
                     vaccineForAppointment.setDoseRequire(vaccine.getDoseRequire());
-                    vaccineForAppointment.setBoosterInteval(vaccine.getBoosterInteval());
+                    vaccineForAppointment.setBoosterInterval(vaccine.getBoosterInterval());
                     vaccineForAppointment.setDosageAmount(vaccine.getDosageAmount());
                     vaccineForAppointment.setAgeRequired(vaccine.getAgeRequired());
                     vaccineForAppointment.setPrice(vaccine.getPrice());
