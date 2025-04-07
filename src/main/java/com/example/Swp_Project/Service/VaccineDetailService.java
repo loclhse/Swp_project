@@ -1,10 +1,13 @@
 package com.example.Swp_Project.Service;
 
+import com.example.Swp_Project.Controller.InjectionHistoryController;
 import com.example.Swp_Project.DTO.VaccineDetailsDTO;
 import com.example.Swp_Project.Model.Vaccin;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Repositories.VaccineDetailsRepositories;
 import com.example.Swp_Project.Repositories.VaccineRepositories;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,8 @@ public class VaccineDetailService {
     private VaccineDetailsRepositories vaccineDetailsRepositories;
     @Autowired
     private VaccineRepositories vaccineRepositories ;
+
+    private static final Logger logger = LoggerFactory.getLogger(InjectionHistoryController.class);
 
 
     public Optional<VaccineDetails>findVaccinesDetailById(UUID vaccinedetailid){
@@ -58,19 +63,14 @@ public class VaccineDetailService {
            return existing;
     }
 
-    public void deleteVaccineDetails(UUID vaccineId, UUID detailsId) {
-
-        Vaccin vaccin = vaccineRepositories.findById(vaccineId)
-                .orElseThrow(() -> new RuntimeException("Vaccine not found for ID: " + vaccineId + ", fam!"));
-
-        List<VaccineDetails> detailsList = vaccin.getVaccineDetailsList();
-        boolean removed = detailsList.removeIf(details -> details.getVaccineDetailsId().equals(detailsId));
-
-        if (!removed) {
-            throw new RuntimeException("VaccineDetails not found with ID: " + detailsId + ", bro!");
+    public void deleteVaccineDetails(UUID detailsId) {
+        if (!vaccineDetailsRepositories.existsById(detailsId)) {
+            throw new IllegalArgumentException("Vaccine detail with ID " + detailsId + " does not exist.");
         }
 
-        vaccineRepositories.save(vaccin);
+        vaccineDetailsRepositories.deleteById(detailsId);
+        logger.info("Deleted VaccineDetail with ID: {}", detailsId);
+
     }
 
     public VaccineDetails createVaccineDetails(UUID vaccineId, VaccineDetailsDTO details) {

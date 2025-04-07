@@ -2,6 +2,8 @@ package com.example.Swp_Project.Controller;
 import com.example.Swp_Project.DTO.VaccineDetailsDTO;
 import com.example.Swp_Project.Model.VaccineDetails;
 import com.example.Swp_Project.Service.VaccineDetailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 public class VaccineDetailsController {
+
+
     @Autowired
     private VaccineDetailService vaccineDetailService;
 
@@ -41,12 +45,11 @@ public class VaccineDetailsController {
         }
     }
 
-    @DeleteMapping("/vaccine-details/{vaccineId}/{detailsId}")
+    @DeleteMapping("/vaccine-details/{detailsId}")
     public ResponseEntity<String> deleteVaccineDetails(
-            @PathVariable UUID vaccineId,
             @PathVariable UUID detailsId) {
         try {
-            vaccineDetailService.deleteVaccineDetails(vaccineId, detailsId);
+            vaccineDetailService.deleteVaccineDetails(detailsId);
             return ResponseEntity.ok("VaccineDetails deleted, fam!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage());

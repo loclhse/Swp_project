@@ -98,6 +98,7 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
                 Children childrenn=children.get();
 
                 InjectionHistory injectionHistory = new InjectionHistory(
+                        savedAppointment.getUserId(),
                         childrenn.getChildrenId(),
                         childrenn.getChildrenName(),
                         vaccineDetail.getVaccineDetailsId(),
@@ -111,8 +112,6 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
         } else {
             logger.info("Not storing injection history for appointment {} as it is not the final dose", appointmentId);
         }
-
-
 
         try {
             createFollowUpAppointments(savedAppointment);

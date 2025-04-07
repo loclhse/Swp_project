@@ -27,7 +27,16 @@ public class Feedback {
     private LocalDateTime updateAt;
     private UUID userId;
     private String username;
+    private boolean isOkay;
     private UUID appointmentsId;
+
+    public boolean isOkay() {
+        return isOkay;
+    }
+
+    public void setOkay(boolean okay) {
+        isOkay = okay;
+    }
 
     public String getUsername() {
         return username;

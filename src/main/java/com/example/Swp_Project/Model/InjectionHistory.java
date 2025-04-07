@@ -9,6 +9,7 @@ import java.util.UUID;
 public class InjectionHistory {
     @Id
     private UUID id;
+    private UUID userId;
     private String childrenName;
     private UUID childrenId;
     private UUID vaccineDetailsId;
@@ -21,7 +22,8 @@ public class InjectionHistory {
     public InjectionHistory() {
     }
 
-    public InjectionHistory(UUID childrenId,String childrenName, UUID vaccineDetailsId,String doseName, Integer doseNumber, LocalDateTime injectionDate, UUID appointmentId) {
+    public InjectionHistory(UUID userId,UUID childrenId,String childrenName, UUID vaccineDetailsId,String doseName, Integer doseNumber, LocalDateTime injectionDate, UUID appointmentId) {
+        this.userId=userId;
         this.childrenId = childrenId;
         this.childrenName=childrenName;
         this.vaccineDetailsId = vaccineDetailsId;
@@ -30,6 +32,38 @@ public class InjectionHistory {
         this.injectionDate = injectionDate;
         this.appointmentId = appointmentId;
 
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public String getChildrenName() {
+        return childrenName;
+    }
+
+    public void setChildrenName(String childrenName) {
+        this.childrenName = childrenName;
+    }
+
+    public String getDoseName() {
+        return doseName;
+    }
+
+    public void setDoseName(String doseName) {
+        this.doseName = doseName;
     }
 
     public UUID getAppointmentId() {
