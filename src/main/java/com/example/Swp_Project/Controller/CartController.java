@@ -102,6 +102,12 @@ public class CartController {
             errorResponse.put("error", "InvalidDosage");
             errorResponse.put("message", e.getMessage());
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        } catch (CartService.TooManyDoseInCartException e){
+                logger.error("Too many vaccines error: {}", e.getMessage());
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "TooManyVaccines");
+                errorResponse.put("message", e.getMessage());
+                return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "InternalServerError");
@@ -166,10 +172,16 @@ public class CartController {
         errorResponse.put("message", e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     } catch (CartService.InvalidDosageException e) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("error", "InvalidDosage");
-        errorResponse.put("message", e.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "InvalidDosage");
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        } catch (CartService.TooManyDoseInCartException e){
+                logger.error("Too many vaccines error: {}", e.getMessage());
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "TooManyVaccines");
+                errorResponse.put("message", e.getMessage());
+                return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", "InternalServerError");

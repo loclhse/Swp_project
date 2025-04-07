@@ -3,7 +3,6 @@ import com.example.Swp_Project.DTO.AppointmentDTO;
 import com.example.Swp_Project.DTO.CartDisplayDTO;
 import com.example.Swp_Project.Model.*;
 import com.example.Swp_Project.Repositories.*;
-
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.slf4j.Logger;
@@ -11,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import javax.smartcardio.CardException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -114,6 +111,20 @@ public class CartService {
             throw new CartEmptyException("Cart is empty");
         }
 
+        if (appointmentDTO == null) {
+            logger.error("Appointment data is missing for userId: {}", userId);
+            throw new MissingDataException("Appointment data is missing");
+        }
+
+        Set<UUID> uniqueVaccineDetailsIds = new HashSet<>();
+        for (CartItem cartItem : cartItems) {
+            uniqueVaccineDetailsIds.add(cartItem.getVaccineDetailsId());
+        }
+        if (uniqueVaccineDetailsIds.size() > 2) {
+            logger.error("Too many different vaccine doses in the cart: {} (maximum allowed is 2)", uniqueVaccineDetailsIds.size());
+            throw new TooManyDoseInCartException("Only two different vaccine doses are allowed per appointment");
+        }
+
         double total = 0.0;
         for (CartItem cartItem : cartItems) {
 
@@ -126,6 +137,8 @@ public class CartService {
             if (vaccinedetail.getQuantity() < cartItem.getQuantity()) {
                 throw new OutOfStockException("Outstock for " + vaccinedetail.getDoseName());
             }
+
+
 
             if (vaccinedetail.getAgeRequired() != null && appointmentDTO.getDateOfBirth() != null) {
 
@@ -172,7 +185,7 @@ public class CartService {
         return paymentUrl;
     }
 
-    public String initiateCashCheckout(UUID userId, AppointmentDTO appointmentDTO) throws InvalidDosageException,CartEmptyException,MissingDataException,OutOfStockException,ResourceNotFoundException {
+    public String initiateCashCheckout(UUID userId, AppointmentDTO appointmentDTO) throws InvalidDosageException,CartEmptyException,MissingDataException,OutOfStockException,ResourceNotFoundException, TooManyDoseInCartException {
         List<CartItem> cartItems = tempCart.getOrDefault(userId, Collections.emptyList());
         if (cartItems.isEmpty()) {
             logger.error("Cart is empty for userId: {}", userId);
@@ -182,6 +195,15 @@ public class CartService {
         if (appointmentDTO == null) {
             logger.error("Appointment data is missing for userId: {}", userId);
             throw new MissingDataException("Appointment data is missing");
+        }
+
+        Set<UUID> uniqueVaccineDetailsIds = new HashSet<>();
+        for (CartItem cartItem : cartItems) {
+            uniqueVaccineDetailsIds.add(cartItem.getVaccineDetailsId());
+        }
+        if (uniqueVaccineDetailsIds.size() > 2) {
+            logger.error("Too many different vaccine doses in the cart: {} (maximum allowed is 2)", uniqueVaccineDetailsIds.size());
+            throw new TooManyDoseInCartException("Only two different vaccine doses are allowed per appointment");
         }
 
         Optional<User> userOpt = userRepositories.findById(userId);
@@ -467,6 +489,12 @@ public class CartService {
 
     public class InvalidDosageException extends RuntimeException {
         public InvalidDosageException(String message) {
+            super(message);
+        }
+    }
+
+    public class TooManyDoseInCartException extends RuntimeException {
+        public TooManyDoseInCartException(String message) {
             super(message);
         }
     }
