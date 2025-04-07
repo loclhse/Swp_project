@@ -29,7 +29,7 @@ public class VaccineDetails {
     private Double price;
     private Integer ageRequired;
     private Integer dosageAmount;
-    private Integer boosterInteval;
+    private Integer boosterInterval;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -37,11 +37,11 @@ public class VaccineDetails {
 
 
     public Integer getBoosterInteval() {
-        return boosterInteval;
+        return boosterInterval;
     }
 
     public void setBoosterInteval(Integer boosterInteval) {
-        this.boosterInteval = boosterInteval;
+        this.boosterInterval = boosterInteval;
     }
 
 
