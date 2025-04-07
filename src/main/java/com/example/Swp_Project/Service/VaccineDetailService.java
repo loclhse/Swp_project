@@ -20,9 +20,12 @@ public class VaccineDetailService {
     @Autowired
     private VaccineRepositories vaccineRepositories ;
 
-public Optional<VaccineDetails>findVaccinesDetailById(UUID vaccinedetailid){
-    return vaccineDetailsRepositories.findById(vaccinedetailid);
-}
+
+    public Optional<VaccineDetails>findVaccinesDetailById(UUID vaccinedetailid){
+
+        return vaccineDetailsRepositories.findById(vaccinedetailid);
+
+    }
 
     public List<VaccineDetails>findAllVaccineDetails(){
 
@@ -46,6 +49,9 @@ public Optional<VaccineDetails>findVaccinesDetailById(UUID vaccinedetailid){
            existing.setStatus(updatedDetails.getStatus());
            existing.setDateBetweenDoses(updatedDetails.getDateBetweenDoses());
            existing.setPrice(updatedDetails.getPrice());
+           existing.setDosageAmount(updatedDetails.getDosageAmount());
+           existing.setAgeRequired(updatedDetails.getAgeRequired());
+           existing.setBoosterInteval(updatedDetails.getBoosterInterval());
            existing.setUpdateAt(LocalDateTime.now());
            vaccineRepositories.save(vaccin);
            vaccineDetailsRepositories.save(existing);
@@ -58,7 +64,6 @@ public Optional<VaccineDetails>findVaccinesDetailById(UUID vaccinedetailid){
                 .orElseThrow(() -> new RuntimeException("Vaccine not found for ID: " + vaccineId + ", fam!"));
 
         List<VaccineDetails> detailsList = vaccin.getVaccineDetailsList();
-
         boolean removed = detailsList.removeIf(details -> details.getVaccineDetailsId().equals(detailsId));
 
         if (!removed) {
@@ -84,6 +89,9 @@ public Optional<VaccineDetails>findVaccinesDetailById(UUID vaccinedetailid){
        vaccineDetails.setStatus("In Stock");
        vaccineDetails.setDateBetweenDoses(details.getDateBetweenDoses());
        vaccineDetails.setPrice(details.getPrice());
+       vaccineDetails.setDosageAmount(details.getDosageAmount());
+       vaccineDetails.setAgeRequired(details.getAgeRequired());
+       vaccineDetails.setBoosterInteval(details.getBoosterInterval());
        vaccineDetails.setCreatedAt(LocalDateTime.now());
        detailsList.add(vaccineDetails);
        vaccineRepositories.save(vaccin);
@@ -91,8 +99,11 @@ public Optional<VaccineDetails>findVaccinesDetailById(UUID vaccinedetailid){
 
        return vaccineDetails;
     }
+
     public List<VaccineDetails>getAllVaccineDetailsByVaccineId(UUID vaccineId){
+
         return vaccineDetailsRepositories.findByVaccineId(vaccineId);
+
     }
 
 }

@@ -1,23 +1,16 @@
 package com.example.Swp_Project.Service;
 import com.example.Swp_Project.Model.*;
-import com.example.Swp_Project.Repositories.AppointmentDetailsRepositories;
-import com.example.Swp_Project.Repositories.AppointmentRepositories;
-import com.example.Swp_Project.Repositories.NotificationsRepositories;
-import com.example.Swp_Project.Repositories.PaymentsRepositories;
+import com.example.Swp_Project.Repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.webjars.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AppointmentDetailService {
@@ -29,6 +22,10 @@ private AppointmentRepositories appointmentRepositories;
 private NotificationsRepositories notificationsRepositories;
 @Autowired
 private PaymentsRepositories paymentsRepositories;
+@Autowired
+private ChildrenRepositories childrenRepositories;
+@Autowired
+private InjectionHistoryRepositories injectionHistoryRepositories;
 private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailService.class);
 
     public List<AppointmentDetail>findAll(){
@@ -43,7 +40,7 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
 
         Appointment appointment = appointmentRepositories.findByAppointmentId(appointmentId);
         if (appointment==null){
-            throw new NotFoundException("Appointment not found with ID: " + appointmentId);
+            throw new NullPointerException("Appointment not found with ID: " + appointmentId);
         }
        if (!"Pending".equals(appointment.getStatus())) {
            throw new IllegalStateException("Appointment must be in Pending status to Verified");
@@ -59,7 +56,7 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
     public Appointment cancelAppointment(UUID appointmentId) {
 
         Appointment appointment = appointmentRepositories.findById(appointmentId)
-                .orElseThrow(() -> new NotFoundException("Appointment not found with ID: " + appointmentId));
+                .orElseThrow(() -> new NullPointerException("Appointment not found with ID: " + appointmentId));
 
         if (!"Pending".equals(appointment.getStatus())) {
             throw new IllegalStateException("Appointment must be in Pending status to cancel");
@@ -69,6 +66,7 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
         appointment.setUpdateAt(LocalDateTime.now());
         appointmentRepositories.save(appointment);
 
+
         return appointment;
     }
 
@@ -76,16 +74,43 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
     public Appointment markAppointmentAsCompleted(UUID appointmentId) {
         Appointment appointment = appointmentRepositories.findByAppointmentId(appointmentId);
         if (appointment == null) {
-            throw new NotFoundException("Appointment not found with ID: " + appointmentId);
+            throw new NullPointerException("Appointment not found with ID: " + appointmentId);
         }
 
         if (!"Verified Coming".equals(appointment.getStatus())) {
             throw new IllegalStateException("Appointment must be in 'Verified Coming' status to mark as completed");
         }
+        LocalDateTime now = LocalDateTime.now();
 
         appointment.setStatus("Completed");
         appointment.setUpdateAt(LocalDateTime.now());
         Appointment savedAppointment = appointmentRepositories.save(appointment);
+
+        if (savedAppointment.isFinalDose()) {
+            logger.info("Storing injection history for appointment {} as it is the final dose", appointmentId);
+            UUID childrenId = savedAppointment.getChildrenId();
+            for (VaccineDetails vaccineDetail : savedAppointment.getVaccineDetailsList()) {
+                Integer doseRequire = vaccineDetail.getDoseRequire();
+                if (doseRequire == null) {
+                    logger.warn("doseRequire is null for vaccineDetail with ID: {}. Skipping injection history for this vaccine.", vaccineDetail.getVaccineDetailsId());
+                    continue;
+                }
+
+                InjectionHistory injectionHistory = new InjectionHistory(
+                        childrenId,
+                        vaccineDetail.getVaccineDetailsId(),
+                        doseRequire,
+                        now,
+                        appointmentId
+                );
+                injectionHistoryRepositories.save(injectionHistory);
+            }
+        } else {
+            logger.info("Not storing injection history for appointment {} as it is not the final dose", appointmentId);
+        }
+
+
+
         try {
             createFollowUpAppointments(savedAppointment);
             notifyUserAboutNextAppointment(savedAppointment);
@@ -116,6 +141,7 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
                     followingAppointment.setAppointmentId(UUID.randomUUID());
                     followingAppointment.setUserId(originalAppointment.getUserId());
                     followingAppointment.setProcessId(originalAppointment.getProcessId());
+                    followingAppointment.setChildrenId(originalAppointment.getChildrenId());
                     followingAppointment.setChildrenName(originalAppointment.getChildrenName());
                     followingAppointment.setChildrenGender(originalAppointment.getChildrenGender());
                     followingAppointment.setDateOfBirth(originalAppointment.getDateOfBirth());
@@ -212,20 +238,20 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
            Payment payment=paymentsRepositories.findByPaymentId(appdetails.getPaymentId());
            if (payment==null) {
                logger.error("Payment not found for ID: {}", appdetails.getPaymentId());
-               throw new NotFoundException("Payment not found for ID: " + appdetails.getPaymentId());
+               throw new NullPointerException("Payment not found for ID: " + appdetails.getPaymentId());
            }
-           CashPayment cashPayment=new CashPayment();
+           Payment cashPayment=new Payment();
            cashPayment.setPaymentId(payment.getPaymentId());
            cashPayment.setUserId(payment.getUserId());
            cashPayment.setStatus("Success");
            cashPayment.setAppointmentId(payment.getAppointmentId());
            cashPayment.setAmount(payment.getAmount());
-           cashPayment.setPaydate(LocalDateTime.now());
            cashPayment.setCreatedAt(LocalDateTime.now());
            paymentsRepositories.save(cashPayment);
+
            Optional<Appointment>appointment=appointmentRepositories.findById(appdetails.getAppointmentId());
            if(appointment.isEmpty()){
-               throw new NotFoundException("there is no appointment found with ID");
+               throw new NullPointerException("there is no appointment found with ID");
            }
            Appointment appointmentt=appointment.get();
            appointmentt.setStatus("Pending");
@@ -233,10 +259,7 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
 
            appdetails.setPaymentStatus("Paid");
            appointmentDetailsRepositories.save(appdetails);
-
-
-
-    return appdetails;
+           return appdetails;
 
     }
 

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.webjars.NotFoundException;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,9 +60,11 @@ public class ChildrenController {
         return ResponseEntity.noContent().build();
     }
 
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    @GetMapping("/child-getByName/{name}")
+        public Optional<Children>findChildrenByName(@PathVariable String name){
+        return childrenService.getChildrenByName(name);
     }
+
+
+
 }

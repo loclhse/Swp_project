@@ -19,6 +19,7 @@ public class Appointment {
     private UUID processId;
     private UUID userId;
     private String childrenName;
+    private UUID childrenId;
     private String note;
     private String medicalIssue;
     private String childrenGender;
@@ -46,6 +47,14 @@ public class Appointment {
         this.childrenName = childrenName;
         this.appointmentDate = appointmentDate;
         this.timeStart = timeStart;
+    }
+
+    public UUID getChildrenId() {
+        return childrenId;
+    }
+
+    public void setChildrenId(UUID childrenId) {
+        this.childrenId = childrenId;
     }
 
     public UUID getProcessId() {

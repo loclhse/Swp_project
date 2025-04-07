@@ -16,7 +16,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.webjars.NotFoundException;
+
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -58,7 +58,7 @@ public class UserService {
             throw new IllegalArgumentException("Invalid OTP.");
         }
         if (LocalDateTime.now().isAfter(otpData.getExpirationTime())) {
-            otpStorage.removeOtp(user.getEmail()); // Clean up expired OTP
+            otpStorage.removeOtp(user.getEmail());
             throw new IllegalStateException("OTP has expired. Please request a new OTP.");
         }
         User us=new User();
@@ -205,7 +205,7 @@ public class UserService {
     public User deactivateUser(UUID userID) {
         User user = usrepo.findByUserID(userID);
         if (user == null) {
-            throw new NotFoundException("User not found with ID: " + userID);
+            throw new NullPointerException("User not found with ID: " + userID);
         }
         if ("Deactivated".equals(user.getStatus())) {
             throw new IllegalStateException("User is already deactivated");
@@ -242,10 +242,10 @@ public class UserService {
         User user = userOptional.get();
         String otp = otpService.generateOtp();
         user.setOtp(otp);
-        user.setOtpExpiration(Instant.now().plusSeconds(600).toEpochMilli());
+        user.setOtpExpiration(Instant.now().plusSeconds(60).toEpochMilli());
         usrepo.save(user);
 
-        // Send OTP via email
+
         otpService.sendOtpEmail(email, otp);
 
         return "OTP sent to your email.";
@@ -297,14 +297,14 @@ public class UserService {
             throw new RuntimeException("Email already exists.");
         }
 
-        // Generate OTP and set expiration time (10 minutes)
-        String otp = otpService.generateOtp();
-        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
 
-        // Store the OTP
+        String otp = otpService.generateOtp();
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(1);
+
+
         otpStorage.storeOtp(email, otp, expirationTime);
 
-        // Send the OTP to the user's email
+
         otpService.sendOtpEmail(email, otp);
     }
 

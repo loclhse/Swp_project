@@ -32,10 +32,10 @@ public class User {
         private LocalDateTime createdAt;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime updateAt;// Auto-set timestamp
-        private List<Feedback>feedbacks=new ArrayList<>();
-        private List<Appointment>appointments=new ArrayList<>();
-    private String otp;
-    private long otpExpiration;
+        private String otp;
+        private long otpExpiration;
+        private List<Feedback>feedbackList;
+        private List<Appointment>appointmentList;
 
         public User(){
         }
@@ -48,6 +48,22 @@ public class User {
             this.status = status;
             this.createdAt=createdAt;
             this.updateAt=updateAt;
+    }
+
+    public List<Feedback> getFeedbackList() {
+        return feedbackList;
+    }
+
+    public void setFeedbackList(List<Feedback> feedbackList) {
+        this.feedbackList = feedbackList;
+    }
+
+    public List<Appointment> getAppointmentList() {
+        return appointmentList;
+    }
+
+    public void setAppointmentList(List<Appointment> appointmentList) {
+        this.appointmentList = appointmentList;
     }
 
     public long getOtpExpiration() {
@@ -96,22 +112,6 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public List<Appointment> getAppointments() {
-        return appointments;
-    }
-
-    public void setAppointments(List<Appointment> appointments) {
-        this.appointments = appointments;
-    }
-
-    public List<Feedback> getFeedbacks() {
-        return feedbacks;
-    }
-
-    public void setFeedbacks(List<Feedback> feedbacks) {
-        this.feedbacks = feedbacks;
     }
 
     public UUID getUserID() {

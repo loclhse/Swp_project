@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.webjars.NotFoundException;
+
 
 import java.util.*;
 
@@ -33,7 +33,7 @@ public class NotificationsController {
         try {
             List<Notifications> notifications = notificationService.findNotificationOfUser(userId);
             return ResponseEntity.ok(notifications);
-        } catch (NotFoundException e) {
+        } catch (RuntimeException e) {
             System.out.println("NotFoundException: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -53,7 +53,7 @@ public class NotificationsController {
         try {
             notificationService.deleteNotification(userId);
             return ResponseEntity.ok("Notifications deleted successfully");
-        } catch (NotFoundException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete notifications");

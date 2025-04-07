@@ -37,7 +37,8 @@ public class SecurityConfig {
                                 "/api/news/getById",
                                 "/api/auth/forgot-password",
                                 "/api/auth/verify-otp",
-                                "/api/auth/reset-password"
+                                "/api/auth/reset-password",
+                                "/api/user/send-otp"
                                 ).permitAll()
 
                         .requestMatchers("/api/**").authenticated().anyRequest().authenticated()

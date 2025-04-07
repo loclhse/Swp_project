@@ -6,7 +6,7 @@ import com.example.Swp_Project.Repositories.ChildrenRepositories;
 import com.example.Swp_Project.Repositories.UserRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
+
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -59,9 +59,12 @@ public class ChildrenService {
 
     public void deleteChild(UUID childrenId) {
         if (!childrenRepository.existsById(childrenId)) {
-            throw new NotFoundException("Child with ID " + childrenId + " not found");
+            throw new NullPointerException("Child with ID " + childrenId + " not found");
         }
         childrenRepository.deleteById(childrenId);
+    }
+    public Optional<Children> getChildrenByName(String name){
+        return childrenRepository.findByChildrenName(name);
     }
 
 }

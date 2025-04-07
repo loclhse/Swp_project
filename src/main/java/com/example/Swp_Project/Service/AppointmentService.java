@@ -4,7 +4,7 @@ import com.example.Swp_Project.Model.*;
 import com.example.Swp_Project.Repositories.AppointmentRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +22,7 @@ public class AppointmentService {
     public Appointment getAppointmentById(UUID appointmentId) {
         Appointment appointment = appointmentRepository.findByAppointmentId(appointmentId);
         if (appointment == null) {
-            throw new NotFoundException("Appointment with ID " + appointmentId + " not found");
+            throw new NullPointerException("Appointment with ID " + appointmentId + " not found");
         }
         return appointment;
     }
@@ -51,7 +51,7 @@ public class AppointmentService {
     public void deleteAppointmentByUserId(UUID userId) {
         List<Appointment> notifications = appointmentRepository.findByUserIdOrderByCreateAtDesc(userId);
         if (notifications.isEmpty()) {
-            throw new NotFoundException("No notifications found for user with ID: " + userId);
+            throw new NullPointerException("No notifications found for user with ID: " + userId);
         }
         appointmentRepository.deleteAll(notifications);
     }

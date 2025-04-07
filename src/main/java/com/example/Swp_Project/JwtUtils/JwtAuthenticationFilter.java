@@ -76,6 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return path.equals("/") || path.startsWith("/public/")
                 || path.equals("/api/user/login")
                 || path.equals("/api/user/register")
+                ||path.startsWith("/swagger-ui.html")
                 || path.startsWith("/swagger-ui")
                 || path.startsWith("/api-docs")
                 || path.startsWith("/api/vaccines-all")
@@ -87,8 +88,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 ||path.startsWith("/api/auth/forgot-password")
                 ||path.startsWith("/api/auth/verify-otp")
                 ||path.startsWith("/api/auth/reset-password")
-                ||path.startsWith("api/vaccinedetails-getById")
-                ;
+                ||path.startsWith("/api/vaccinedetails-getById")
+                ||path.startsWith("/api/user/send-otp");
 
     }
 }

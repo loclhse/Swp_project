@@ -27,10 +27,40 @@ public class VaccineDetails {
     private String status;
     private Integer dateBetweenDoses;
     private Double price;
+    private Integer ageRequired;
+    private Integer dosageAmount;
+    private Integer boosterInteval;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateAt;
+
+
+    public Integer getBoosterInteval() {
+        return boosterInteval;
+    }
+
+    public void setBoosterInteval(Integer boosterInteval) {
+        this.boosterInteval = boosterInteval;
+    }
+
+
+
+    public Integer getDosageAmount() {
+        return dosageAmount;
+    }
+
+    public void setDosageAmount(Integer dosageAmount) {
+        this.dosageAmount = dosageAmount;
+    }
+
+    public Integer getAgeRequired() {
+        return ageRequired;
+    }
+
+    public void setAgeRequired(Integer ageRequired) {
+        this.ageRequired = ageRequired;
+    }
 
     public Integer getCurrentDose() {
         return currentDose;

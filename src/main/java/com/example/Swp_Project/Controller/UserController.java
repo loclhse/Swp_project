@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.web.bind.annotation.*;
 
-import org.webjars.NotFoundException;
+
 
 import java.util.*;
 
@@ -85,11 +85,6 @@ public class UserController {
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
     }
 
     @GetMapping
@@ -177,7 +172,7 @@ public class UserController {
             response.put("message", "User account deactivated successfully");
             response.put("user", deactivatedUser);
             return ResponseEntity.ok(response);
-        } catch (NotFoundException e) {
+        } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", e.getMessage()));
         } catch (IllegalStateException e) {

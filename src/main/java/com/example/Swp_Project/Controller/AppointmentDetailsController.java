@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.webjars.NotFoundException;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +35,7 @@ public class AppointmentDetailsController {
         try {
             Appointment verifiedAppointment = appointmentDetailService.updateAppointmentStatusToVerified(appointmentId);
             return ResponseEntity.ok(verifiedAppointment);
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Not Found: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (IllegalStateException e) {
@@ -56,7 +56,7 @@ public class AppointmentDetailsController {
             response.put("appointment canceled: ", newAppointment);
 
             return ResponseEntity.ok(response);
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", e.getMessage()));
         } catch (IllegalStateException e) {
@@ -73,7 +73,7 @@ public class AppointmentDetailsController {
         try {
             Appointment completedAppointment = appointmentDetailService.markAppointmentAsCompleted(appointmentId);
             return ResponseEntity.ok(completedAppointment);
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Not Found: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (IllegalStateException e) {
@@ -90,7 +90,7 @@ public class AppointmentDetailsController {
         try {
             appointmentDetailService.deleteByUserId(userId);
             return ResponseEntity.ok("Appointments deleted successfully for user with ID: " + userId);
-        } catch (NotFoundException ex) {
+        } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -104,7 +104,7 @@ public class AppointmentDetailsController {
         try {
             AppointmentDetail updatedAppointmentDetail = appointmentDetailService.updateStatusToPaid(appointmentDetailId);
             return ResponseEntity.ok(updatedAppointmentDetail);
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

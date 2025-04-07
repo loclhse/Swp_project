@@ -6,7 +6,7 @@ import com.example.Swp_Project.Repositories.NewsRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,7 +62,7 @@ public class NewsService {
     public Optional<News> findById(UUID id){
         Optional<News> news= newsrepo.findById(id);
         if(news.isEmpty()){
-            throw new NotFoundException("there is no news found with ID: " + id);
+            throw new NullPointerException("there is no news found with ID: " + id);
         }
         return news;
     }

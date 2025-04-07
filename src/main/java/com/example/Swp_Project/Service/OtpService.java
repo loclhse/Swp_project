@@ -27,7 +27,7 @@ public class OtpService {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
             message.setSubject("Your OTP for Password Reset");
-            message.setText("Your OTP is: " + otp + "\nThis OTP is valid for 10 minutes.");
+            message.setText("Your OTP is: " + otp + "\nThis OTP is valid for 1 minutes.");
             mailSender.send(message);
             System.out.println("Email sent successfully to: " + email);
         } catch (Exception e) {

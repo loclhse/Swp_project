@@ -3,10 +3,11 @@ import com.example.Swp_Project.DTO.DailyRevenueDTO;
 import com.example.Swp_Project.Model.Payment;
 import com.example.Swp_Project.Repositories.PaymentsRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
 
-import java.time.LocalDateTime;
+import org.springframework.stereotype.Service;
+
+
+
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +29,7 @@ public class PaymentService {
 
         List<Payment>paymentList=paymentsRepositories.findByUserId(userId);
         if(paymentList.isEmpty()){
-            throw new NotFoundException("there is no vaccine found for ID: " + userId);
+            throw new NullPointerException("there is no vaccine found for ID: " + userId);
         }
         return paymentList;
     }
@@ -36,7 +37,7 @@ public class PaymentService {
     public boolean deletePaymentByUserId(UUID userId){
         List<Payment>paymentList=paymentsRepositories.findByUserId(userId);
         if(paymentList.isEmpty()){
-            throw new NotFoundException("there is no vaccine found for ID: " + userId);
+            throw new NullPointerException("there is no vaccine found for ID: " + userId);
         }
         paymentsRepositories.deleteAll(paymentList);
         return true;

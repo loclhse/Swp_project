@@ -9,6 +9,34 @@ public class VaccineDetailsDTO {
     private String status;
     private Integer dateBetweenDoses;
     private Double price;
+    private Integer ageRequired;
+    private Integer dosageAmount;
+    private Integer boosterInterval;
+
+    public Integer getBoosterInterval() {
+        return boosterInterval;
+    }
+
+    public void setBoosterInterval(Integer boosterInterval) {
+        this.boosterInterval = boosterInterval;
+    }
+
+    public Integer getAgeRequired() {
+        return ageRequired;
+    }
+
+    public void setAgeRequired(Integer ageRequired) {
+        this.ageRequired = ageRequired;
+    }
+
+    public Integer getDosageAmount() {
+        return dosageAmount;
+    }
+
+    public void setDosageAmount(Integer dosageAmount) {
+        this.dosageAmount = dosageAmount;
+    }
+
     public Integer getDoseRequire() {
         return doseRequire;
     }
@@ -41,7 +69,6 @@ public class VaccineDetailsDTO {
         return price;
     }
 
-    // Setters
     public void setDoseRequire(Integer doseRequire) {
         this.doseRequire = doseRequire;
     }

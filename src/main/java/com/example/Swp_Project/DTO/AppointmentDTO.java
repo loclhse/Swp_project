@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
 
 public class AppointmentDTO {
     private String childrenName;
+    private UUID childrenId;
     private String note;
     private String medicalIssue;
     private String childrenGender;
@@ -16,6 +18,14 @@ public class AppointmentDTO {
     private LocalDate appointmentDate;
     @JsonFormat(pattern="HH:mm")
     private LocalTime timeStart;
+
+    public UUID getChildrenId() {
+        return childrenId;
+    }
+
+    public void setChildrenId(UUID childrenId) {
+        this.childrenId = childrenId;
+    }
 
     public String getChildrenName() {
         return childrenName;

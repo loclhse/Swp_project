@@ -4,7 +4,7 @@ import com.example.Swp_Project.Model.Notifications;
 import com.example.Swp_Project.Repositories.NotificationsRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +26,7 @@ public class NotificationService {
     public void deleteNotification(UUID userId) {
         List<Notifications> notifications = notificationRepository.findByUserID(userId);
         if (notifications.isEmpty()) {
-            throw new NotFoundException("No notifications found for user with ID: " + userId);
+            throw new NullPointerException("No notifications found for user with ID: " + userId);
         }
         notificationRepository.deleteAll(notifications);
     }

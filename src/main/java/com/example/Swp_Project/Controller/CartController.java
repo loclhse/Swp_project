@@ -69,17 +69,44 @@ public class CartController {
     }
 
     @PostMapping("/cart/checkout")
-    public ResponseEntity<String> checkout(
+    public ResponseEntity<Map<String,Object>> checkout(
             @RequestParam UUID userId,
-            @RequestBody AppointmentDTO appointmentdto) {
+            @RequestBody AppointmentDTO appointmentdto) throws Exception {
         try {
             String paymentUrl = cartService.initiateCheckout(userId, appointmentdto);
-            System.out.println("Checkout - Payment URL sent to VNPAY: " + paymentUrl);
-            return new ResponseEntity<>(paymentUrl, HttpStatus.OK);
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("message", paymentUrl);
+            return ResponseEntity.ok(successResponse);
+        } catch (CartService.CartEmptyException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        } catch (CartService.MissingDataException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "MissingData");
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        } catch (CartService.ResourceNotFoundException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "ResourceNotFound");
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        } catch (CartService.OutOfStockException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "OutOfStock");
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        } catch (CartService.InvalidDosageException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "InvalidDosage");
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Checkout - Error: " + e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "InternalServerError");
+            errorResponse.put("message", "An unexpected error occurred: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -110,10 +137,47 @@ public class CartController {
     }
 
     @PostMapping("/cart/checkout/cash/{userId}")
-    public ResponseEntity<String> initiateCashCheckout(
+    public ResponseEntity<Map<String, Object>> initiateCashCheckout(
             @PathVariable UUID userId,
-            @RequestBody AppointmentDTO appointmentDTO) throws Exception {
+            @RequestBody AppointmentDTO appointmentDTO) {
+        try{
         String result = cartService.initiateCashCheckout(userId, appointmentDTO);
-        return ResponseEntity.ok(result);
+        Map<String, Object> successResponse = new HashMap<>();
+        successResponse.put("message", result);
+        return ResponseEntity.ok(successResponse);
+    } catch (CartService.CartEmptyException e) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "CartEmpty");
+        errorResponse.put("message", e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    } catch (CartService.MissingDataException e) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "MissingData");
+        errorResponse.put("message", e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    } catch (CartService.ResourceNotFoundException e) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "ResourceNotFound");
+        errorResponse.put("message", e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    } catch (CartService.OutOfStockException e) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "OutOfStock");
+        errorResponse.put("message", e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    } catch (CartService.InvalidDosageException e) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "InvalidDosage");
+        errorResponse.put("message", e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    } catch (Exception e) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "InternalServerError");
+        errorResponse.put("message", "An unexpected error occurred: " + e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+    }
+
+
+

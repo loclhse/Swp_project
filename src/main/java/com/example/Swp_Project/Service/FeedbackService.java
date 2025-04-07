@@ -82,7 +82,7 @@ public class FeedbackService {
                 .orElseThrow(() -> new RuntimeException("Appointment not found with ID: " + appointmentId + ", fam!"));
 
 
-        Feedback userFeedback = user.getFeedbacks().stream()
+        Feedback userFeedback = user.getFeedbackList().stream()
                 .filter(f -> f.getFeedbackId().equals(feedbackId))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Feedback not found with ID: " + feedbackId + ", dawg!"));
@@ -105,13 +105,14 @@ public class FeedbackService {
         Feedback savedFeedback = feedbackRepository.save(userFeedback);
         return savedFeedback;
     }
+
     public void deleteFeedback(UUID userId, UUID appointmentId, UUID feedbackId) {
         User user = userRepositories.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId + ", fam!"));
         Appointment appointment = appointmentRepositories.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found with ID: " + appointmentId + ", fam!"));
 
-        boolean userRemoved = user.getFeedbacks().removeIf(f -> f.getFeedbackId().equals(feedbackId));
+        boolean userRemoved = user.getFeedbackList().removeIf(f -> f.getFeedbackId().equals(feedbackId));
         if (!userRemoved) {
             throw new RuntimeException("Feedback not found in User's list with ID: " + feedbackId + ", dawg!");
         }
