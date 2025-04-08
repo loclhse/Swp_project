@@ -80,7 +80,7 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
         if (!"Verified Coming".equals(appointment.getStatus())) {
             throw new IllegalStateException("Appointment must be in 'Verified Coming' status to mark as completed");
         }
-        LocalDateTime now = LocalDateTime.now();
+
 
         appointment.setStatus("Completed");
         appointment.setUpdateAt(LocalDateTime.now());
@@ -88,26 +88,31 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
 
         if (savedAppointment.isFinalDose()) {
             logger.info("Storing injection history for appointment {} as it is the final dose", appointmentId);
-            Optional<Children> children = childrenRepositories.findById(savedAppointment.getChildrenId());
+            Optional<Children> childrenOpt = childrenRepositories.findByChildrenId(savedAppointment.getChildrenId());
+            if (!childrenOpt.isPresent()) {
+                logger.error("Children record not found for appointment {}", appointmentId);
+                throw new IllegalArgumentException("Children record not found for ID: " + savedAppointment.getChildrenId());
+            }
+            Children childrenn = childrenOpt.get();
+
             for (VaccineDetails vaccineDetail : savedAppointment.getVaccineDetailsList()) {
                 Integer doseRequire = vaccineDetail.getDoseRequire();
                 if (doseRequire == null) {
                     logger.warn("doseRequire is null for vaccineDetail with ID: {}. Skipping injection history for this vaccine.", vaccineDetail.getVaccineDetailsId());
                     continue;
                 }
-                Children childrenn=children.get();
-
-                InjectionHistory injectionHistory = new InjectionHistory(
-                        savedAppointment.getUserId(),
-                        childrenn.getChildrenId(),
-                        childrenn.getChildrenName(),
-                        vaccineDetail.getVaccineDetailsId(),
-                        vaccineDetail.getDoseName(),
-                        doseRequire,
-                        now,
-                        appointmentId
-                );
-                injectionHistoryRepositories.save(injectionHistory);
+                InjectionHistory injectionHistory = new InjectionHistory();
+                       injectionHistory.setId(UUID.randomUUID());
+                        injectionHistory.setUserId(savedAppointment.getUserId());
+                        injectionHistory.setChildrenId(savedAppointment.getChildrenId());
+                        injectionHistory.setChildrenName(childrenn.getChildrenName());
+                        injectionHistory.setVaccineDetailsId(vaccineDetail.getVaccineDetailsId());
+                        injectionHistory.setDoseName(vaccineDetail.getDoseName());
+                        injectionHistory.setDoseNumber(vaccineDetail.getDoseRequire());
+                        injectionHistory.setInjectionDate(savedAppointment.getAppointmentDate());
+                        injectionHistory.setAppointmentId(savedAppointment.getAppointmentId());
+                        injectionHistoryRepositories.save(injectionHistory);
+                        logger.info("Injection history saved for vaccineDetail {}", vaccineDetail.getVaccineDetailsId());
             }
         } else {
             logger.info("Not storing injection history for appointment {} as it is not the final dose", appointmentId);
@@ -118,9 +123,8 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
             notifyUserAboutNextAppointment(savedAppointment);
             return savedAppointment;
         } catch (Exception e) {
-            System.err.println("Error processing appointment: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            logger.error("Error processing appointment {}: {}", appointmentId, e.getMessage(), e);
+            throw new RuntimeException("Failed to process appointment completion for " + appointmentId, e);
         }
     }
 

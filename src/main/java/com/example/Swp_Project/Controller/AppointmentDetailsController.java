@@ -71,7 +71,9 @@ public class AppointmentDetailsController {
     @PutMapping("/appointmentsDetail/{appointmentId}/mark-successful")
     public ResponseEntity<Appointment> markFinalDoseAsSuccessful(@PathVariable UUID appointmentId) {
         try {
+            System.out.println("Received request to mark appointment as successful for ID: " + appointmentId);
             Appointment completedAppointment = appointmentDetailService.markAppointmentAsCompleted(appointmentId);
+            System.out.println("Successfully marked appointment as completed: " + completedAppointment);
             return ResponseEntity.ok(completedAppointment);
         } catch (IllegalArgumentException e) {
             System.out.println("Not Found: " + e.getMessage());
@@ -80,6 +82,7 @@ public class AppointmentDetailsController {
             System.out.println("Conflict: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         } catch (Exception e) {
+            System.out.println("Unexpected Error: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

@@ -24,8 +24,8 @@ public class InjectionHistoryController {
 
     private static final Logger logger = LoggerFactory.getLogger(InjectionHistoryController.class);
 
-    @GetMapping("/injection-history/{childrenId}")
-    public ResponseEntity<Map<String, Object>> findByChildrenIdDesc(@PathVariable UUID childrenId) {
+    @GetMapping("/children/injection-history")
+    public ResponseEntity<Map<String, Object>> findByChildrenIdDesc(@RequestParam UUID childrenId) {
         try {
             List<InjectionHistory> histories = injectionHistoryService.findByChildrenIdDesc(childrenId);
             Map<String, Object> successResponse = new HashMap<>();
@@ -81,7 +81,7 @@ public class InjectionHistoryController {
                 return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-    @DeleteMapping("/injection-history/{childrenId}")
+    @DeleteMapping("/children/injection-history")
     public ResponseEntity<Map<String, Object>> deleteByChildrenId(@PathVariable UUID childrenId) {
         try {
             injectionHistoryService.deleteByChildrenId(childrenId);
@@ -132,8 +132,8 @@ public class InjectionHistoryController {
         }
     }
 
-    @GetMapping("/injection-history/{userId}")
-    public ResponseEntity<Map<String, Object>> findByUserId(@PathVariable UUID userId) {
+    @GetMapping("/user/injection-history")
+    public ResponseEntity<Map<String, Object>> findByUserId(@RequestParam UUID userId) {
         try {
             List<InjectionHistory> histories = injectionHistoryService.findByUserId(userId);
             Map<String, Object> successResponse = new HashMap<>();

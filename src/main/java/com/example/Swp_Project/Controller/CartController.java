@@ -91,6 +91,11 @@ public class CartController {
             errorResponse.put("error", "MissingData");
             errorResponse.put("message", e.getMessage());
             return new ResponseEntity<>(convertToJsonString(errorResponse), HttpStatus.BAD_REQUEST);
+        } catch (CartService.BoosterIntervalViolationException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "InternalServerError");
+            errorResponse.put("message", "An unexpected error occurred: " + e.getMessage());
+            return new ResponseEntity<>(convertToJsonString(errorResponse), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (CartService.ResourceNotFoundException e) {
             logger.error("Not found error: {}", e.getMessage());
             Map<String, Object> errorResponse = new HashMap<>();
@@ -169,7 +174,12 @@ public class CartController {
         errorResponse.put("error", "MissingData");
         errorResponse.put("message", e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    } catch (CartService.ResourceNotFoundException e) {
+    } catch (CartService.BoosterIntervalViolationException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "InternalServerError");
+            errorResponse.put("message", "An unexpected error occurred: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (CartService.ResourceNotFoundException e) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", "ResourceNotFound");
         errorResponse.put("message", e.getMessage());

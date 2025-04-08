@@ -60,10 +60,7 @@ public class ChildrenController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/child-getByName/{name}")
-        public Optional<Children>findChildrenByName(@PathVariable String name){
-        return childrenService.getChildrenByName(name);
-    }
+
 
 
 

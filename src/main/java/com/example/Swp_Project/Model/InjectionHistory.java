@@ -1,11 +1,10 @@
 package com.example.Swp_Project.Model;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.annotation.Id;
-
-import java.time.LocalDateTime;
+import org.springframework.data.mongodb.core.mapping.Document;
+import java.time.LocalDate;
 import java.util.UUID;
-
+@Document(collection="injection_history")
 public class InjectionHistory {
     @Id
     private UUID id;
@@ -15,24 +14,14 @@ public class InjectionHistory {
     private UUID vaccineDetailsId;
     private String doseName;
     private Integer doseNumber;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime injectionDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate injectionDate;
     private UUID appointmentId;
 
     public InjectionHistory() {
     }
 
-    public InjectionHistory(UUID userId,UUID childrenId,String childrenName, UUID vaccineDetailsId,String doseName, Integer doseNumber, LocalDateTime injectionDate, UUID appointmentId) {
-        this.userId=userId;
-        this.childrenId = childrenId;
-        this.childrenName=childrenName;
-        this.vaccineDetailsId = vaccineDetailsId;
-        this.doseName=doseName;
-        this.doseNumber = doseNumber;
-        this.injectionDate = injectionDate;
-        this.appointmentId = appointmentId;
 
-    }
 
     public UUID getId() {
         return id;
@@ -49,6 +38,7 @@ public class InjectionHistory {
     public void setUserId(UUID userId) {
         this.userId = userId;
     }
+
 
     public String getChildrenName() {
         return childrenName;
@@ -82,11 +72,11 @@ public class InjectionHistory {
         this.doseNumber = doseNumber;
     }
 
-    public LocalDateTime getInjectionDate() {
+    public LocalDate getInjectionDate() {
         return injectionDate;
     }
 
-    public void setInjectionDate(LocalDateTime injectionDate) {
+    public void setInjectionDate(LocalDate injectionDate) {
         this.injectionDate = injectionDate;
     }
 

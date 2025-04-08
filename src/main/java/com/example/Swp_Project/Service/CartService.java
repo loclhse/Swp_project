@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import java.util.stream.Collectors;
@@ -32,6 +33,8 @@ public class CartService {
     private UserRepositories userRepositories;
     @Autowired
     private AppointmentDetailsRepositories appointmentDetailsRepositories;
+    @Autowired
+    private InjectionHistoryService injectionHistoryService;
 
     @Value("${vnpay.tmnCode}")
     private String vnp_TmnCode;
@@ -104,7 +107,7 @@ public class CartService {
     }
 
 
-    public String initiateCheckout(UUID userId, AppointmentDTO appointmentDTO)  throws InvalidDosageException,CartEmptyException,MissingDataException,OutOfStockException,ResourceNotFoundException {
+    public String initiateCheckout(UUID userId, AppointmentDTO appointmentDTO)  throws InvalidDosageException,CartEmptyException,MissingDataException,OutOfStockException,ResourceNotFoundException, BoosterIntervalViolationException {
 
         List<CartItem> cartItems = tempCart.getOrDefault(userId, Collections.emptyList());
         if (cartItems.isEmpty()) {
@@ -136,6 +139,37 @@ public class CartService {
             VaccineDetails vaccinedetail = vaccinedetailsOpt.get();
             if (vaccinedetail.getQuantity() < cartItem.getQuantity()) {
                 throw new OutOfStockException("Outstock for " + vaccinedetail.getDoseName());
+            }
+
+            List<InjectionHistory> existingHistories;
+            try {
+                existingHistories = injectionHistoryService.findByChildrenIdDesc(appointmentDTO.getChildrenId());
+            } catch (ResourceNotFoundException e) {
+                existingHistories = Collections.emptyList();
+            }
+
+            Optional<InjectionHistory> lastInjection = existingHistories.stream()
+                    .filter(h -> h.getVaccineDetailsId().equals(cartItem.getVaccineDetailsId()))
+                    .max((h1, h2) -> h1.getInjectionDate().compareTo(h2.getInjectionDate()));
+
+            if (lastInjection.isPresent()) {
+                InjectionHistory lastInjectionRecord = lastInjection.get();
+                LocalDate lastInjectionDate = lastInjectionRecord.getInjectionDate();
+                Integer boosterInterval = vaccinedetail.getBoosterInterval();
+                if (boosterInterval == null) {
+                    logger.warn("boosterInterval is null for vaccineDetail with ID: {}. Skipping booster interval check.", vaccinedetail.getVaccineDetailsId());
+                    continue;
+                }
+                LocalDate appointmentDate = appointmentDTO.getAppointmentDate();
+                long daysSinceLastInjection = ChronoUnit.DAYS.between(lastInjectionDate, appointmentDate);
+                if (daysSinceLastInjection < boosterInterval) {
+                    String errorMessage = String.format(
+                            "Cannot re-inject vaccine %s for child %s; must wait %d days after the last injection on %s (only %d days have passed).",
+                            vaccinedetail.getDoseName(), appointmentDTO.getChildrenName(), boosterInterval, lastInjectionDate, daysSinceLastInjection
+                    );
+                    logger.error(errorMessage);
+                    throw new BoosterIntervalViolationException(errorMessage);
+                }
             }
 
 
@@ -185,7 +219,7 @@ public class CartService {
         return paymentUrl;
     }
 
-    public String initiateCashCheckout(UUID userId, AppointmentDTO appointmentDTO) throws InvalidDosageException,CartEmptyException,MissingDataException,OutOfStockException,ResourceNotFoundException, TooManyDoseInCartException {
+    public String initiateCashCheckout(UUID userId, AppointmentDTO appointmentDTO) throws InvalidDosageException,CartEmptyException,MissingDataException,OutOfStockException,ResourceNotFoundException, TooManyDoseInCartException, BoosterIntervalViolationException {
         List<CartItem> cartItems = tempCart.getOrDefault(userId, Collections.emptyList());
         if (cartItems.isEmpty()) {
             logger.error("Cart is empty for userId: {}", userId);
@@ -225,6 +259,37 @@ public class CartService {
             if (vaccineDetail.getQuantity() < cartItem.getQuantity()) {
                 logger.error("Insufficient stock for vaccine: {}", vaccineDetail.getDoseName());
                 throw new OutOfStockException("Out of stock for " + vaccineDetail.getDoseName());
+            }
+
+            List<InjectionHistory> existingHistories;
+            try {
+                existingHistories = injectionHistoryService.findByChildrenIdDesc(appointmentDTO.getChildrenId());
+            } catch (ResourceNotFoundException e) {
+                existingHistories = Collections.emptyList();
+            }
+
+            Optional<InjectionHistory> lastInjection = existingHistories.stream()
+                    .filter(h -> h.getVaccineDetailsId().equals(cartItem.getVaccineDetailsId()))
+                    .max((h1, h2) -> h1.getInjectionDate().compareTo(h2.getInjectionDate()));
+
+            if (lastInjection.isPresent()) {
+                InjectionHistory lastInjectionRecord = lastInjection.get();
+                LocalDate lastInjectionDate = lastInjectionRecord.getInjectionDate();
+                Integer boosterInterval = vaccineDetail.getBoosterInterval();
+                if (boosterInterval == null) {
+                    logger.warn("boosterInterval is null for vaccineDetail with ID: {}. Skipping booster interval check.", vaccineDetail.getVaccineDetailsId());
+                    continue;
+                }
+                LocalDate appointmentDate = appointmentDTO.getAppointmentDate();
+                long daysSinceLastInjection = ChronoUnit.DAYS.between(lastInjectionDate, appointmentDate);
+                if (daysSinceLastInjection < boosterInterval) {
+                    String errorMessage = String.format(
+                            "Cannot re-inject vaccine %s for child %s; must wait %d days after the last injection on %s (only %d days have passed).",
+                            vaccineDetail.getDoseName(), appointmentDTO.getChildrenName(), boosterInterval, lastInjectionDate, daysSinceLastInjection
+                    );
+                    logger.error(errorMessage);
+                    throw new BoosterIntervalViolationException(errorMessage);
+                }
             }
 
             if (vaccineDetail.getAgeRequired() != null && appointmentDTO.getDateOfBirth() != null) {
@@ -452,7 +517,7 @@ public class CartService {
         int maxDosage;
 
         if (childrenAge <= 2) {
-            minDosage = 0;
+            minDosage = 5;
             maxDosage = 10;
         } else if (childrenAge <= 5 && childrenAge >2) {
             minDosage = 10;
@@ -489,6 +554,12 @@ public class CartService {
 
     public class InvalidDosageException extends RuntimeException {
         public InvalidDosageException(String message) {
+            super(message);
+        }
+    }
+
+    public class BoosterIntervalViolationException extends RuntimeException {
+        public BoosterIntervalViolationException(String message) {
             super(message);
         }
     }

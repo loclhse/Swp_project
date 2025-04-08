@@ -9,5 +9,5 @@ import java.util.UUID;
 
 public interface ChildrenRepositories extends MongoRepository<Children, UUID> {
 List<Children>findByUserId(UUID userId);
-Optional<Children>findByChildrenName(String childrenName);
+Optional<Children>findByChildrenId(UUID childrenId);
 }

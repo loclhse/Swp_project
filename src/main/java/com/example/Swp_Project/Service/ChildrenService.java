@@ -54,7 +54,7 @@ public class ChildrenService {
     }
 
     public Optional<Children> getChildById(UUID childrenId) {
-        return childrenRepository.findById(childrenId);
+        return childrenRepository.findByChildrenId(childrenId);
     }
 
     public void deleteChild(UUID childrenId) {
@@ -63,9 +63,7 @@ public class ChildrenService {
         }
         childrenRepository.deleteById(childrenId);
     }
-    public Optional<Children> getChildrenByName(String name){
-        return childrenRepository.findByChildrenName(name);
-    }
+
 
 }
 
