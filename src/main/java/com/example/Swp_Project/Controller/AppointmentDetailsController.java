@@ -1,7 +1,11 @@
 package com.example.Swp_Project.Controller;
+import com.example.Swp_Project.DTO.ReactionDTO;
 import com.example.Swp_Project.Model.Appointment;
 import com.example.Swp_Project.Model.AppointmentDetail;
 import com.example.Swp_Project.Service.AppointmentDetailService;
+import com.example.Swp_Project.Service.CartService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,8 @@ import java.util.UUID;
 public class AppointmentDetailsController {
     @Autowired
     private AppointmentDetailService appointmentDetailService;
+    private static final Logger logger = LoggerFactory.getLogger(InjectionHistoryController.class);
+
     @GetMapping("/appointmentDetails/findAll")
     public ResponseEntity<List<AppointmentDetail>> getAllAppointmentDetails() {
         try {
@@ -26,6 +32,38 @@ public class AppointmentDetailsController {
             return ResponseEntity.ok(appointmentDetails);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @PostMapping("/appointmentDetails/{appointmentId}/record-reaction-and-set-qualification")
+    public ResponseEntity<Map<String, Object>> recordReactionAndSetQualification(
+            @PathVariable UUID appointmentId,
+            @RequestBody ReactionDTO requestBody) {
+        try {
+            Appointment appointment = appointmentDetailService.recordReactionAndSetQualification(
+                    appointmentId, requestBody.getCondition(), requestBody.isQualified());
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("message", "Reaction recorded and qualification status updated");
+            successResponse.put("appointment", appointment);
+            successResponse.put("isOkay", appointment.isOkay());
+            return ResponseEntity.ok(successResponse);
+        } catch (NullPointerException e) {
+            logger.error("Not found error: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "ResourceNotFound");
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        } catch (IllegalStateException e) {
+            logger.error("Illegal state error: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "IllegalState");
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            logger.error("Internal server error: {}", e.getMessage(), e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "InternalServerError");
+            errorResponse.put("message", "An unexpected error occurred: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

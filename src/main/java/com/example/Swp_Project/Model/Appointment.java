@@ -31,8 +31,10 @@ public class Appointment {
     private LocalTime timeStart;
     private List<Feedback>feedbacks=new ArrayList<>();
     private List<VaccineDetails>vaccineDetailsList;
+    private List<Reaction>reactions;
     private String status;
     private boolean isFinalDose;
+    private boolean isOkay=false;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -47,6 +49,22 @@ public class Appointment {
         this.childrenName = childrenName;
         this.appointmentDate = appointmentDate;
         this.timeStart = timeStart;
+    }
+
+    public boolean isOkay() {
+        return isOkay;
+    }
+
+    public void setOkay(boolean okay) {
+        isOkay = okay;
+    }
+
+    public List<Reaction> getReactions() {
+        return reactions;
+    }
+
+    public void setReactions(List<Reaction> reactions) {
+        this.reactions = reactions;
     }
 
     public UUID getChildrenId() {

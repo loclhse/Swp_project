@@ -52,6 +52,54 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public Appointment recordReactionAndSetQualification(UUID appointmentId, String condition, boolean isQualified) {
+        logger.debug("Recording reaction and setting qualification for appointmentId: {}, condition: {}, isQualified: {}",
+                appointmentId, condition, isQualified);
+
+        try {
+            // Find the appointment
+            Optional<Appointment> appointmentOpt = appointmentRepositories.findById(appointmentId);
+            if (appointmentOpt.isEmpty()) {
+                logger.error("Appointment not found for ID: {}", appointmentId);
+                throw new NullPointerException("Appointment not found for ID: " + appointmentId);
+            }
+
+            Appointment appointment = appointmentOpt.get();
+            List<Reaction> reactions = appointment.getReactions();
+            if (reactions == null) {
+                reactions = new ArrayList<>();
+                appointment.setReactions(reactions);
+            }
+
+            // Add a new reaction
+            Reaction reaction = new Reaction();
+            reaction.setCondition(condition);
+            reactions.add(reaction);
+
+            // Set isOkay based on the qualification status
+            if (isQualified) {
+                appointment.setOkay(true); // isQualified == true, so isOkay = true
+            } else {
+                appointment.setOkay(false); // isQualified == false, so isOkay = false
+            }
+
+            // Save the appointment
+            Appointment savedAppointment = appointmentRepositories.save(appointment);
+            logger.info("Recorded reaction and set qualification for appointmentId: {}, isOkay: {}",
+                    appointmentId, savedAppointment.isOkay());
+            return savedAppointment;
+        } catch (NullPointerException e) {
+            logger.error("Failed to record reaction and set qualification for appointmentId: {}: {}",
+                    appointmentId, e.getMessage(), e);
+            throw e; // Re-throw to trigger transaction rollback
+        } catch (Exception e) {
+            logger.error("Unexpected error while recording reaction and setting qualification for appointmentId: {}: {}",
+                    appointmentId, e.getMessage(), e);
+            throw new RuntimeException("Failed to record reaction and set qualification for appointment " + appointmentId, e);
+        }
+    }
+
     @Transactional
     public Appointment cancelAppointment(UUID appointmentId) {
 
