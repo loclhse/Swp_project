@@ -57,6 +57,8 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
         logger.debug("Recording reaction and setting qualification for appointmentId: {}, condition: {}, isQualified: {}",
                 appointmentId, condition, isQualified);
 
+
+
         try {
             // Find the appointment
             Optional<Appointment> appointmentOpt = appointmentRepositories.findById(appointmentId);
@@ -66,6 +68,9 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
             }
 
             Appointment appointment = appointmentOpt.get();
+            if (!"Verified Coming".equals(appointment.getStatus())) {
+                throw new IllegalStateException("Appointment must be in 'Verified Coming' status to mark as completed");
+            }
             List<Reaction> reactions = appointment.getReactions();
             if (reactions == null) {
                 reactions = new ArrayList<>();
