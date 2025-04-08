@@ -357,7 +357,9 @@ public class CartService {
         payment.setUserId(userId);
         payment.setAppointmentId(appointment.getAppointmentId());
         payment.setAmount((long) total);
+        payment.setPaymentMethod("Cash");
         payment.setStatus("Pending");
+        payment.setVaccineDetailsList(appointment.getVaccineDetailsList());
         payment.setCreatedAt(LocalDateTime.now());
         paymentsRepositories.save(payment);
 
@@ -484,6 +486,7 @@ public class CartService {
                 payment.setUserId(userId);
                 payment.setAppointmentId(appointment.getAppointmentId());
                 payment.setAmount(Long.parseLong(vnp_Params.get("vnp_Amount")) / 100);
+                payment.setPaymentMethod("VNPAY");
                 payment.setStatus("Success");
                 payment.setVaccineDetailsList(appointment.getVaccineDetailsList());
                 payment.setCreatedAt(LocalDateTime.now());
