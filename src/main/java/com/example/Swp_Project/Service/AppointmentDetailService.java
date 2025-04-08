@@ -71,6 +71,9 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
             if (!"Verified Coming".equals(appointment.getStatus())) {
                 throw new IllegalStateException("Appointment must be in 'Verified Coming' status to mark as completed");
             }
+            if ("Completed".equals(appointment.getStatus())) {
+                throw new IllegalStateException("Appointment must be in 'Verified Coming' status to mark as completed");
+            }
             List<Reaction> reactions = appointment.getReactions();
             if (reactions == null) {
                 reactions = new ArrayList<>();
@@ -132,6 +135,9 @@ private final static Logger logger= LoggerFactory.getLogger(AppointmentDetailSer
 
         if (!"Verified Coming".equals(appointment.getStatus())) {
             throw new IllegalStateException("Appointment must be in 'Verified Coming' status to mark as completed");
+        }
+        if (appointment.isOkay()) {
+            throw new IllegalStateException("Appointment must be qualified to be completed");
         }
 
 
